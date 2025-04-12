@@ -13,6 +13,7 @@ import { Link } from "react-router"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod";
 import signupSchema from "@/utils/signupSchema"
+import { signUp } from "@/utils/auth"
 
 export function LoginForm({
   className,
@@ -23,8 +24,13 @@ export function LoginForm({
     resolver: zodResolver(signupSchema)
   })
 
-  const onSubmit = (data) =>{
+  const onSubmit =  (data) =>{
     console.log(data)
+    try {
+       signUp(data.email,data.password)
+    } catch (error) {
+      console.log("error",error)
+    }
 
   }
   return (
