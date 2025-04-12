@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@tailwind utilities;
 
 @custom-variant dark (&:is(.dark *));
 
@@ -118,3 +119,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .gradient{
+    @apply bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500
+  }
+  .gradient-title {
+    @apply bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-transparent bg-clip-text;
+  }
+}
+
