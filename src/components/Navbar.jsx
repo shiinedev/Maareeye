@@ -23,9 +23,9 @@ const Navbar = () => {
     <header className="container mx-auto py-3 px-4 flex items-center justify-between shadow-sm border-b ">
       {/* logo */}
       <div>
-        <a className="gradient-title text-xl  sm:text-2xl font-bold uppercase">
+        <Link to="/" className="gradient-title text-xl  sm:text-2xl font-bold uppercase">
           Maareeye
-        </a>
+        </Link>
       </div>
       {/* theme and login */}
       <div className="flex space-x-4">
