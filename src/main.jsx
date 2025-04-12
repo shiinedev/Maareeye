@@ -7,12 +7,18 @@ import { RouterProvider } from 'react-router'
 import { createBrowserRouter } from "react-router-dom"; // FIX HERE!!
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Home from './pages/Home'
+
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
+      {
+        index:true,
+        element:<Home />
+      },
       {
         path: "login",    // no slash here
         element: <Login />
