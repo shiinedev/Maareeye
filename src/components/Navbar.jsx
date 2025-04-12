@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
-import { MoonStar, Sun } from "lucide-react";
+import { MoonStar, Sun, User } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
@@ -12,14 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { Link } from "react-router";
 
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
 
-  const avatar_url =
-    "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-
+  const avatar_url =false
   return (
     <header className="container mx-auto py-3 px-4 flex items-center justify-between shadow-sm border-b ">
       {/* logo */}
@@ -48,31 +47,38 @@ const Navbar = () => {
                           <AvatarImage src={avatar_url} />
                         </Avatar>
                       ) : (
-                        <span className=" text-gray-600">
-                          <FaUser size={25} />
+                        <span >
+                          <User size={25} />
                         </span>
                       )}
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-50 mr-3">
+                  <DropdownMenuContent className="w-50 mt-2 mr-3">
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    <Link to={"/profile"}>
                     <DropdownMenuItem>profile</DropdownMenuItem>
-                    <DropdownMenuItem>Subscription</DropdownMenuItem>
-                    <DropdownMenuItem>Logout</DropdownMenuItem>
+                    </Link>
+                   <Link to="/dashboard">
+                   <DropdownMenuItem>Dashboard</DropdownMenuItem>
+                   </Link>
+                   <Link to={"/login"}>
+                   <DropdownMenuItem>Logout</DropdownMenuItem>
+                   </Link>
+                   
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
             </div>
           ) : (
-            <a>
+            <Link to={"/login"} >
               <Button
                 variant="purple"
                 className="text-lg font-medium"
                 size="lg">
                 Login
               </Button>
-            </a>
+            </Link>
           )}
         </div>
       </div>
