@@ -16,7 +16,7 @@ import { Link } from "react-router";
 
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
 
   const avatar_url =false
   return (
