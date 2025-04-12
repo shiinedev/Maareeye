@@ -1,4 +1,4 @@
-import { profile } from "console";
+
 import supabase from "./supabase"
 
 export const signUp = async (email,password,username)=>{
