@@ -1,5 +1,6 @@
 import { getUserProfile, onAuthChange, singOut } from '@/utils/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { toast } from 'sonner';
 
 
 const AuthContext = createContext();
@@ -9,6 +10,8 @@ export const AuthProvider = ({children}) => {
     const [profile,setProfile] = useState(null);
     const [isLoading,setIsLoading] = useState(false);
 
+
+
     useEffect(()=>{
         setIsLoading(true)
         const cleanUp = onAuthChange( async (user)=>{
@@ -16,7 +19,8 @@ export const AuthProvider = ({children}) => {
 
             if(user){
                 try {
-                    const profile =await getUserProfile(user.id);
+                    const profile = await getUserProfile(user.id);
+                    setProfile(profile)
                     console.log("user profile",profile);
                 } catch (error) {
                     console.log("error profile fetching",error);
@@ -31,7 +35,13 @@ export const AuthProvider = ({children}) => {
     },[]);
 
     const logout = async()=>{
-        await singOut();
+        try {
+            await singOut();
+            toast.warning("user logged out")
+        } catch (error) {
+            console.log("error user logout ")
+        }
+        
     }
 
     const value = {
