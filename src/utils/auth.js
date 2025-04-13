@@ -128,3 +128,8 @@ export const onAuthChange =  (callback)=>{
 
     return ()=> data.subscription.unsubscribe();
 }
+
+export const singOut = async ()=>{
+    await supabase.auth.signOut();
+}
+

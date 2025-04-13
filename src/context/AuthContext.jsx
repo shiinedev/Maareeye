@@ -1,4 +1,4 @@
-import { getUserProfile, onAuthChange } from '@/utils/auth';
+import { getUserProfile, onAuthChange, singOut } from '@/utils/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
 
@@ -30,12 +30,16 @@ export const AuthProvider = ({children}) => {
         return cleanUp;
     },[]);
 
+    const logout = async()=>{
+        await singOut();
+    }
+
     const value = {
         user,
         profile,
         isLoading,
         isLoggedIn:!!user,
-
+        logout
     }
   return (
     <AuthContext.Provider value={value}>
