@@ -4,11 +4,12 @@ import './index.css'
 import App from './App.jsx'
 import { ThemeProvider } from './components/ThemeProvider'
 import { RouterProvider } from 'react-router'
-import { createBrowserRouter } from "react-router-dom"; // FIX HERE!!
+import { createBrowserRouter } from "react-router-dom"; 
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Home from './pages/Home'
 import { AuthProvider } from './context/AuthContext'
+import UnAuthenticatedRoutes from './components/UnAuthenticatedRoutes'
 
 
 export const router = createBrowserRouter([
@@ -21,12 +22,12 @@ export const router = createBrowserRouter([
         element:<Home />
       },
       {
-        path: "login",    // no slash here
-        element: <Login />
+        path: "/login",    
+        element:<UnAuthenticatedRoutes children={ <Login />} />
       },
       {
-        path: "register", // no slash here
-        element: <Register />
+        path: "/register", 
+        element:<UnAuthenticatedRoutes children={<Register />} /> 
       }
     ],
   },
