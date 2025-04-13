@@ -36,7 +36,7 @@ export function LoginForm({
     try {
 
         setIsLoading(true);      
-       signUp(data.email,data.password);
+       signUp(data.email,data.password,data.username);
        setSuccess(true);
        setTimeout(()=>{
         navigate("/login");
