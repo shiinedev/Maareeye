@@ -6,12 +6,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+import supabase from "@/utils/supabase";
+import { uploadImage } from "@/utils/storage";
 
 export default function Profile() {
-  const { user, profile, isLoading } = useAuth();
+  const { user, profile ,isLoading} = useAuth();
 
   const [username, setUsername] = useState("");
+  const [Loading,setLoading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatar, setAvatar] = useState(null);
 
   useEffect(() => {
     if (profile) {
@@ -20,6 +24,50 @@ export default function Profile() {
     }
   }, [profile, user]);
 
+  const handleSubmit = async (e) =>{
+    e.preventDefault();
+    try {
+      let updates={username};
+      setLoading(true);
+      if(avatar ){
+        const {path,imageUrl} = await uploadImage(avatar,user.id,"avatars");
+        console.log(imageUrl);
+
+        updates ={
+          ...updates,
+          avatar_url:imageUrl
+        }
+        console.log(updates)
+      }
+
+        const { data:updatedData, error } = await supabase
+        .from('users')
+        .update(updates)
+        .eq('id',user.id)
+        .select()
+        .single()
+  
+      
+        
+        console.log(updatedData)
+        if(error) throw error;
+
+        if(updatedData){
+          console.log(updatedData)
+          setAvatarUrl(updatedData.avatar_url);
+          setUsername(updatedData.username);
+        
+
+        toast.success(" profile updated successfully")
+
+      }
+    } catch (error) {
+      console.log("error uploading avatar",error);
+    }finally{
+      setLoading(false);
+    }
+  }
+
   const handleAvatarChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -27,6 +75,7 @@ export default function Profile() {
         toast.error("Image must be smaller than 2MB");
         return;
       }
+      setAvatar(file);
 
       const previewUrl = URL.createObjectURL(file);
 
@@ -34,18 +83,21 @@ export default function Profile() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex justify-center items-center">
-        <div className="animate-spin w-12 h-12 rounded-full border-y-2 border-purple-500"></div>
-      </div>
-    );
-  }
+  if(isLoading){
+    return(
+    <div className='min-h-screen flex justify-center items-center'>
+        <div className='animate-spin w-12 h-12 rounded-full border-y-2 border-purple-500'>
+
+        </div>
+    </div>
+    )
+}
+ 
 
   return (
     <div className="min-h-[90vh] flex items-center justify-center  px-4">
-      <div className="w-full max-w-2xl md:mx-auto space-y-8 p-6  backdrop-blur-xs rounded-xl border  shadow-xs">
-        <div className="flex items-center justify-center gap-6">
+      <form onSubmit={handleSubmit} className="w-full max-w-2xl md:mx-auto space-y-8 p-6  backdrop-blur-xs rounded-xl border  shadow-xs">
+        <div  className="flex items-center justify-center gap-6">
           <Avatar className="h-24 w-24 rounded-full border-2  shadow-xs">
             <AvatarImage
               src={avatarUrl}
@@ -78,7 +130,7 @@ export default function Profile() {
               id="username"
               placeholder="@username"
               defaultValue={username}
-              onChange={() => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
               autoComplete="off"
             />
           </div>
@@ -95,9 +147,11 @@ export default function Profile() {
         </div>
         <div className="flex justify-end gap-4">
           <Button variant="outline">Cancel</Button>
-          <Button variant="purple">Save Changes</Button>
+          <Button type="submit"  disabled={Loading} variant="purple">
+           { Loading ? "saving...": "Save Changes"}
+            </Button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

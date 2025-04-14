@@ -9,7 +9,7 @@ import {
   User,
 } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
-import { Avatar, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 import {
   DropdownMenu,
@@ -49,15 +49,12 @@ const Navbar = () => {
             <div className="flex items-center space-x-2 ">
               <DropdownMenu>
                 <DropdownMenuTrigger>
-                  {profile?.avatar_url ? (
                     <Avatar>
                       <AvatarImage src={profile?.avatar_url} />
+                      <AvatarFallback >
+                        <User size={40} />
+                      </AvatarFallback>
                     </Avatar>
-                  ) : (
-                    <Avatar>
-                      <User size={30} />
-                    </Avatar>
-                  )}
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="max-w-70 mt-2 mr-3">
                   <DropdownMenuLabel>
