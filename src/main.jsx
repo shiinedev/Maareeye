@@ -10,6 +10,7 @@ import Register from './pages/Register'
 import Home from './pages/Home'
 import { AuthProvider } from './context/AuthContext'
 import UnAuthenticatedRoutes from './components/UnAuthenticatedRoutes'
+import Profile from './pages/Profile'
 
 
 export const router = createBrowserRouter([
@@ -28,6 +29,10 @@ export const router = createBrowserRouter([
       {
         path: "/register", 
         element:<UnAuthenticatedRoutes children={<Register />} /> 
+      },
+      {
+        path:"/profile",
+        element:<Profile />
       }
     ],
   },
