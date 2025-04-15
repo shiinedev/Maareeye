@@ -1,9 +1,11 @@
 import React from 'react'
 import { Button } from "./ui/button"
+import Navbar from './Navbar'
 const HeroSection = () => {
   return (
     <div className='min-h-screen flex flex-col'>
       {/* Main Content */}
+      <Navbar />
       <main className="flex-1 flex flex-col items-center justify-center text-center px-4 relative">
         <div className="max-w-3xl mx-auto mb-24 z-10">
           <h1 className="text-5xl md:text-6xl font-bold mb-4">
