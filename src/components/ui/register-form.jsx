@@ -17,7 +17,7 @@ import { signUp } from "@/utils/auth"
 import { useState } from "react"
 
 
-export function LoginForm({
+export function RegisterForm({
   className,
   ...props
   

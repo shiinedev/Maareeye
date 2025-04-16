@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import supabase from "@/utils/supabase";
 import { uploadImage } from "@/utils/storage";
+import Navbar from "@/components/Navbar";
 
 export default function Profile() {
   const { user, profile ,isLoading} = useAuth();
@@ -95,7 +96,9 @@ export default function Profile() {
  
 
   return (
-    <div className="min-h-[90vh] flex items-center justify-center  px-4">
+    <div className="min-h-screen">
+      <Navbar />
+      <div className="flex items-center justify-center mt-8  px-4">
       <form onSubmit={handleSubmit} className="w-full max-w-2xl md:mx-auto space-y-8 p-6  backdrop-blur-xs rounded-xl border  shadow-xs">
         <div  className="flex items-center justify-center gap-6">
           <Avatar className="h-24 w-24 rounded-full border-2  shadow-xs">
@@ -152,6 +155,7 @@ export default function Profile() {
             </Button>
         </div>
       </form>
+      </div>
     </div>
   );
 }

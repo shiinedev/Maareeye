@@ -6,7 +6,6 @@ import {
   MoonStar,
   Settings,
   Sun,
-  User,
 } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -14,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -21,6 +21,7 @@ import {
 } from "./ui/dropdown-menu";
 import { Link } from "react-router";
 import { useAuth } from "@/context/AuthContext";
+import { IconUserCircle } from "@tabler/icons-react";
 
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
@@ -37,8 +38,7 @@ const Navbar = () => {
         </Link>
       </div>
       {/* theme and login */}
-      <div className="flex space-x-4">
-        <Button
+      <div className="flex space-x-4">         <Button
           variant="outline"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           className="shadow-md">
@@ -48,28 +48,23 @@ const Navbar = () => {
           {isLoggedIn ? (
             <div className="flex items-center space-x-2 ">
               <DropdownMenu>
-                <DropdownMenuTrigger>
+                <DropdownMenuTrigger asChild>
                     <Avatar>
                       <AvatarImage src={profile?.avatar_url} />
                       <AvatarFallback >
-                        <User size={40} />
+                        <IconUserCircle size={40} />
                       </AvatarFallback>
                     </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="max-w-70 mt-2 mr-3">
                   <DropdownMenuLabel>
                     <div className="flex items-center space-x-4">
-                      <div>
-                        {profile?.avatar_url ? (
-                          <Avatar>
-                            <AvatarImage src={profile?.avatar_url} />
-                          </Avatar>
-                        ) : (
-                          <Avatar className="w-8 h-8 rounded-full">
-                            <User size={30} />
-                          </Avatar>
-                        )}
-                      </div>
+                    <Avatar>
+                      <AvatarImage src={profile?.avatar_url} />
+                      <AvatarFallback >
+                        <IconUserCircle size={40} />
+                      </AvatarFallback>
+                    </Avatar>
                       <div className="flex flex-col">
                         <p className="capitalize">{profile?.username}</p>
                         <p className="text-gray-400">{user?.email}</p>
@@ -77,14 +72,14 @@ const Navbar = () => {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
                   <Link to={"/profile"}>
                     <DropdownMenuItem>
-                      <Settings /> Manege Account
+                    <Settings/> Manage Account
                     </DropdownMenuItem>
                   </Link>
                   <Link to="/dashboard">
                     <DropdownMenuItem>
-                      {" "}
                       <LayoutDashboard /> Dashboard
                     </DropdownMenuItem>
                   </Link>
@@ -94,6 +89,7 @@ const Navbar = () => {
                     onClick={() => logout()}>
                     <LogOut /> Logout
                   </Button>
+                  </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
