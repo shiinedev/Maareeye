@@ -1,9 +1,10 @@
+import TransactionForm from '@/components/TransactionForm'
 import React from 'react'
 
 const AddTransaction = () => {
   return (
     <div>
-      Add Transaction
+    <TransactionForm />
     </div>
   )
 }
