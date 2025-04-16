@@ -6,14 +6,12 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Link } from "react-router"
-import { LayoutDashboard,BadgeDollarSign, BadgePlus,CreditCard, CircleDollarSign} from 'lucide-react';
+import { LayoutDashboard,CreditCard, CircleDollarSign,BellPlus,TableProperties} from 'lucide-react';
 import { useAuth } from "@/context/AuthContext"
 import { DropdownMenuSeparator } from "./dropdown-menu"
+import { IconCameraDollar, IconCashRegister, IconReport } from "@tabler/icons-react"
 
 const data = {
   navMain: [
@@ -25,17 +23,32 @@ const data = {
     {
       title: "Add Transaction",
       url: "/dashboard/addTransaction",
-      icon: BadgePlus,
+      icon: IconCameraDollar      ,
     },
     {
       title: "Transactions",
       url: "/dashboard/transactionList",
-      icon: BadgeDollarSign,
+      icon: IconCashRegister,
+    },
+    {
+      title: "Make Plan",
+      url: "/dashboard/makePlan",
+      icon: BellPlus,
+    },
+    {
+      title: "Your Plans",
+      url: "/dashboard/yourPlans",
+      icon: TableProperties,
     },
     {
       title: "Accounts",
       url: "/dashboard/accounts",
       icon: CreditCard,
+    },
+    {
+      title: "Report",
+      url: "/dashboard/plansList",
+      icon: IconReport,
     },
   ],
 
