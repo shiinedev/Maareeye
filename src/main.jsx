@@ -11,7 +11,11 @@ import Home from './pages/Home'
 import { AuthProvider } from './context/AuthContext'
 import UnAuthenticatedRoutes from './components/UnAuthenticatedRoutes'
 import Profile from './pages/Profile'
-import Dashboard from './pages/dashboard'
+import Dashboard from './pages/Dashboars/Dashboard'
+import Overview from './pages/Dashboars/Overview'
+import AddTransaction from './pages/Dashboars/AddTransaction'
+import Transactions from './pages/Dashboars/Transactions'
+import Accounts from './pages/Dashboars/Accounts'
 
 export const router = createBrowserRouter([
   {
@@ -36,7 +40,25 @@ export const router = createBrowserRouter([
       },
       {
         path:"/dashboard",
-        element:<Dashboard/>
+        element:<Dashboard/>,
+        children:[
+          {
+            index:true,
+            element:<Overview />
+          },
+          {
+            path:"/dashboard/addTransaction",
+            element:<AddTransaction />
+          },
+          {
+            path:"/dashboard/transactionList",
+            element:<Transactions />
+          },
+          {
+            path:"/dashboard/accounts",
+            element:<Accounts />
+          }
+        ]
       }
     ],
   },
