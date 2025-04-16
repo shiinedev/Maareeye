@@ -11,6 +11,8 @@ import AddTransaction from "./pages/Dashboard/AddTransaction";
 import Transactions from "./pages/Dashboard/Transactions";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Accounts from "./pages/Dashboard/Accounts";
+import MakePlan from "./pages/Dashboard/MakePlan";
+import YourPlans from "./pages/Dashboard/YourPlans";
 
 
 export const router = createBrowserRouter([
@@ -53,6 +55,18 @@ export const router = createBrowserRouter([
           {
             path:"/dashboard/accounts",
             element:<Accounts />
+          },
+          {
+            path:"/dashboard/makePlan",
+            element:<MakePlan />
+          },
+          {
+            path:"/dashboard/yourPlans",
+            element:<YourPlans />
+          },
+          {
+            path:"/dashboard/report",
+            element:<Report />
           }
         ]
       }
