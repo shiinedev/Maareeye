@@ -16,6 +16,7 @@ import Overview from './pages/Dashboars/Overview'
 import AddTransaction from './pages/Dashboars/AddTransaction'
 import Transactions from './pages/Dashboars/Transactions'
 import Accounts from './pages/Dashboars/Accounts'
+import ProtectedRoute from './components/ProtectedRoute'
 
 export const router = createBrowserRouter([
   {
@@ -36,11 +37,11 @@ export const router = createBrowserRouter([
       },
       {
         path:"/profile",
-        element:<Profile />
+        element:<ProtectedRoute children={<Profile />} />
       },
       {
         path:"/dashboard",
-        element:<Dashboard/>,
+        element: <ProtectedRoute children={<Dashboard/>} /> ,
         children:[
           {
             index:true,
@@ -48,7 +49,7 @@ export const router = createBrowserRouter([
           },
           {
             path:"/dashboard/addTransaction",
-            element:<AddTransaction />
+            element: <AddTransaction />
           },
           {
             path:"/dashboard/transactionList",
