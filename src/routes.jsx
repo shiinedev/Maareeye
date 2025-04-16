@@ -13,6 +13,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Accounts from "./pages/Dashboard/Accounts";
 import MakePlan from "./pages/Dashboard/MakePlan";
 import YourPlans from "./pages/Dashboard/YourPlans";
+import Report from "./pages/Dashboard/Report";
 
 
 export const router = createBrowserRouter([
