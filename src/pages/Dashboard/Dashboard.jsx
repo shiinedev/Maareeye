@@ -5,7 +5,7 @@ import { SiteHeader } from '@/components/ui/site-header'
 import React from 'react'
 import { Outlet } from 'react-router'
 
-const dashboard = () => {
+const Dashboard = () => {
   return (
     <SidebarProvider>
     <AppSidebar variant="inset" />
@@ -17,4 +17,4 @@ const dashboard = () => {
   )
 }
 
-export default dashboard
+export default Dashboard
