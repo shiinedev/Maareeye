@@ -11,7 +11,7 @@ import Home from './pages/Home'
 import { AuthProvider } from './context/AuthContext'
 import UnAuthenticatedRoutes from './components/UnAuthenticatedRoutes'
 import Profile from './pages/Profile'
-
+import Dashboard from './pages/dashboard'
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +33,10 @@ export const router = createBrowserRouter([
       {
         path:"/profile",
         element:<Profile />
+      },
+      {
+        path:"/dashboard",
+        element:<Dashboard/>
       }
     ],
   },
