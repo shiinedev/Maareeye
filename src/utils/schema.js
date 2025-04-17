@@ -24,12 +24,12 @@ export const signinSchema = z
   
 
 export const transactionSchema = z.object({
-  amount: z.number().min().positive(1,"Amount must be a positive number"),
-  date: z.date("data is required"),
-  description: z.string().optional(),
-  category: z.string("category is required"),
   type: z.enum(["income", "expense"]),
+  amount: z.string().min(1,"Amount is required"),
   accountId: z.string("accountId is required"),
+  category: z.string("category is required"),
+  date: z.date({required_error:"Data is required"}),
+  description: z.string().optional(), 
 })
 
 

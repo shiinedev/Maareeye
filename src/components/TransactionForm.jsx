@@ -1,12 +1,7 @@
 export default TransactionForm;
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -20,24 +15,22 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "./ui/calendar";
 import { Textarea } from "./ui/textarea";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { transactionSchema } from "@/utils/schema";
 
 export function TransactionForm({ className, ...props }) {
   const accounts = [
     {
-      id: 1,
-      name: "saving",
-      balance: 100,
-    },
-    {
-      id: 2,
-      name: "currunt",
-      balance: 50,
+      id: "592be531-9178-453c-bfa3-671a907f9398",
+      name: "my account",
+      balance: 100.0,
     },
   ];
 
   const filteredCategories = [
     {
-      id: 1,
+      id: "1",
       name: "food",
     },
     {
@@ -45,6 +38,23 @@ export function TransactionForm({ className, ...props }) {
       name: "shopping",
     },
   ];
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+    reset,
+  } = useForm({
+    resolver: zodResolver(transactionSchema),
+  });
+
+  const date = watch("date");
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+
   return (
     <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
       <Card>
@@ -54,102 +64,147 @@ export function TransactionForm({ className, ...props }) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-3 ">
-                <Label className="text-sm font-medium">Type</Label>
-                <Select>
-                  <SelectTrigger className={"w-full"}>
-                    <SelectValue placeholder="Select type" />
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Type */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Type</Label>
+              <Select onValueChange={(value) => setValue("type", value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="expense">Expense</SelectItem>
+                  <SelectItem value="income">Income</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.type && (
+                <p className="text-sm text-red-500">{errors.type.message}</p>
+              )}
+            </div>
+
+            {/* Amount and Account */}
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Amount</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  {...register("amount")}
+                />
+                {errors.amount && (
+                  <p className="text-sm text-red-500">
+                    {errors.amount.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Account</Label>
+                <Select onValueChange={(value) => setValue("accountId", value)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select account" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="EXPENSE">Expense</SelectItem>
-                    <SelectItem value="INCOME">Income</SelectItem>
+                    {accounts.map((account) => (
+                      <SelectItem key={account.id} value={account.id}>
+                        {account.name} ($
+                        {parseFloat(account.balance).toFixed(2)})
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
+                {errors.accountId && (
+                  <p className="text-sm text-red-500">
+                    {errors.accountId.message}
+                  </p>
+                )}
               </div>
+            </div>
 
-              {/* Amount and Account */}
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Amount</Label>
-                  <Input type="number" step="0.01" placeholder="0.00" />
-                </div>
+            {/* Category */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Category</Label>
+              <Select onValueChange={(value) => setValue("category", value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {filteredCategories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.category && (
+                <p className="text-sm text-red-500">
+                  {errors.category.message}
+                </p>
+              )}
+            </div>
 
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Account</Label>
-                  <Select>
-                    <SelectTrigger className={"w-full"}>
-                      <SelectValue placeholder="Select account" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {accounts.map((account) => (
-                        <SelectItem key={account.id} value={account.id}>
-                          {account.name} ($
-                          {parseFloat(account.balance).toFixed(2)})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              {/* category and date */}
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Category</Label>
-                  <Select>
-                    <SelectTrigger className={"w-full "}>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {filteredCategories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {/* data */}
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium mb-2">Date</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full pl-3 text-left font-normal",
-                          "text-muted-foreground"
-                        )}>
-                        <span>Pick a date</span>
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar mode="single" initialFocus />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
-
-              <div className="grid gap-3">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Description</Label>
-                  <Textarea
-                    placeholder="Enter description"
+            {/* Date */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full pl-3 text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}>
+                    <span>Pick a date</span>
+                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(date) => setValue("date", date)}
+                    disabled={(date) =>
+                      date > new Date() || date < new Date("1900-01-01")
+                    }
+                    initialFocus
                   />
-                  
-                </div>
-              </div>
-              <div className="flex  gap-3">
-                <Button variant="outline"  className=" w-full md:w-1/2">
-                  Cancel
-                </Button>
-                <Button variant="purple" type="submit" className="w-full md:w-1/2">
-                  Create Transaction
-                </Button>
-              </div>
+                </PopoverContent>
+              </Popover>
+              {errors.date && (
+                <p className="text-sm text-red-500">{errors.date.message}</p>
+              )}
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Description</Label>
+              <Input
+                placeholder="Enter description"
+                {...register("description")}
+              />
+              {errors.description && (
+                <p className="text-sm text-red-500">
+                  {errors.description.message}
+                </p>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={reset}
+                className="w-full md:w-1/2">
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="purple"
+                className="w-full md:w-1/2">
+                Create Transaction
+              </Button>
             </div>
           </form>
         </CardContent>
