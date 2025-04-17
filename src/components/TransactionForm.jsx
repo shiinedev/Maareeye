@@ -29,6 +29,11 @@ const accounts = [
     name: "my account",
     balance: 100.0,
   },
+  {
+    id: "4a1e2825-1c24-4127-bd79-e247856138d5",
+    name: "saving account",
+    balance: 500.0,
+  },
 ];
 
 
@@ -53,7 +58,8 @@ export function TransactionForm({ className, categories, ...props }) {
         type: "expense",
         amount: "",
         description: "",
-        accountId: "",
+        accountId:accounts[0].id,
+        
     },
   });
 
@@ -212,7 +218,7 @@ export function TransactionForm({ className, categories, ...props }) {
             {/* Description */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">Description</Label>
-              <Input
+              <Textarea
                 placeholder="Enter description"
                 {...register("description")}
               />

@@ -5,7 +5,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useState } from "react";
+
 import { Link, useLocation } from "react-router";
 
 export function NavMain({
@@ -13,7 +13,6 @@ export function NavMain({
 }) {
   const location = useLocation()
   const currentPath = location.pathname
-  console.log(currentPath)
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
