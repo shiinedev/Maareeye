@@ -83,17 +83,11 @@ export function TransactionForm({ className, categories, ...props }) {
 
   const type = watch("type");
   const date = watch("date");
+ 
+  const filteredCategories = categories.filter(
+    (category) => category.type === type
+  );
 
-  const filteredCategories = [
-    {
-      id: "1",
-      name: "food",
-    },
-    {
-      id: "2",
-      name: "shopping",
-    },
-  ];
   return (
     <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
       <Card>
