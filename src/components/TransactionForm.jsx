@@ -18,26 +18,26 @@ import { Textarea } from "./ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { transactionSchema } from "@/utils/schema";
+import { createTransaction } from "@/utils/transaction";
+import { useAuth } from "@/context/AuthContext";
+import { useState } from "react";
+import { format } from "date-fns";
 
-export function TransactionForm({ className, ...props }) {
-  const accounts = [
-    {
-      id: "592be531-9178-453c-bfa3-671a907f9398",
-      name: "my account",
-      balance: 100.0,
-    },
-  ];
+const accounts = [
+  {
+    id: "592be531-9178-453c-bfa3-671a907f9398",
+    name: "my account",
+    balance: 100.0,
+  },
+];
 
-  const filteredCategories = [
-    {
-      id: "1",
-      name: "food",
-    },
-    {
-      id: 2,
-      name: "shopping",
-    },
-  ];
+
+
+export function TransactionForm({ className, categories, ...props }) {
+  
+  const {user} = useAuth();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
@@ -45,16 +45,55 @@ export function TransactionForm({ className, ...props }) {
     formState: { errors },
     setValue,
     watch,
+    getValues,
     reset,
   } = useForm({
     resolver: zodResolver(transactionSchema),
+    defaultValues :{
+        type: "expense",
+        amount: "",
+        description: "",
+        accountId: "",
+    },
   });
 
-  const date = watch("date");
-  const onSubmit = (data) => {
-    console.log(data);
+ 
+  const onSubmit =async (data) => {
+    const formData = {
+      user_id:user.id,
+      ...data,
+      amount:parseFloat(data.amount)
+    }
+   
+    try {
+      setIsLoading(true);
+      if(formData){
+      const transaction = await createTransaction(formData);
+
+      console.log("transaction created successfully", transaction);
+      reset();
+      }
+    } catch (error) {
+      console.log("error creating transaction", error);
+    }finally {
+      setIsLoading(false);
+    }
+   
   };
 
+  const type = watch("type");
+  const date = watch("date");
+
+  const filteredCategories = [
+    {
+      id: "1",
+      name: "food",
+    },
+    {
+      id: "2",
+      name: "shopping",
+    },
+  ];
   return (
     <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
       <Card>
@@ -68,7 +107,7 @@ export function TransactionForm({ className, ...props }) {
             {/* Type */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">Type</Label>
-              <Select onValueChange={(value) => setValue("type", value)}>
+              <Select onValueChange={(value) => setValue("type", value)} defaultValue={type}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
@@ -101,7 +140,7 @@ export function TransactionForm({ className, ...props }) {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Account</Label>
-                <Select onValueChange={(value) => setValue("accountId", value)}>
+                <Select onValueChange={(value) => setValue("accountId", value)} defaultValue={getValues("accountId")}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select account" />
                   </SelectTrigger>
@@ -125,8 +164,8 @@ export function TransactionForm({ className, ...props }) {
             {/* Category */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">Category</Label>
-              <Select onValueChange={(value) => setValue("category", value)}>
-                <SelectTrigger className="w-full">
+              <Select onValueChange={(value) => setValue("category", value)} defaultValue={getValues("category")}>
+                <SelectTrigger className="w-full" >
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -155,7 +194,7 @@ export function TransactionForm({ className, ...props }) {
                       "w-full pl-3 text-left font-normal",
                       !date && "text-muted-foreground"
                     )}>
-                    <span>Pick a date</span>
+                   {date ? format(date, "PPP") :   <span>Pick a date</span>}
                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                   </Button>
                 </PopoverTrigger>
@@ -200,10 +239,11 @@ export function TransactionForm({ className, ...props }) {
                 Cancel
               </Button>
               <Button
+              disabled={isLoading}
                 type="submit"
                 variant="purple"
                 className="w-full md:w-1/2">
-                Create Transaction
+               { isLoading ? "creating....." :"Create Transaction"}
               </Button>
             </div>
           </form>
