@@ -14,7 +14,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signIn } from "@/utils/auth"
-import { signinSchema } from "@/utils/signinSchema"
+import { signinSchema } from "@/utils/schema"
 import { toast } from "sonner"
 
 export function LoginForm({

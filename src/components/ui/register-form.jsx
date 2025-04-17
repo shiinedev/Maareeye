@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Link, useNavigate } from "react-router"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod";
-import signupSchema from "@/utils/signupSchema"
+import { signupSchema } from "@/utils/schema"
 import { signUp } from "@/utils/auth"
 import { useState } from "react"
 
