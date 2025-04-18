@@ -7,11 +7,33 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { updateDefaultAccount } from "@/utils/account";
+import { toast } from "sonner";
+import { useState } from "react";
 
 
 export function AccountCard({ account,fetchAccounts }) {
   const { name, type, balance, id, is_default } = account;
-   
+
+  const [isLoading,setIsLoading] = useState(false);
+
+  const handleToggleDefault = async (id) => {
+    if (is_default) {
+      toast.warning("You need at least one default account.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await updateDefaultAccount(id);
+      fetchAccounts();
+    } catch (error) {
+      console.error("Failed to update default account:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Card className="hover:shadow-md transition-shadow group relative">
       <div >
@@ -21,7 +43,8 @@ export function AccountCard({ account,fetchAccounts }) {
           </CardTitle>
           <Switch
           checked={is_default}
-          onCheckedChange={() => handleDefaultChange(id)}
+          onCheckedChange={() => handleToggleDefault(id)}
+          disabled={isLoading}
           />
         </CardHeader>
         <CardContent>

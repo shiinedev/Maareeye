@@ -23,7 +23,7 @@ import { createAccount } from "@/utils/account";
 import { Card, CardContent } from "./ui/card";
 import { Plus } from "lucide-react";
 
-const AccountForm = () => {
+const AccountForm = ({fetchAccounts}) => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [open,setOpen] = useState(false);
@@ -58,6 +58,7 @@ const AccountForm = () => {
         
         const account = await createAccount(formData);
          console.log("account created successfully",account );
+         fetchAccounts();
          reset();
          setOpen(false);
          }
