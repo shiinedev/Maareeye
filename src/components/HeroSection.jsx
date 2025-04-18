@@ -28,14 +28,15 @@ const HeroSection = () => {
             <Button variant="purple" size="xl">
               Get started
             </Button>
-            <Link to={"https://github.com/shiinedev/Maareeye"} >
+           
               <Button   
-              size="xl" variant="outline" >
-              <Github />
-              View onGithub
+              size="xl" variant="outline">
+              <Link to={"https://github.com/shiinedev/Maareeye"} className='flex items-center gap-1'>
+                <Github />
+                   View onGithub
+              </Link>
               </Button>
-            
-            </Link>
+         
           </div>
         </div>
 

@@ -53,7 +53,7 @@ const Navbar = () => {
          <Button
           variant="outline"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="shadow-sm">
+          className="shadow-sm cursor-pointer">
           {theme === "dark" ? <Sun size={40} /> : <MoonStar size={40} />}
         </Button>
         <div>
