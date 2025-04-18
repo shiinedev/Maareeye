@@ -1,11 +1,14 @@
 import React from 'react'
 import { Button } from "./ui/button"
 import Navbar from './Navbar'
+import { Github } from 'lucide-react'
+import { Link } from 'react-router'
 const HeroSection = () => {
   return (
     <div className='min-h-screen flex flex-col'>
+       <Navbar />
       {/* Main Content */}
-      <Navbar />
+     
       <main className="flex-1 flex flex-col items-center justify-center text-center px-4 relative">
         <div className="max-w-3xl mx-auto mb-24 z-10">
           <h1 className="text-5xl md:text-6xl font-bold mb-4">
@@ -25,13 +28,15 @@ const HeroSection = () => {
             <Button variant="purple" size="xl">
               Get started
             </Button>
-            <Button
            
-              variant="outline"
-              size="xl"
-            >
-              Ecosystems
-            </Button>
+              <Button   
+              size="xl" variant="outline">
+              <Link to={"https://github.com/shiinedev/Maareeye"} className='flex items-center gap-1'>
+                <Github />
+                   View onGithub
+              </Link>
+              </Button>
+         
           </div>
         </div>
 

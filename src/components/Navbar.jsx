@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import {
+  Github,
   LayoutDashboard,
   LogOut,
   MoonStar,
@@ -28,7 +29,7 @@ const Navbar = () => {
   const { user, profile, isLoggedIn, logout } = useAuth();
 
   return (
-    <header className="container mx-auto py-3 px-4 flex items-center justify-between shadow-sm border-b ">
+    <header className="container mx-auto py-3 px-4 flex items-center justify-between  border-b ">
       {/* logo */}
       <div>
         <Link
@@ -38,10 +39,21 @@ const Navbar = () => {
         </Link>
       </div>
       {/* theme and login */}
-      <div className="flex space-x-4">         <Button
+
+      <div className="flex space-x-4">     
+      <Button variant="outline" className="shadow-sm hidden sm:block" asChild>
+            <a
+              href="https://github.com/shiinedev/maareye"
+              rel="noopener noreferrer"
+              target="_blank"
+              className="">
+              <Github />
+            </a>
+          </Button>   
+         <Button
           variant="outline"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="shadow-md">
+          className="shadow-sm cursor-pointer">
           {theme === "dark" ? <Sun size={40} /> : <MoonStar size={40} />}
         </Button>
         <div>
