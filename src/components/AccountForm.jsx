@@ -20,10 +20,13 @@ import { useAuth } from "@/context/AuthContext";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createAccount } from "@/utils/account";
+import { Card, CardContent } from "./ui/card";
+import { Plus } from "lucide-react";
 
 const AccountForm = () => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [open,setOpen] = useState(false);
   const {
     register,
     handleSubmit,
@@ -38,7 +41,7 @@ const AccountForm = () => {
       name: "",
       type: "current",
       balance: "",
-      isDefault: false,
+      is_default: false,
     },
   });
 
@@ -56,6 +59,7 @@ const AccountForm = () => {
         const account = await createAccount(formData);
          console.log("account created successfully",account );
          reset();
+         setOpen(false);
          }
        } catch (error) {
          console.log("error creating account", error);
@@ -66,9 +70,14 @@ const AccountForm = () => {
   };
 
   return (
-    <Popover>
-      <PopoverTrigger className="py-10" asChild>
-        <Button variant="outline">Add New Account</Button>
+    <Popover  open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+      <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="flex flex-col items-center justify-center text-muted-foreground h-full ">
+              <Plus className="h-10 w-10 mb-2" />
+              <p className="text-sm sm:font-medium">Add New Account</p>
+            </CardContent>
+          </Card>
       </PopoverTrigger>
       <PopoverContent className="mx-2 md:mx-auto max-w-80 " align="start">
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
@@ -138,8 +147,9 @@ const AccountForm = () => {
             <div className="flex flex-row justify-between mt-2 items-center gap-2">
               <Label htmlFor="isDefault">Set is Default</Label>
               <Switch id="isDefault"     
-              checked={watch("isDefault")}
-            onCheckedChange={(checked) => setValue("isDefault", checked)} />
+              checked={watch("is_default")}
+              onCheckedChange={(checked) => setValue("is_default", checked)}
+               />
             </div>
           </div>
           <div className="flex flex-col gap-4">

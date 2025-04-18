@@ -28,7 +28,7 @@ export const accountSchema = z.object({
   name: z.string().min(2,"Name is required"),
   type: z.enum(["current", "saving"]),
   balance: z.string().min(1,"Balance is required"),
-  isDefault: z.boolean().optional(),
+  is_default: z.boolean().optional(),
 })
 
 export const transactionSchema = z.object({
