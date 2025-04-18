@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,75 +15,153 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { accountSchema } from "@/utils/schema";
+import { useAuth } from "@/context/AuthContext";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createAccount } from "@/utils/account";
 
 const AccountForm = () => {
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+    getValues,
+    reset,
+  } = useForm({
+    resolver: zodResolver(accountSchema),
+    defaultValues: {
+      name: "",
+      type: "current",
+      balance: "",
+      isDefault: false,
+    },
+  });
+
+  const onSubmit = async (data) => {
+   const formData = {
+         user_id:user.id,
+         ...data,
+         balance:parseFloat(data.balance)
+       }
+      
+       try {
+         setIsLoading(true);
+         if(formData){
+        
+        const account = await createAccount(formData);
+         console.log("account created successfully",account );
+         reset();
+         }
+       } catch (error) {
+         console.log("error creating account", error);
+       }finally {
+         setIsLoading(false);
+       }
+      
+  };
+
   return (
-       <Popover >
-        <PopoverTrigger className="py-10" asChild>
-          <Button variant="outline">Add New Account</Button>
-        </PopoverTrigger>
-        <PopoverContent className="mx-2 md:mx-auto max-w-80 " align="start">
-          <div className="grid gap-4">
-            <div className="space-y-2">
-              <h4 className="font-medium leading-none gradient-title">
-                Create New Account
-              </h4>
-            </div>
-            <div className="grid gap-2">
+    <Popover>
+      <PopoverTrigger className="py-10" asChild>
+        <Button variant="outline">Add New Account</Button>
+      </PopoverTrigger>
+      <PopoverContent className="mx-2 md:mx-auto max-w-80 " align="start">
+        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
+          <div className="space-y-2">
+            <h4 className="font-medium leading-none gradient-title">
+              Create New Account
+            </h4>
+          </div>
+          <div className="grid gap-2">
+            <div>
               <div className="flex flex-col md:flex-row md:items-center gap-2 ">
-                <Label htmlFor="width">name</Label>
+                <Label htmlFor="width">Name</Label>
                 <Input
                   id="name"
+                  {...register("name")}
+                  type="text"
+                  onChange={(e) => setValue("name", e.target.value)}
+                  defaultValue={getValues("name")}
                   placeholder="Enter account name"
                   className="flex-1 w-full h-8"
                 />
               </div>
-              <div className="flex flex-col md:flex-row md:items-center gap-2">
-                <Label htmlFor="type">type</Label>
-                <Select>
-                  <SelectTrigger className="flex-1 w-full h-8">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="current">Current</SelectItem>
-                    <SelectItem value="saving">Saving</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex flex-col md:flex-row md:items-center gap-2">
-                <Label htmlFor="balance">balance</Label>
-                <Input
-                  id="balance"
-                  placeholder="Enter account balance"
-                  className="flex-1 w-full h-8"
-                />
-              </div>
-              <div className="flex flex-row justify-between mt-2 items-center gap-2">
-                <Label htmlFor="isDefault">Is Default</Label>
-                <Switch id="isDefault" />
-              </div>
+              {errors.name && (
+                <p className="text-sm text-red-500">{errors.name.message}</p>
+              )}
             </div>
-            <div className="flex flex-col gap-4">
-              <Button
-                // disabled={isLoading}
-                type="submit"
-                variant="purple"
-                className="w-full ">
-                Create Account
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                // onClick={reset}
-                className="w-full">
-                Cancel
-              </Button>
+            <div>
+            <div className="flex flex-col md:flex-row md:items-center gap-2">
+              <Label htmlFor="type">Type</Label>
+              <Select
+                {...register("type")}
+                onValueChange={(value) => setValue("type", value)}
+                defaultValue={getValues("type")}>
+                <SelectTrigger className="flex-1 w-full h-8">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="current">Current</SelectItem>
+                  <SelectItem value="saving">Saving</SelectItem>
+                </SelectContent>
+              </Select>
+              
+            </div>
+            {errors.type && (
+                <p className="text-sm text-red-500">{errors.type.message}</p>
+              )}
+            </div>
+            <div>
+            <div className="flex flex-col md:flex-row md:items-center gap-2">
+              <Label htmlFor="balance">Balance</Label>
+              <Input
+                id="balance"
+                {...register("balance")}
+                type="Number"
+                step="0.01"
+                onChange={(e) => setValue("balance", e.target.value)}
+                defaultValue={getValues("balance")}
+                placeholder="Enter account balance"
+                className="flex-1 w-full h-8"
+              />
+             
+            </div>
+            {errors.balance && (
+                <p className="text-sm text-red-500 ">{errors.balance.message}</p>
+              )}
+            </div>
+            <div className="flex flex-row justify-between mt-2 items-center gap-2">
+              <Label htmlFor="isDefault">Set is Default</Label>
+              <Switch id="isDefault"     
+              checked={watch("isDefault")}
+            onCheckedChange={(checked) => setValue("isDefault", checked)} />
             </div>
           </div>
-        </PopoverContent>
-      </Popover>
+          <div className="flex flex-col gap-4">
+            <Button
+              disabled={isLoading}
+              type="submit"
+              variant="purple"
+              className="w-full ">
+              Create Account
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={reset}
+              className="w-full">
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </PopoverContent>
+    </Popover>
+  );
+};
 
-  )
-}
-
-export default AccountForm
+export default AccountForm;
