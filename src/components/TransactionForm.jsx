@@ -20,29 +20,29 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { transactionSchema } from "@/utils/schema";
 import { createTransaction } from "@/utils/transaction";
 import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
-
-const accounts = [
-  {
-    id: "592be531-9178-453c-bfa3-671a907f9398",
-    name: "my account",
-    balance: 100.0,
-  },
-  {
-    id: "4a1e2825-1c24-4127-bd79-e247856138d5",
-    name: "saving account",
-    balance: 500.0,
-  },
-];
-
+import { useFetch } from "@/hooks/useFetch";
+import { getAccountsByUserId } from "@/utils/account";
 
 
 export function TransactionForm({ className, categories, ...props }) {
   
   const {user} = useAuth();
-
   const [isLoading, setIsLoading] = useState(false);
+
+   const {
+      data:accounts  = [],
+      isLoading:accountsLoading,
+      error:accountsError,
+      fetchData:fetchAccounts
+    } = useFetch( () => getAccountsByUserId(user?.id),[user?.id])   
+
+    useEffect(() => {
+      fetchAccounts();  
+    }, [fetchAccounts]);
+
+   
 
   const {
     register,
@@ -58,7 +58,6 @@ export function TransactionForm({ className, categories, ...props }) {
         type: "expense",
         amount: "",
         description: "",
-        accountId:accounts[0].id,
         
     },
   });
@@ -140,12 +139,14 @@ export function TransactionForm({ className, categories, ...props }) {
 
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Account</Label>
-                <Select onValueChange={(value) => setValue("accountId", value)} defaultValue={getValues("accountId")}>
+                <Select onValueChange={(value) => setValue("accountId", value)}
+                 defaultValue={getValues("accountId")} 
+                 disabled={accountsLoading} >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select account" />
+                    <SelectValue placeholder={accountsLoading ? "Loading accounts..." : "Select account"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {accounts.map((account) => (
+                    {accounts?.map((account) => (
                       <SelectItem key={account.id} value={account.id}>
                         {account.name} ($
                         {parseFloat(account.balance).toFixed(2)})
