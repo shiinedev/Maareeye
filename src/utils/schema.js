@@ -23,6 +23,14 @@ export const signinSchema = z
   })
   
 
+
+export const accountSchema = z.object({
+  name: z.string().min(2,"Name is required"),
+  type: z.enum(["current", "saving"]),
+  balance: z.string().min(1,"Balance is required"),
+  isDefault: z.boolean().optional(),
+})
+
 export const transactionSchema = z.object({
   type: z.enum(["income", "expense"]),
   amount: z.string().min(1,"Amount is required"),
@@ -31,6 +39,5 @@ export const transactionSchema = z.object({
   date: z.date({required_error:"Data is required"}),
   description: z.string().optional(), 
 })
-
 
 
