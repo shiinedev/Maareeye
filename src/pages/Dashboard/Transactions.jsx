@@ -7,6 +7,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -21,10 +23,14 @@ import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getTransactions } from "@/utils/transaction";
 import { format } from "date-fns";
-import { Badge, Clock, MoreVertical, RefreshCw } from "lucide-react";
-import React, { useEffect } from "react";
+import { Badge, Clock, MoreVertical, RefreshCw, Search, Trash, X } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+
 
 const Transactions = () => {
+  const[searchTerm,setSearchTerm] = useState("");
+  const[typeFilter,setTypeFilter] = useState("");
+  const[subscriptionFilter,setSubscriptionFilter] = useState("");
   const { user } = useAuth();
 
   const {
@@ -40,10 +46,126 @@ const Transactions = () => {
     }
   }, [user]);
 
-  
 
-  return (
-    <div className="p-6">
+  // filteredTransactions 
+  const filteredTransactions = useMemo( () => {
+    let result = [...(transactions || [])]; ;
+
+    // Apply search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      result = result.filter((transaction) =>
+        transaction.description?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Apply type filter
+    if (typeFilter) {
+      result = result.filter((transaction) => transaction.type === typeFilter);
+    }
+
+    //Apply by subscription filter
+    if (subscriptionFilter) {
+      result = result.filter((transaction) => {
+        if (subscriptionFilter === "true") return transaction.is_subscription;
+        if (subscriptionFilter === "false") return !transaction.is_subscription;
+        return true;
+      });
+    }
+
+    return result;
+},[searchTerm, typeFilter, subscriptionFilter, transactions]);
+
+
+  if (isLoading) { 
+    return (  
+      <div className="flex items-center justify-center h-screen">
+        <div className="loader">Loading</div>
+      </div>
+    );
+  }
+
+
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setTypeFilter("");
+    setSubscriptionFilter("");
+  } 
+   
+  
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-red-500 bg-red-100 p-4 rounded-md shadow-sm border border-red-200">
+          <p className="font-semibold">Failed to load transactions.</p>
+          <p className="text-sm">Please try again later.</p>
+        </div>
+      </div>
+    );
+  }
+   
+  
+      
+ return (
+    <div className="p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search transactions..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+            }}
+            className="pl-8"
+          />
+        </div>
+        <div className="flex gap-2">
+          <Select
+            value={typeFilter}
+            onValueChange={(value) => {
+              setTypeFilter(value);
+             
+            }}
+          >
+            <SelectTrigger className="w-[130px]">
+              <SelectValue placeholder="All Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="income">Income</SelectItem>
+              <SelectItem value="expense">Expense</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={subscriptionFilter}
+            onValueChange={(value) => {
+              setSubscriptionFilter(value);
+            }}
+          >
+            <SelectTrigger className="w-[130px]">
+              <SelectValue placeholder="All Transactions" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="true">Subscription Only</SelectItem>
+              <SelectItem value="false">Non-Subscription Only</SelectItem>
+            </SelectContent>
+          </Select>
+
+        
+          {(searchTerm || typeFilter || subscriptionFilter) && (
+            <Button
+              variant="destructive"
+              size="icon"
+              onClick={handleClearFilters}
+              title="Clear filters"
+            >
+              <X className="h-4 w-5" />
+            </Button>
+          )}
+        </div>
+      </div>
+
       <Table className={"border  rounded-md"}>
         <TableCaption>A list of your Transactions.</TableCaption>
         <TableHeader>
@@ -63,8 +185,9 @@ const Transactions = () => {
         <TableBody>
          
             {
-            transactions?.map((transaction) => (
-              <TableRow>
+              filteredTransactions?.length > 0 ? (
+                filteredTransactions?.map((transaction) => (
+              <TableRow key={transaction.id}>
             <TableCell className="font-medium">
               <Checkbox />
             </TableCell>
@@ -88,10 +211,10 @@ const Transactions = () => {
                           <TooltipTrigger>
                             <Badge
                               variant="secondary"
-                              className="gap-1 bg-purple-100 text-purple-700 hover:bg-purple-200"
+                              className="gap-1 bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200"
                             >
                               <RefreshCw className="h-3 w-3" />
-                             one time
+                             subscription
                             </Badge>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -145,8 +268,17 @@ const Transactions = () => {
               </DropdownMenu>
             </TableCell>
             </TableRow>
-        ))}
-         
+        ))
+      ):(
+        <TableRow>
+        <TableCell
+          colSpan={7}
+          className="text-center text-muted-foreground"
+        >
+          No transactions found
+        </TableCell>
+      </TableRow>
+      )}
         </TableBody>
       </Table>
     </div>
