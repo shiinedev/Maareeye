@@ -18,3 +18,17 @@ export const createTransaction = async (transaction) => {
     return data;
 
 };
+
+export const getTransactions = async () => {
+  const { data, error } = await supabase
+    .from("transaction")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.log("error getting transactions", error);
+    throw error;
+  }
+
+  return data;
+}
