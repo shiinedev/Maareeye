@@ -28,7 +28,7 @@ export function SiteHeader() {
           size={"sm"}
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           asChild 
-          className="shadow-md"  >
+        >
           {theme === "dark" ? <Sun size={40} /> : <MoonStar size={40} />}
           
         </Button>

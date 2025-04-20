@@ -35,13 +35,13 @@ import { useAuth } from "@/context/AuthContext";
 import { categoryColors } from "@/data/categories";
 import { useFetch } from "@/hooks/useFetch";
 import { deleteTransactions, getTransactions } from "@/utils/transaction";
+import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { format } from "date-fns";
 import {
   Badge,
   ChevronDown,
   ChevronUp,
   Clock,
-  Loader,
   MoreVertical,
   RefreshCw,
   Search,
@@ -358,7 +358,13 @@ const Transactions = () => {
                   {transaction.type === "expense" ? "-" : "+"} $
                   {parseFloat(transaction.amount).toFixed(2)}
                 </TableCell>
-                <TableCell>{transaction.status}</TableCell>
+                <TableCell > 
+                    <Button variant="outline" className="capitalize rounded-full">
+                        <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
+                    {transaction.status}
+                    </Button>
+                   
+                   </TableCell>
                 <TableCell>
                   {transaction.is_subscription ? (
                     <TooltipProvider>
