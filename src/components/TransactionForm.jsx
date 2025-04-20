@@ -18,7 +18,7 @@ import { Textarea } from "./ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { transactionSchema } from "@/utils/schema";
-import { createTransaction, getTransactionById } from "@/utils/transaction";
+import { createTransaction, getTransactionById, updateTransaction } from "@/utils/transaction";
 import { useAuth } from "@/context/AuthContext";
 import { use, useEffect, useState } from "react";
 import { format } from "date-fns";
@@ -30,28 +30,8 @@ import { useNavigate, useParams } from "react-router";
 export function TransactionForm({ className, categories, ...props }) {
   
   const {user} = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+ // const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
-   const {
-      data:accounts  = [],
-      isLoading:accountsLoading,
-      error:accountsError,
-      fetchData:fetchAccounts
-    } = useFetch( () => getAccountsByUserId(user?.id),[user?.id])   
-
-    useEffect(() => {
-      fetchAccounts();  
-    }, [fetchAccounts]);
-   
-
-    const {id} = useParams();
-  const isEdit = Boolean(id);
-
-    const {data:transaction} = useFetch(() => getTransactionById(id),[id])
-
-    console.log(transaction)
-
   const {
     register,
     handleSubmit,
@@ -68,19 +48,46 @@ export function TransactionForm({ className, categories, ...props }) {
         description: "",    
     },
   });
-   useEffect(() => {
-    if (isEdit && transaction) {
+
+   const {
+      data:accounts  = [],
+      isLoading:accountsLoading,
+      error:accountsError,
+      fetchData:fetchAccounts
+    } = useFetch( () => getAccountsByUserId(user?.id),[user?.id])   
+
+    useEffect(() => {
+      fetchAccounts();  
+    }, [fetchAccounts]);
+   
+
+    const {id} = useParams();
+  const isEdit = Boolean(id);
+  const {
+    data:updateData,
+    fetchData:updatedTransaction,
+  } = useFetch(()=> getTransactionById(id),[id]);
+
+    const {
+      data:transactions,
+      isLoading:transactionLoading,
+      fetchData:fnTransaction,
+    } = useFetch( isEdit ? updateTransaction : createTransaction,[id,user]);
+
+   
+
+  useEffect(() => {
+    if (isEdit && updateData) {
       reset({
-        ...transaction
+        ...updateData
       });
 
-    setValue("type", transaction.type);
-    setValue("accountId", transaction.accountId);
-    setValue("category", transaction.category);
+    setValue("type", updateData.type);
+    setValue("accountId", updateData.accountId);
+    setValue("category", updateData.category);
     }
-  }, [transaction, reset, isEdit]);
- 
-  
+  }, [updateData, reset, isEdit]);
+
  
   const onSubmit =async (data) => {
     const formData = {
@@ -88,21 +95,22 @@ export function TransactionForm({ className, categories, ...props }) {
       ...data,
       amount:parseFloat(data.amount)
     }
-   
-    try {
-      setIsLoading(true);
-      if(formData){
-      const transaction = await createTransaction(formData);
+    console.log(formData)
 
-      console.log("transaction created successfully", transaction);
-      reset();
-       navigate("/dashboard/transactionList")
-      }
-    } catch (error) {
-      console.log("error creating transaction", error);
-    }finally {
-      setIsLoading(false);
+    if(isEdit){
+      updateTransaction(id,formData);
+      navigate("/dashboard/transactionList")
+      
+    }else{
+      createTransaction(formData); 
+  
+        console.log("transaction created successfully", transaction);
+        reset();
+         navigate("/dashboard/transactionList")
+        
     }
+   
+  
    
   };
  
@@ -260,11 +268,11 @@ export function TransactionForm({ className, categories, ...props }) {
                 Cancel
               </Button>
               <Button
-              disabled={isLoading}
+              disabled={transactionLoading}
                 type="submit"
                 variant="purple"
                 className="w-full md:w-1/2">
-               { isLoading ? isEdit ? "updating..." :"creating....." : isEdit ? "Update Transaction" :"Create Transaction"}
+               { transactionLoading ? isEdit ? "updating..." :"creating....." : isEdit ? "Update Transaction" :"Create Transaction"}
               </Button>
             </div>
           </form>

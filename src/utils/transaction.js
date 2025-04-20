@@ -48,6 +48,22 @@ export const getTransactionById = async (id) => {
   return data;
 }
 
+export const updateTransaction = async (id, transaction) => {
+    
+const { data, error } = await supabase
+.from('transaction')
+.update([transaction ])
+.eq('id', id)
+.select()
+  
+    if (error) {
+      console.log("error updating transaction", error);
+      throw error;
+    }
+  
+    return data;
+}
+
 export const deleteTransactions = async (ids) => {
   console.log(ids)
   const { data, error } = await supabase
