@@ -38,6 +38,8 @@ import { deleteTransactions, getTransactions } from "@/utils/transaction";
 import { format } from "date-fns";
 import {
   Badge,
+  ChevronDown,
+  ChevronUp,
   Clock,
   Loader,
   MoreVertical,
@@ -55,6 +57,10 @@ const Transactions = () => {
   const [subscriptionFilter, setSubscriptionFilter] = useState("");
   const [selectedIds, setSelectedIds] = useState([]);
   const [deleLoading, setDeleteLoading] = useState(false);
+  const [sortConfig, setSortConfig] = useState({
+    field: "date",
+    direction: "desc",
+  });
 
   const { user } = useAuth();
 
@@ -71,7 +77,7 @@ const Transactions = () => {
     }
   }, [user, fetchData]);
 
-  const filteredTransactions = useMemo(() => {
+  const filterAndSortTransactions = useMemo(() => {
     let result = transactions || [];
 
     // Apply search filter
@@ -95,9 +101,39 @@ const Transactions = () => {
         return true;
       });
     }
+    
+     // Apply sorting
+     result.sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortConfig.field) {
+        case "date":
+          comparison = new Date(a.date) - new Date(b.date);
+          break;
+        case "amount":
+          comparison = a.amount - b.amount;
+          break;
+        case "category":
+          comparison = a.category.localeCompare(b.category);
+          break;
+        default:
+          comparison = 0;
+      }
+
+      return sortConfig.direction === "asc" ? comparison : -comparison;
+    });
 
     return result;
-  }, [searchTerm, typeFilter, subscriptionFilter, transactions]);
+  }, [searchTerm, typeFilter, subscriptionFilter, transactions,sortConfig]);
+
+  const handleSort = (field) => {
+    setSortConfig((current) => ({
+      field,
+      direction:
+        current.field === field && current.direction === "asc" ? "desc" : "asc",
+    }));
+  };
+
 
   const handleBulkDelete = async () => {
     if (selectedIds.length === 0) return;
@@ -192,7 +228,7 @@ const Transactions = () => {
                onClick={handleBulkDelete}
               >
                 <Trash className="h-4 w-4 mr-2" />
-                Delete Selected
+                Delete Selected({selectedIds.length})
               </Button>
             </div>
           )}
@@ -216,30 +252,71 @@ const Transactions = () => {
             <TableHead className="w-[50px]">
             <Checkbox
                   checked={
-                    selectedIds.length === filteredTransactions.length &&
+                    selectedIds.length === filterAndSortTransactions.length &&
                     selectedIds.length > 0
                   }
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      setSelectedIds(filteredTransactions.map((tx) => tx.id));
+                      setSelectedIds(filterAndSortTransactions.map((tx) => tx.id));
                     } else {
                       setSelectedIds([]);
                     }
                   }}
                 />
             </TableHead>
-            <TableHead>date</TableHead>
+            <TableHead 
+              className="cursor-pointer"
+              onClick={() => handleSort("date")}
+            >
+              <div className="flex items-center">
+              Date
+              {sortConfig.field === "date" &&
+                    (sortConfig.direction === "asc" ? (
+                      <ChevronUp className="ml-1 h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="ml-1 h-4 w-4" />
+                    ))}
+              </div>
+
+            </TableHead>
             <TableHead>Description</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Amount</TableHead>
+            <TableHead 
+              className="cursor-pointer"
+              onClick={() => handleSort("category")}
+              >
+            <div className="flex items-center">
+                  Category
+                  {sortConfig.field === "category" &&
+                    (sortConfig.direction === "asc" ? (
+                      <ChevronUp className="ml-1 h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="ml-1 h-4 w-4" />
+                    ))}
+               </div>
+            </TableHead>
+            <TableHead 
+            
+              className="cursor-pointer"
+              onClick={() => handleSort("amount")}
+            >
+            <div className="flex items-center">
+                    Amount
+                  {sortConfig.field === "amount" &&
+                    (sortConfig.direction === "asc" ? (
+                      <ChevronUp className="ml-1 h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="ml-1 h-4 w-4" />
+                    ))}
+               </div>
+            </TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Subscription</TableHead>
             <TableHead className="w-[50px]" />
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredTransactions?.length > 0 ? (
-            filteredTransactions?.map((transaction) => (
+          {filterAndSortTransactions?.length > 0 ? (
+            filterAndSortTransactions?.map((transaction) => (
               <TableRow key={transaction.id}>
                 <TableCell className="font-medium">
                   <Checkbox 
