@@ -8,7 +8,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
   TableBody,
@@ -18,19 +25,32 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
-import { getTransactions } from "@/utils/transaction";
+import { deleteTransaction, getTransactions } from "@/utils/transaction";
 import { format } from "date-fns";
-import { Badge, Clock, MoreVertical, RefreshCw, Search, Trash, X } from "lucide-react";
+import {
+  Badge,
+  Clock,
+  Loader,
+  MoreVertical,
+  RefreshCw,
+  Search,
+  X,
+} from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 
-
 const Transactions = () => {
-  const[searchTerm,setSearchTerm] = useState("");
-  const[typeFilter,setTypeFilter] = useState("");
-  const[subscriptionFilter,setSubscriptionFilter] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [subscriptionFilter, setSubscriptionFilter] = useState("");
+
   const { user } = useAuth();
 
   const {
@@ -44,12 +64,10 @@ const Transactions = () => {
     if (user) {
       fetchData();
     }
-  }, [user]);
+  }, [user, fetchData]);
 
-
-  // filteredTransactions 
-  const filteredTransactions = useMemo( () => {
-    let result = [...(transactions || [])]; ;
+  const filteredTransactions = useMemo(() => {
+    let result = transactions || [];
 
     // Apply search filter
     if (searchTerm) {
@@ -64,7 +82,7 @@ const Transactions = () => {
       result = result.filter((transaction) => transaction.type === typeFilter);
     }
 
-    //Apply by subscription filter
+    // Apply subscription filter
     if (subscriptionFilter) {
       result = result.filter((transaction) => {
         if (subscriptionFilter === "true") return transaction.is_subscription;
@@ -74,41 +92,46 @@ const Transactions = () => {
     }
 
     return result;
-},[searchTerm, typeFilter, subscriptionFilter, transactions]);
+  }, [searchTerm, typeFilter, subscriptionFilter, transactions]);
 
+  const handleDelete = async (id) => {
+ 
+    try {
+      if (
+        !window.confirm(
+          `Are you sure you want to delete ${id} transactions?`
+        )
+      )
+        return;
+      const deleted = await deleteTransaction(id);
+      console.log(deleted);
+      toast.success("Transaction deleted successfully")
+      fetchData();
+    } catch (error) {
+      console.log("error deleting transaction", error);
+    } finally {
+      fetchData();
+    }
+  };
 
-  if (isLoading) { 
-    return (  
-      <div className="flex items-center justify-center h-screen">
-        <div className="loader">Loading</div>
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen gap-3">
+        <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
+        <div className="loader text-2xl ">   Loading Transaction Please wait.....</div>
       </div>
     );
   }
-
 
   const handleClearFilters = () => {
     setSearchTerm("");
     setTypeFilter("");
     setSubscriptionFilter("");
-  } 
-   
-  
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-red-500 bg-red-100 p-4 rounded-md shadow-sm border border-red-200">
-          <p className="font-semibold">Failed to load transactions.</p>
-          <p className="text-sm">Please try again later.</p>
-        </div>
-      </div>
-    );
-  }
-   
-  
-      
- return (
+  };
+
+  return (
     <div className="p-6 space-y-4">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -125,9 +148,7 @@ const Transactions = () => {
             value={typeFilter}
             onValueChange={(value) => {
               setTypeFilter(value);
-             
-            }}
-          >
+            }}>
             <SelectTrigger className="w-[130px]">
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
@@ -141,8 +162,7 @@ const Transactions = () => {
             value={subscriptionFilter}
             onValueChange={(value) => {
               setSubscriptionFilter(value);
-            }}
-          >
+            }}>
             <SelectTrigger className="w-[130px]">
               <SelectValue placeholder="All Transactions" />
             </SelectTrigger>
@@ -152,14 +172,26 @@ const Transactions = () => {
             </SelectContent>
           </Select>
 
-        
+          {/* Bulk Actions */}
+          {/* {selectedIds.length > 0 && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="destructive"
+                size="sm"
+               // onClick={handleBulkDelete}
+              >
+                <Trash className="h-4 w-4 mr-2" />
+                Delete Selected
+              </Button>
+            </div>
+          )} */}
+
           {(searchTerm || typeFilter || subscriptionFilter) && (
             <Button
               variant="destructive"
               size="icon"
               onClick={handleClearFilters}
-              title="Clear filters"
-            >
+              title="Clear filters">
               <X className="h-4 w-5" />
             </Button>
           )}
@@ -183,102 +215,89 @@ const Transactions = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-         
-            {
-              filteredTransactions?.length > 0 ? (
-                filteredTransactions?.map((transaction) => (
+          {filteredTransactions?.length > 0 ? (
+            filteredTransactions?.map((transaction) => (
               <TableRow key={transaction.id}>
-            <TableCell className="font-medium">
-              <Checkbox />
-            </TableCell>
-            <TableCell> {format(new Date(transaction.date), "PP")}</TableCell>
-            <TableCell>{transaction.description}</TableCell>
-            <TableCell>{transaction.category}</TableCell>
-            <TableCell 
-             className={(
-              "text-right font-medium",
-              transaction.type === "expense"
-                ? "text-red-500"
-                : "text-green-500"
-            )}>
-              { transaction.type === "expense" ? "-": "+"} ${parseFloat(transaction.amount).toFixed(2)}</TableCell>
-            <TableCell>{transaction.status}</TableCell>
-            <TableCell>
-              {
-                transaction.is_subscription ?(
-                  <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Badge
-                              variant="secondary"
-                              className="gap-1 bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200"
-                            >
-                              <RefreshCw className="h-3 w-3" />
-                             subscription
-                            </Badge>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <div className="text-sm">
-                              <div className="font-medium">Next Date:</div>
-                              <div>
-                                {format(
-                                  new Date(),
-                                  "PPP"
-                                )}
-                              </div>
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-             </TooltipProvider> 
-                )
-                :
-                <Badge variant="outline" className="gap-1">
-                <Clock className="h-3 w-3" />
-                One-time
-              </Badge>
-              }
-            
-              
-            </TableCell>
-            <TableCell>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                  // onClick={() =>
-                  //   router.push(
-                  //     `/transaction/create?edit=${transaction.id}`
-                  //   )
-                  // }
-                  >
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    className="text-destructive"
-                    // onClick={() => deleteFn([transaction.id])}
-                  >
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TableCell>
+                <TableCell className="font-medium">
+                  <Checkbox />
+                </TableCell>
+                <TableCell>
+                  {" "}
+                  {format(new Date(transaction.date), "PP")}
+                </TableCell>
+                <TableCell>{transaction.description}</TableCell>
+                <TableCell>{transaction.category}</TableCell>
+                <TableCell
+                  className={
+                    ("text-right font-medium",
+                    transaction.type === "expense"
+                      ? "text-red-500"
+                      : "text-green-500")
+                  }>
+                  {transaction.type === "expense" ? "-" : "+"} $
+                  {parseFloat(transaction.amount).toFixed(2)}
+                </TableCell>
+                <TableCell>{transaction.status}</TableCell>
+                <TableCell>
+                  {transaction.is_subscription ? (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Badge
+                            variant="secondary"
+                            className="gap-1 bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200">
+                            <RefreshCw className="h-3 w-3" />
+                            subscription
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <div className="text-sm">
+                            <div className="font-medium">Next Date:</div>
+                            <div>{format(new Date(), "PPP")}</div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ) : (
+                    <Badge variant="outline" className="gap-1">
+                      <Clock className="h-3 w-3" />
+                      One-time
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                      >
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="text-destructive"
+                        onClick={() => handleDelete(transaction.id)}
+                        >
+                          Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={7}
+                className="text-center text-muted-foreground">
+                No transactions found
+              </TableCell>
             </TableRow>
-        ))
-      ):(
-        <TableRow>
-        <TableCell
-          colSpan={7}
-          className="text-center text-muted-foreground"
-        >
-          No transactions found
-        </TableCell>
-      </TableRow>
-      )}
+          )}
         </TableBody>
       </Table>
     </div>

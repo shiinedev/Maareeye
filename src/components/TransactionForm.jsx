@@ -24,12 +24,14 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useFetch } from "@/hooks/useFetch";
 import { getAccountsByUserId } from "@/utils/account";
+import { useNavigate } from "react-router";
 
 
 export function TransactionForm({ className, categories, ...props }) {
   
   const {user} = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
    const {
       data:accounts  = [],
@@ -77,6 +79,7 @@ export function TransactionForm({ className, categories, ...props }) {
 
       console.log("transaction created successfully", transaction);
       reset();
+       navigate("/dashboard/transactionList")
       }
     } catch (error) {
       console.log("error creating transaction", error);
