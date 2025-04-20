@@ -32,6 +32,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/context/AuthContext";
+import { categoryColors } from "@/data/categories";
 import { useFetch } from "@/hooks/useFetch";
 import { deleteTransactions, getTransactions } from "@/utils/transaction";
 import { format } from "date-fns";
@@ -256,7 +257,17 @@ const Transactions = () => {
                   {format(new Date(transaction.date), "PP")}
                 </TableCell>
                 <TableCell>{transaction.description}</TableCell>
-                <TableCell>{transaction.category}</TableCell>
+                <TableCell className={"capitalize"}>
+                  
+                <span
+                      style={{
+                        background: categoryColors[transaction.category],
+                      }}
+                      className="px-2 py-1 rounded text-white text-sm"
+                    >
+                      {transaction.category}
+                    </span>
+                  </TableCell>
                 <TableCell
                   className={
                     ("text-right font-medium",
