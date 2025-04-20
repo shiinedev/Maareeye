@@ -1,4 +1,6 @@
+import { SubscriptionOptions } from "@/components/SubscriptionOptions";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -34,6 +36,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { categoryColors } from "@/data/categories";
 import { useFetch } from "@/hooks/useFetch";
+import { cn } from "@/lib/utils";
 import { deleteTransactions, getTransactions } from "@/utils/transaction";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { format } from "date-fns";
@@ -42,6 +45,7 @@ import {
   ChevronDown,
   ChevronUp,
   Clock,
+  HandCoins,
   MoreVertical,
   RefreshCw,
   Search,
@@ -104,9 +108,9 @@ const Transactions = () => {
         return true;
       });
     }
-    
-     // Apply sorting
-     result.sort((a, b) => {
+
+    // Apply sorting
+    result.sort((a, b) => {
       let comparison = 0;
 
       switch (sortConfig.field) {
@@ -127,7 +131,7 @@ const Transactions = () => {
     });
 
     return result;
-  }, [searchTerm, typeFilter, subscriptionFilter, transactions,sortConfig]);
+  }, [searchTerm, typeFilter, subscriptionFilter, transactions, sortConfig]);
 
   const handleSort = (field) => {
     setSortConfig((current) => ({
@@ -136,7 +140,6 @@ const Transactions = () => {
         current.field === field && current.direction === "asc" ? "desc" : "asc",
     }));
   };
-
 
   const handleBulkDelete = async () => {
     if (selectedIds.length === 0) return;
@@ -154,13 +157,11 @@ const Transactions = () => {
       setSelectedIds([]);
       setDeleteLoading(false);
       fetchData();
-     
     } catch (error) {
       console.log("error deleting transaction", error);
     } finally {
       setDeleteLoading(false);
       fetchData();
-   
     }
   };
 
@@ -168,7 +169,10 @@ const Transactions = () => {
     return (
       <div className="flex items-center justify-center h-screen gap-3">
         <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
-        <div className="loader text-2xl ">   Loading Transaction Please wait.....</div>
+        <div className="loader text-2xl ">
+          {" "}
+          Loading Transaction Please wait.....
+        </div>
       </div>
     );
   }
@@ -228,8 +232,7 @@ const Transactions = () => {
               <Button
                 variant="destructive"
                 size="sm"
-               onClick={handleBulkDelete}
-              >
+                onClick={handleBulkDelete}>
                 <Trash className="h-4 w-4 mr-2" />
                 Delete Selected({selectedIds.length})
               </Button>
@@ -253,64 +256,61 @@ const Transactions = () => {
         <TableHeader>
           <TableRow>
             <TableHead className="w-[50px]">
-            <Checkbox
-                  checked={
-                    selectedIds.length === filterAndSortTransactions.length &&
-                    selectedIds.length > 0
+              <Checkbox
+                checked={
+                  selectedIds.length === filterAndSortTransactions.length &&
+                  selectedIds.length > 0
+                }
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    setSelectedIds(
+                      filterAndSortTransactions.map((tx) => tx.id)
+                    );
+                  } else {
+                    setSelectedIds([]);
                   }
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      setSelectedIds(filterAndSortTransactions.map((tx) => tx.id));
-                    } else {
-                      setSelectedIds([]);
-                    }
-                  }}
-                />
+                }}
+              />
             </TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer"
-              onClick={() => handleSort("date")}
-            >
+              onClick={() => handleSort("date")}>
               <div className="flex items-center">
-              Date
-              {sortConfig.field === "date" &&
-                    (sortConfig.direction === "asc" ? (
-                      <ChevronUp className="ml-1 h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="ml-1 h-4 w-4" />
-                    ))}
+                Date
+                {sortConfig.field === "date" &&
+                  (sortConfig.direction === "asc" ? (
+                    <ChevronUp className="ml-1 h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="ml-1 h-4 w-4" />
+                  ))}
               </div>
-
             </TableHead>
             <TableHead>Description</TableHead>
-            <TableHead 
+            <TableHead
               className="cursor-pointer"
-              onClick={() => handleSort("category")}
-              >
-            <div className="flex items-center">
-                  Category
-                  {sortConfig.field === "category" &&
-                    (sortConfig.direction === "asc" ? (
-                      <ChevronUp className="ml-1 h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="ml-1 h-4 w-4" />
-                    ))}
-               </div>
+              onClick={() => handleSort("category")}>
+              <div className="flex items-center">
+                Category
+                {sortConfig.field === "category" &&
+                  (sortConfig.direction === "asc" ? (
+                    <ChevronUp className="ml-1 h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="ml-1 h-4 w-4" />
+                  ))}
+              </div>
             </TableHead>
-            <TableHead 
-            
+            <TableHead
               className="cursor-pointer"
-              onClick={() => handleSort("amount")}
-            >
-            <div className="flex items-center">
-                    Amount
-                  {sortConfig.field === "amount" &&
-                    (sortConfig.direction === "asc" ? (
-                      <ChevronUp className="ml-1 h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="ml-1 h-4 w-4" />
-                    ))}
-               </div>
+              onClick={() => handleSort("amount")}>
+              <div className="flex items-center">
+                Amount
+                {sortConfig.field === "amount" &&
+                  (sortConfig.direction === "asc" ? (
+                    <ChevronUp className="ml-1 h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="ml-1 h-4 w-4" />
+                  ))}
+              </div>
             </TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Subscription</TableHead>
@@ -322,15 +322,15 @@ const Transactions = () => {
             filterAndSortTransactions?.map((transaction) => (
               <TableRow key={transaction.id}>
                 <TableCell className="font-medium">
-                  <Checkbox 
-                   checked={selectedIds.includes(transaction.id)}
-                   onCheckedChange={(checked) => {
-                     setSelectedIds((prev) =>
-                       checked
-                         ? [...prev, transaction.id]
-                         : prev.filter((id) => id !== transaction.id)
-                     );
-                   }}
+                  <Checkbox
+                    checked={selectedIds.includes(transaction.id)}
+                    onCheckedChange={(checked) => {
+                      setSelectedIds((prev) =>
+                        checked
+                          ? [...prev, transaction.id]
+                          : prev.filter((id) => id !== transaction.id)
+                      );
+                    }}
                   />
                 </TableCell>
                 <TableCell>
@@ -338,16 +338,14 @@ const Transactions = () => {
                 </TableCell>
                 <TableCell>{transaction.description}</TableCell>
                 <TableCell className={"capitalize"}>
-                  
-                <span
-                      style={{
-                        background: categoryColors[transaction.category],
-                      }}
-                      className="px-2 py-1 rounded text-white text-sm"
-                    >
-                      {transaction.category}
-                    </span>
-                  </TableCell>
+                  <span
+                    style={{
+                      background: categoryColors[transaction.category],
+                    }}
+                    className="px-2 py-1 rounded text-white text-sm">
+                    {transaction.category}
+                  </span>
+                </TableCell>
                 <TableCell
                   className={
                     ("text-right font-medium",
@@ -358,38 +356,39 @@ const Transactions = () => {
                   {transaction.type === "expense" ? "-" : "+"} $
                   {parseFloat(transaction.amount).toFixed(2)}
                 </TableCell>
-                <TableCell > 
-                    <Button variant="outline" className="capitalize rounded-full">
-                        <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
+                <TableCell>
+                  <Button variant="outline" className="capitalize rounded-full">
+                    <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
                     {transaction.status}
-                    </Button>
-                   
-                   </TableCell>
+                  </Button>
+                </TableCell>
                 <TableCell>
                   {transaction.is_subscription ? (
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger>
-                          <Badge
-                            variant="secondary"
-                            className="gap-1 bg-purple-100 text-purple-700 rounded-full hover:bg-purple-200">
-                            <RefreshCw className="h-3 w-3" />
-                            subscription
-                          </Badge>
+                          <SubscriptionOptions
+                            selected={transaction.subscription_time}
+                          />
                         </TooltipTrigger>
                         <TooltipContent>
                           <div className="text-sm">
                             <div className="font-medium">Next Date:</div>
-                            <div>{format(new Date(), "PPP")}</div>
+                            <div>
+                              {format(new Date(transaction.next_time), "PPP")}
+                            </div>
                           </div>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   ) : (
-                    <Badge variant="outline" className="gap-1">
-                      <Clock className="h-3 w-3" />
-                      One-time
-                    </Badge>
+                    <Card
+                      className={cn(` max-w-25 bg-gray-100 text-gray-800  px-2 py-1  rounded border transition-all duration-200`)}>
+                      <span className="flex items-center gap-2 text-sm font-medium">
+                      <HandCoins className="h-3 w-3 text-gray-500" />
+                      One Time
+                      </span>
+                    </Card>
                   )}
                 </TableCell>
                 <TableCell>
@@ -401,16 +400,18 @@ const Transactions = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem
-                      onClick={() => navigate(`/dashboard/addTransaction/${transaction.id}`) }
-                      >
+                        onClick={() =>
+                          navigate(
+                            `/dashboard/addTransaction/${transaction.id}`
+                          )
+                        }>
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-destructive"
-                        onClick={() => selectedIds([transaction.id])}
-                        >
-                          Delete
+                        onClick={() => selectedIds([transaction.id])}>
+                        Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
