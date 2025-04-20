@@ -49,6 +49,7 @@ import {
   X,
 } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 const Transactions = () => {
@@ -61,6 +62,8 @@ const Transactions = () => {
     field: "date",
     direction: "desc",
   });
+
+  const navigate = useNavigate();
 
   const { user } = useAuth();
 
@@ -392,6 +395,7 @@ const Transactions = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem
+                      onClick={() => navigate(`/dashboard/addTransaction/${transaction.id}`) }
                       >
                         Edit
                       </DropdownMenuItem>

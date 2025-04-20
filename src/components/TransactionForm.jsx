@@ -18,13 +18,13 @@ import { Textarea } from "./ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { transactionSchema } from "@/utils/schema";
-import { createTransaction } from "@/utils/transaction";
+import { createTransaction, getTransactionById } from "@/utils/transaction";
 import { useAuth } from "@/context/AuthContext";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useFetch } from "@/hooks/useFetch";
 import { getAccountsByUserId } from "@/utils/account";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 
 export function TransactionForm({ className, categories, ...props }) {
@@ -43,8 +43,14 @@ export function TransactionForm({ className, categories, ...props }) {
     useEffect(() => {
       fetchAccounts();  
     }, [fetchAccounts]);
-
    
+
+    const {id} = useParams();
+  const isEdit = Boolean(id);
+
+    const {data:transaction} = useFetch(() => getTransactionById(id),[id])
+
+    console.log(transaction)
 
   const {
     register,
@@ -56,14 +62,25 @@ export function TransactionForm({ className, categories, ...props }) {
     reset,
   } = useForm({
     resolver: zodResolver(transactionSchema),
-    defaultValues :{
+    defaultValues: {
         type: "expense",
-        amount: "",
-        description: "",
-        
+        amount: 0,
+        description: "",    
     },
   });
+   useEffect(() => {
+    if (isEdit && transaction) {
+      reset({
+        ...transaction
+      });
 
+    setValue("type", transaction.type);
+    setValue("accountId", transaction.accountId);
+    setValue("category", transaction.category);
+    }
+  }, [transaction, reset, isEdit]);
+ 
+  
  
   const onSubmit =async (data) => {
     const formData = {
@@ -88,7 +105,7 @@ export function TransactionForm({ className, categories, ...props }) {
     }
    
   };
-
+ 
   const type = watch("type");
   const date = watch("date");
  
@@ -101,7 +118,7 @@ export function TransactionForm({ className, categories, ...props }) {
       <Card>
         <CardHeader>
           <CardTitle className="gradient-title text-2xl font-bold text-center">
-            Create New Transaction
+           { isEdit ? "Edit Transaction" : "Create Transaction"} 
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -109,7 +126,7 @@ export function TransactionForm({ className, categories, ...props }) {
             {/* Type */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">Type</Label>
-              <Select onValueChange={(value) => setValue("type", value)} defaultValue={type}>
+              <Select onValueChange={(value) => setValue("type", value)} value={type}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
@@ -143,7 +160,7 @@ export function TransactionForm({ className, categories, ...props }) {
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Account</Label>
                 <Select onValueChange={(value) => setValue("accountId", value)}
-                 defaultValue={getValues("accountId")} 
+                 value={getValues("accountId")} 
                  disabled={accountsLoading} >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={accountsLoading ? "Loading accounts..." : "Select account"} />
@@ -168,7 +185,7 @@ export function TransactionForm({ className, categories, ...props }) {
             {/* Category */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">Category</Label>
-              <Select onValueChange={(value) => setValue("category", value)} defaultValue={getValues("category")}>
+              <Select onValueChange={(value) => setValue("category", value)} value={getValues("category")}>
                 <SelectTrigger className="w-full" >
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
@@ -247,7 +264,7 @@ export function TransactionForm({ className, categories, ...props }) {
                 type="submit"
                 variant="purple"
                 className="w-full md:w-1/2">
-               { isLoading ? "creating....." :"Create Transaction"}
+               { isLoading ? isEdit ? "updating..." :"creating....." : isEdit ? "Update Transaction" :"Create Transaction"}
               </Button>
             </div>
           </form>

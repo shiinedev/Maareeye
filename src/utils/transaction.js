@@ -33,6 +33,21 @@ export const getTransactions = async () => {
   return data;
 }
 
+export const getTransactionById = async (id) => {
+  const { data, error } = await supabase
+    .from("transaction")
+    .select("*")
+    .eq("id", id)
+    .single()
+
+  if (error) {
+    console.log("error getting transaction by id", error);
+    throw error;
+  }
+
+  return data;
+}
+
 export const deleteTransactions = async (ids) => {
   console.log(ids)
   const { data, error } = await supabase
