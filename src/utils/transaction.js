@@ -33,14 +33,13 @@ export const getTransactions = async () => {
   return data;
 }
 
-export const deleteTransaction = async (transactionId) => {
-  console.log(transactionId)
+export const deleteTransactions = async (ids) => {
+  console.log(ids)
   const { data, error } = await supabase
     .from("transaction")
     .delete()
-    .eq("id", transactionId)
+    .in("id", ids)
     .select()
-    .single()
 
   if (error) {
     console.log("error deleting transaction", error);

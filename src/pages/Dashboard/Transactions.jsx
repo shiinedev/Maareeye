@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
-import { deleteTransaction, getTransactions } from "@/utils/transaction";
+import { deleteTransactions, getTransactions } from "@/utils/transaction";
 import { format } from "date-fns";
 import {
   Badge,
@@ -42,14 +42,18 @@ import {
   MoreVertical,
   RefreshCw,
   Search,
+  Trash,
   X,
 } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 const Transactions = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [subscriptionFilter, setSubscriptionFilter] = useState("");
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [deleLoading, setDeleteLoading] = useState(false);
 
   const { user } = useAuth();
 
@@ -94,23 +98,29 @@ const Transactions = () => {
     return result;
   }, [searchTerm, typeFilter, subscriptionFilter, transactions]);
 
-  const handleDelete = async (id) => {
- 
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    setDeleteLoading(true);
     try {
       if (
         !window.confirm(
-          `Are you sure you want to delete ${id} transactions?`
+          `Are you sure you want to delete ${selectedIds.length} transactions?`
         )
       )
         return;
-      const deleted = await deleteTransaction(id);
+      const deleted = await deleteTransactions(selectedIds);
       console.log(deleted);
-      toast.success("Transaction deleted successfully")
+      toast.success("Transaction deleted successfully");
+      setSelectedIds([]);
+      setDeleteLoading(false);
       fetchData();
+     
     } catch (error) {
       console.log("error deleting transaction", error);
     } finally {
+      setDeleteLoading(false);
       fetchData();
+   
     }
   };
 
@@ -173,18 +183,18 @@ const Transactions = () => {
           </Select>
 
           {/* Bulk Actions */}
-          {/* {selectedIds.length > 0 && (
+          {selectedIds.length > 0 && (
             <div className="flex items-center gap-2">
               <Button
                 variant="destructive"
                 size="sm"
-               // onClick={handleBulkDelete}
+               onClick={handleBulkDelete}
               >
                 <Trash className="h-4 w-4 mr-2" />
                 Delete Selected
               </Button>
             </div>
-          )} */}
+          )}
 
           {(searchTerm || typeFilter || subscriptionFilter) && (
             <Button
@@ -203,7 +213,19 @@ const Transactions = () => {
         <TableHeader>
           <TableRow>
             <TableHead className="w-[50px]">
-              <Checkbox />
+            <Checkbox
+                  checked={
+                    selectedIds.length === filteredTransactions.length &&
+                    selectedIds.length > 0
+                  }
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setSelectedIds(filteredTransactions.map((tx) => tx.id));
+                    } else {
+                      setSelectedIds([]);
+                    }
+                  }}
+                />
             </TableHead>
             <TableHead>date</TableHead>
             <TableHead>Description</TableHead>
@@ -219,10 +241,18 @@ const Transactions = () => {
             filteredTransactions?.map((transaction) => (
               <TableRow key={transaction.id}>
                 <TableCell className="font-medium">
-                  <Checkbox />
+                  <Checkbox 
+                   checked={selectedIds.includes(transaction.id)}
+                   onCheckedChange={(checked) => {
+                     setSelectedIds((prev) =>
+                       checked
+                         ? [...prev, transaction.id]
+                         : prev.filter((id) => id !== transaction.id)
+                     );
+                   }}
+                  />
                 </TableCell>
                 <TableCell>
-                  {" "}
                   {format(new Date(transaction.date), "PP")}
                 </TableCell>
                 <TableCell>{transaction.description}</TableCell>
@@ -280,7 +310,7 @@ const Transactions = () => {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-destructive"
-                        onClick={() => handleDelete(transaction.id)}
+                        onClick={() => selectedIds([transaction.id])}
                         >
                           Delete
                       </DropdownMenuItem>
