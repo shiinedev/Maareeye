@@ -20,7 +20,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { transactionSchema } from "@/utils/schema";
 import { createTransaction, getTransactionById, updateTransaction } from "@/utils/transaction";
 import { useAuth } from "@/context/AuthContext";
-import { use, useEffect, useState } from "react";
+import {  useEffect} from "react";
 import { format } from "date-fns";
 import { useFetch } from "@/hooks/useFetch";
 import { getAccountsByUserId } from "@/utils/account";
@@ -79,7 +79,9 @@ export function TransactionForm({ className, categories, ...props }) {
   useEffect(() => {
     if (isEdit && updateData) {
       reset({
-        ...updateData
+        ...updateData,
+        amount:String(updateData.amount),
+        date: new Date(updateData.date)
       });
 
     setValue("type", updateData.type);
@@ -93,21 +95,26 @@ export function TransactionForm({ className, categories, ...props }) {
     const formData = {
       user_id:user.id,
       ...data,
-      amount:parseFloat(data.amount)
+      amount:parseFloat(data.amount),
+      date: new Date(data.date).toISOString()
     }
     console.log(formData)
-
-    if(isEdit){
-      updateTransaction(id,formData);
+    try {
+      if(isEdit){
+       await updateTransaction(id,formData);
+        console.log("transaction updated successfully", formData);
+        reset();       
+      }else{
+       
+         await createTransaction(formData); 
+    
+          console.log("transaction created successfully", formData);
+          reset();
+      }
       navigate("/dashboard/transactionList")
-      
-    }else{
-      createTransaction(formData); 
-  
-        console.log("transaction created successfully", transaction);
-        reset();
-         navigate("/dashboard/transactionList")
-        
+    } catch (error) {
+      console.error("Transaction error:", error);
+      alert(error.message || "Something went wrong");
     }
    
   
