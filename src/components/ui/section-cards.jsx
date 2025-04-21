@@ -13,6 +13,7 @@ import { BarChart, Wallet } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getDefaultAccountByUserId } from "@/utils/account";
+import { getTransactionById, getTransactionsForAccount } from "@/utils/transaction";
 
 export function SectionCards() {
 
@@ -25,7 +26,18 @@ export function SectionCards() {
     fetchData: refetchDefaultAccount,
   } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
 
-  console.log(defaultAccount, "defaultAccount")
+  
+  const {
+    data: accountTransactions,
+    error: transactionError,
+    isLoading: transactionLoading,
+    fetchData: refetchTransaction,
+  } = useFetch(() => getTransactionsForAccount(defaultAccount?.id), [user?.id,defaultAccount?.id]);
+
+  console.log(accountTransactions)
+
+
+ 
 
 
 

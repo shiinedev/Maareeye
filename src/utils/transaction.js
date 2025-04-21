@@ -168,3 +168,19 @@ export const deleteTransactions = async (ids) => {
 
   return data;
 }
+
+// getTransactionsForAccount
+export const getTransactionsForAccount = async (accountId) => {
+  const { data, error } = await supabase
+    .from('transaction')
+    .select('*')
+    .eq('accountId', accountId) // Filter by the accountId
+    .order('date', { ascending: false }); // Sort by date, descending
+
+  if (error) {
+    console.error('Error fetching transactions:', error);
+    return [];
+  }
+
+  return data; // Return transactions for the account within the date range
+};
