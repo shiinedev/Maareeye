@@ -184,3 +184,23 @@ export const getTransactionsForAccount = async (accountId) => {
 
   return data; // Return transactions for the account within the date range
 };
+
+
+//report Data
+export const generateReport = (transactions) => {
+  const income = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
+  const expense = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
+  
+  const categories = transactions.reduce((acc, t) => {
+    acc[t.category] = (acc[t.category] || 0) + t.amount;
+    return acc;
+  }, {});
+
+  const monthlyTrends = transactions.reduce((acc, t) => {
+    const month = new Date(t.date).getMonth(); // Group by month
+    acc[month] = (acc[month] || 0) + t.amount;
+    return acc;
+  }, {});
+
+  return { income, expense, categories, monthlyTrends };
+};

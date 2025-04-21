@@ -13,7 +13,7 @@ import { BarChart, Wallet } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getDefaultAccountByUserId } from "@/utils/account";
-import { getTransactionById, getTransactionsForAccount } from "@/utils/transaction";
+import { generateReport, getTransactionsForAccount } from "@/utils/transaction";
 
 export function SectionCards() {
 
@@ -35,6 +35,32 @@ export function SectionCards() {
   } = useFetch(() => getTransactionsForAccount(defaultAccount?.id), [user?.id,defaultAccount?.id]);
 
   console.log(accountTransactions)
+
+  const {
+    data: reportData,
+    error: reportError,
+    isLoading: reportLoading,
+    fetchData: refetchReportData,
+  } = useFetch(() => generateReport(accountTransactions), [user?.id,defaultAccount?.id,accountTransactions]);
+
+  console.log(reportData)
+
+
+
+
+  if (defaultAccountError) {
+    console.error("Error fetching default account:", defaultAccountError);  
+  }
+
+  if (defaultAccountLoading || transactionLoading) {
+    return (
+      <div className="flex flex-1 items-center justify-center">
+        <Badge variant="outline" className="animate-pulse">
+          Loading...
+        </Badge>
+      </div>
+    );
+  }
 
 
  
