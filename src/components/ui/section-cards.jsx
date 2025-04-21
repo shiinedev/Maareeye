@@ -43,7 +43,7 @@ export function SectionCards() {
     fetchData: refetchReportData,
   } = useFetch(() => generateReport(accountTransactions), [user?.id,defaultAccount?.id,accountTransactions]);
 
-  console.log(reportData)
+ const {income,expense,topCategory,monthlyTrends} = reportData || {};
 
 
 
@@ -72,9 +72,10 @@ export function SectionCards() {
       className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
        <Card className="@container/card">
         <CardHeader>
-          <CardDescription>{defaultAccount?.name}</CardDescription>
-          <CardTitle className="text-purple-400 text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-           ${defaultAccount?.balance.toFixed(2)}
+          <CardDescription>Balance</CardDescription>
+          <CardTitle className="text-purple-400 text-2xl font-semibold tabular-num @[250px]/card:text-3xl">
+           ${defaultAccount ?  defaultAccount?.balance.toLocaleString("en-Us",
+            { minimumFractionDigits:2,},{ maximumFractionDigits:2,}) : "0.00"}
           </CardTitle>
           <CardAction>
             <div variant="outline" className={"text-purple-600"}>
@@ -84,17 +85,18 @@ export function SectionCards() {
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-             Balance<IconTrendingUp className="size-4" />
+          <div className="line-clamp-1 flex gap-2 font-medium capitalize">
+             { defaultAccount ? defaultAccount?.name : "No Account"}<IconTrendingUp className="size-4" />
           </div>
-          <div className="text-muted-foreground">Net Balance</div>
+          <div className="text-muted-foreground capitalize">{defaultAccount ? defaultAccount?.type : "no account"}</div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Income</CardDescription>
           <CardTitle className="text-green-400 text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $1,250.00
+           ${income?.toLocaleString("en-Us",
+            { minimumFractionDigits:2,},{ maximumFractionDigits:2,})}
           </CardTitle>
           <CardAction>
             <div variant="outline" className={"text-green-600"}>
@@ -115,7 +117,8 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>Expense</CardDescription>
           <CardTitle className="text-red-400 text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $ 1,234.00
+            ${expense?.toLocaleString("en-Us",
+            { minimumFractionDigits:2,},{ maximumFractionDigits:2,})}
           </CardTitle>
           <CardAction>
             <div variant="outline" className={"text-red-600"}>

@@ -154,20 +154,73 @@ const { data, error } = await supabase
 
 // delete transaction
 export const deleteTransactions = async (ids) => {
-  console.log(ids)
-  const { data, error } = await supabase
+  console.log("Deleting transactions:", ids);
+
+  // 1. Fetch the transactions first
+  const { data: transactions, error: fetchError } = await supabase
+    .from("transaction")
+    .select("*")
+    .in("id", ids);
+
+  if (fetchError) {
+    console.log("Error fetching transactions before deletion", fetchError);
+    throw fetchError;
+  }
+
+  // 2. Group transactions by account
+  const accountChanges = {};
+
+  for (const txn of transactions) {
+    const change = txn.type === "income" ? -txn.amount : txn.amount;
+
+    if (!accountChanges[txn.accountId]) {
+      accountChanges[txn.accountId] = 0;
+    }
+
+    accountChanges[txn.accountId] += change;
+  }
+
+  // 3. Update each affected account balance
+  for (const accountId in accountChanges) {
+    const { data: account, error: accountError } = await supabase
+      .from("account")
+      .select("*")
+      .eq("id", accountId)
+      .single();
+
+    if (accountError) {
+      console.log("Error fetching account", accountError);
+      throw accountError;
+    }
+
+    const newBalance = account.balance + accountChanges[accountId];
+
+    const { error: updateError } = await supabase
+      .from("account")
+      .update({ balance: newBalance })
+      .eq("id", accountId);
+
+    if (updateError) {
+      console.log("Error updating account balance", updateError);
+      throw updateError;
+    }
+  }
+
+  // 4. Finally, delete the transactions
+  const { data: deleted, error: deleteError } = await supabase
     .from("transaction")
     .delete()
     .in("id", ids)
-    .select()
+    .select();
 
-  if (error) {
-    console.log("error deleting transaction", error);
-    throw error;
+  if (deleteError) {
+    console.log("Error deleting transactions", deleteError);
+    throw deleteError;
   }
 
-  return data;
-}
+  return deleted;
+};
+
 
 // getTransactionsForAccount
 export const getTransactionsForAccount = async (accountId) => {
