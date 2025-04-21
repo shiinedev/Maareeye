@@ -18,18 +18,36 @@ import { Textarea } from "./ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { transactionSchema } from "@/utils/schema";
-import { createTransaction } from "@/utils/transaction";
+import { createTransaction, getTransactionById, updateTransaction } from "@/utils/transaction";
 import { useAuth } from "@/context/AuthContext";
-import { useEffect, useState } from "react";
+import {  useEffect} from "react";
 import { format } from "date-fns";
 import { useFetch } from "@/hooks/useFetch";
 import { getAccountsByUserId } from "@/utils/account";
+import { useNavigate, useParams } from "react-router";
 
 
 export function TransactionForm({ className, categories, ...props }) {
   
   const {user} = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+ // const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+    getValues,
+    reset,
+  } = useForm({
+    resolver: zodResolver(transactionSchema),
+    defaultValues: {
+        type: "expense",
+        amount: 0,
+        description: "",    
+    },
+  });
 
    const {
       data:accounts  = [],
@@ -41,51 +59,68 @@ export function TransactionForm({ className, categories, ...props }) {
     useEffect(() => {
       fetchAccounts();  
     }, [fetchAccounts]);
+   
+
+    const {id} = useParams();
+  const isEdit = Boolean(id);
+  const {
+    data:updateData,
+    fetchData:updatedTransaction,
+  } = useFetch(()=> getTransactionById(id),[id]);
+
+    const {
+      data:transactions,
+      isLoading:transactionLoading,
+      fetchData:fnTransaction,
+    } = useFetch( isEdit ? updateTransaction : createTransaction,[id,user]);
 
    
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch,
-    getValues,
-    reset,
-  } = useForm({
-    resolver: zodResolver(transactionSchema),
-    defaultValues :{
-        type: "expense",
-        amount: "",
-        description: "",
-        
-    },
-  });
+  useEffect(() => {
+    if (isEdit && updateData) {
+      reset({
+        ...updateData,
+        amount:String(updateData.amount),
+        date: new Date(updateData.date)
+      });
+
+    setValue("type", updateData.type);
+    setValue("accountId", updateData.accountId);
+    setValue("category", updateData.category);
+    }
+  }, [updateData, reset, isEdit]);
 
  
   const onSubmit =async (data) => {
     const formData = {
       user_id:user.id,
       ...data,
-      amount:parseFloat(data.amount)
+      amount:parseFloat(data.amount),
+      date: new Date(data.date).toISOString()
+    }
+    console.log(formData)
+    try {
+      if(isEdit){
+       await updateTransaction(id,formData);
+        console.log("transaction updated successfully", formData);
+        reset();       
+      }else{
+       
+         await createTransaction(formData); 
+    
+          console.log("transaction created successfully", formData);
+          reset();
+      }
+      navigate("/dashboard/transactionList")
+    } catch (error) {
+      console.error("Transaction error:", error);
+      alert(error.message || "Something went wrong");
     }
    
-    try {
-      setIsLoading(true);
-      if(formData){
-      const transaction = await createTransaction(formData);
-
-      console.log("transaction created successfully", transaction);
-      reset();
-      }
-    } catch (error) {
-      console.log("error creating transaction", error);
-    }finally {
-      setIsLoading(false);
-    }
+  
    
   };
-
+ 
   const type = watch("type");
   const date = watch("date");
  
@@ -98,7 +133,7 @@ export function TransactionForm({ className, categories, ...props }) {
       <Card>
         <CardHeader>
           <CardTitle className="gradient-title text-2xl font-bold text-center">
-            Create New Transaction
+           { isEdit ? "Edit Transaction" : "Create Transaction"} 
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -106,7 +141,7 @@ export function TransactionForm({ className, categories, ...props }) {
             {/* Type */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">Type</Label>
-              <Select onValueChange={(value) => setValue("type", value)} defaultValue={type}>
+              <Select onValueChange={(value) => setValue("type", value)} value={type}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
@@ -140,7 +175,7 @@ export function TransactionForm({ className, categories, ...props }) {
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Account</Label>
                 <Select onValueChange={(value) => setValue("accountId", value)}
-                 defaultValue={getValues("accountId")} 
+                 value={getValues("accountId")} 
                  disabled={accountsLoading} >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={accountsLoading ? "Loading accounts..." : "Select account"} />
@@ -165,7 +200,7 @@ export function TransactionForm({ className, categories, ...props }) {
             {/* Category */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">Category</Label>
-              <Select onValueChange={(value) => setValue("category", value)} defaultValue={getValues("category")}>
+              <Select onValueChange={(value) => setValue("category", value)} value={getValues("category")}>
                 <SelectTrigger className="w-full" >
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
@@ -240,11 +275,11 @@ export function TransactionForm({ className, categories, ...props }) {
                 Cancel
               </Button>
               <Button
-              disabled={isLoading}
+              disabled={transactionLoading}
                 type="submit"
                 variant="purple"
                 className="w-full md:w-1/2">
-               { isLoading ? "creating....." :"Create Transaction"}
+               { transactionLoading ? isEdit ? "updating..." :"creating....." : isEdit ? "Update Transaction" :"Create Transaction"}
               </Button>
             </div>
           </form>

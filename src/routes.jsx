@@ -50,6 +50,10 @@ export const router = createBrowserRouter([
             element: <AddTransaction />
           },
           {
+            path:"/dashboard/addTransaction/:id",
+            element: <AddTransaction />
+          },
+          {
             path:"/dashboard/transactionList",
             element:<Transactions />
           },
