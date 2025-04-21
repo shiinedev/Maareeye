@@ -46,6 +46,8 @@ export const createAccount = async (account) => {
 
 }
 
+
+// get all accounts by user id
 export const getAccountsByUserId = async (userId) => {
     const { data, error } = await supabase
       .from("account")
@@ -62,6 +64,26 @@ export const getAccountsByUserId = async (userId) => {
   }
 
 
+
+// get default account by user id
+export const getDefaultAccountByUserId = async (userId) => {
+    const { data, error } = await supabase
+      .from("account")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("is_default", true)
+      .single();
+  
+    if (error) {
+      console.log("error fetching default account", error);
+      throw error;
+    }
+  
+    return data;
+  }
+
+
+  // update default account by accountId
 export const updateDefaultAccount = async (accountId) =>{
         try {
           // Step 1: Set all accounts to false

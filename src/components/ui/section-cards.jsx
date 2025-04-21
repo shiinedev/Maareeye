@@ -10,16 +10,33 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { BarChart, Wallet } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getDefaultAccountByUserId } from "@/utils/account";
 
 export function SectionCards() {
+
+  const {user} = useAuth();
+
+  const {
+    data: defaultAccount,
+    error: defaultAccountError,
+    isLoading: defaultAccountLoading,
+    fetchData: refetchDefaultAccount,
+  } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
+
+  console.log(defaultAccount, "defaultAccount")
+
+
+
   return (
     <div
       className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
        <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Balance</CardDescription>
+          <CardDescription>{defaultAccount?.name}</CardDescription>
           <CardTitle className="text-purple-400 text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            45,678.00
+           ${defaultAccount?.balance.toFixed(2)}
           </CardTitle>
           <CardAction>
             <div variant="outline" className={"text-purple-600"}>
@@ -30,7 +47,7 @@ export function SectionCards() {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Net Balance<IconTrendingUp className="size-4" />
+             Balance<IconTrendingUp className="size-4" />
           </div>
           <div className="text-muted-foreground">Net Balance</div>
         </CardFooter>
