@@ -14,6 +14,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getDefaultAccountByUserId } from "@/utils/account";
 import { generateReport, getTransactionsForAccount } from "@/utils/transaction";
+import { Spinner } from "./spinner";
+import { useMemo } from "react";
 
 export function SectionCards() {
 
@@ -23,44 +25,37 @@ export function SectionCards() {
     data: defaultAccount,
     error: defaultAccountError,
     isLoading: defaultAccountLoading,
-    fetchData: refetchDefaultAccount,
   } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
 
-  
+  const shouldFetch = !!defaultAccount?.id && !!user?.id;
   const {
     data: accountTransactions,
     error: transactionError,
     isLoading: transactionLoading,
-    fetchData: refetchTransaction,
-  } = useFetch(() => getTransactionsForAccount(defaultAccount?.id), [user?.id,defaultAccount?.id]);
+  } = useFetch( 
+    shouldFetch ? () => getTransactionsForAccount(defaultAccount?.id) : null, [user?.id, defaultAccount?.id]);
 
   console.log(accountTransactions)
 
-  const {
-    data: reportData,
-    error: reportError,
-    isLoading: reportLoading,
-    fetchData: refetchReportData,
-  } = useFetch(() => generateReport(accountTransactions), [user?.id,defaultAccount?.id,accountTransactions]);
+  const reportData = useMemo(() => {
+    if (!Array.isArray(accountTransactions)) return null;
+    return  generateReport(accountTransactions);
+  }, [accountTransactions]);
+  
 
- const {income,expense,topCategory,monthlyTrends} = reportData || {};
-
-
-
-
-  if (defaultAccountError) {
-    console.error("Error fetching default account:", defaultAccountError);  
-  }
+  console.log(reportData);
 
   if (defaultAccountLoading || transactionLoading) {
     return (
-      <div className="flex flex-1 items-center justify-center">
+      <div className="flex flex-1 items-center justify-center mt-20">
         <Badge variant="outline" className="animate-pulse">
-          Loading...
+          <Spinner /> Loading Data...
         </Badge>
       </div>
     );
   }
+
+ 
 
 
  
@@ -74,8 +69,8 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>Balance</CardDescription>
           <CardTitle className="text-purple-400 text-2xl font-semibold tabular-num @[250px]/card:text-3xl">
-           ${defaultAccount ?  defaultAccount?.balance.toLocaleString("en-Us",
-            { minimumFractionDigits:2,},{ maximumFractionDigits:2,}) : "0.00"}
+           ${defaultAccount?.balance.toLocaleString("en-Us",
+            { minimumFractionDigits:2,},{ maximumFractionDigits:2,})}
           </CardTitle>
           <CardAction>
             <div variant="outline" className={"text-purple-600"}>
@@ -95,7 +90,7 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>Income</CardDescription>
           <CardTitle className="text-green-400 text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-           ${income?.toLocaleString("en-Us",
+           ${reportData?.income?.toLocaleString("en-Us",
             { minimumFractionDigits:2,},{ maximumFractionDigits:2,})}
           </CardTitle>
           <CardAction>
@@ -117,7 +112,7 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>Expense</CardDescription>
           <CardTitle className="text-red-400 text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            ${expense?.toLocaleString("en-Us",
+            ${reportData?.expense?.toLocaleString("en-Us",
             { minimumFractionDigits:2,},{ maximumFractionDigits:2,})}
           </CardTitle>
           <CardAction>
@@ -138,9 +133,10 @@ export function SectionCards() {
      
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Top Category</CardDescription>
-          <CardTitle className="text-blue-400 text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            4.5%
+          <CardDescription>Top Expense Category</CardDescription>
+          <CardTitle className="text-blue-400 text-2xl font-semibold tabular-num @[250px]/card:text-3xl">
+            ${reportData?.topCategory?.amount.toLocaleString("en-Us",
+            { minimumFractionDigits:2,},{ maximumFractionDigits:2,})}
           </CardTitle>
           <CardAction>
             <div variant="outline" className={"text-blue-600"}>
@@ -150,8 +146,8 @@ export function SectionCards() {
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Top Category <BarChart className="size-4" />
+          <div className="line-clamp-1 flex gap-2 font-medium capitalize">
+            {reportData?.topCategory?.category} <BarChart className="size-4" />
           </div>
           <div className="text-muted-foreground">Top Category For the last Month</div>
         </CardFooter>
