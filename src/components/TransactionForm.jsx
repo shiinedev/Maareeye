@@ -1,4 +1,4 @@
-export default TransactionForm;
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +27,7 @@ import { getAccountsByUserId } from "@/utils/account";
 import { useNavigate, useParams } from "react-router";
 
 
-export function TransactionForm({ className, categories, ...props }) {
+const TransactionForm = ({ className, categories, ...props }) => {
   
   const {user} = useAuth();
  // const [isLoading, setIsLoading] = useState(false);
@@ -288,3 +288,5 @@ export function TransactionForm({ className, categories, ...props }) {
     </div>
   );
 }
+
+export default TransactionForm;
