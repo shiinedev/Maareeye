@@ -45,7 +45,7 @@ const Overview = () => {
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
               <SectionCards  defaultAccount={defaultAccount} transactions={accountTransactions}/>
               <div className="px-4 lg:px-6">
-                <BarChar defaultAccount={defaultAccount} transactions={accountTransactions} />
+                <BarChar  transactions={accountTransactions} />
               </div>
               <DataTable data={data} />
             </div>
