@@ -40,4 +40,27 @@ export const transactionSchema = z.object({
   description: z.string().optional(), 
 })
 
+export const planSchema = z
+  .object({
+    type: z.enum(["income", "expense"]),
+    amount: z.string().min(1,"Amount is required"),
+    accountId: z.string("accountId is required"),
+    category: z.string("category is required"),
+    date: z.date({required_error:"Data is required"}),
+    description: z.string().optional(), 
+    is_subscription: z.boolean().default(false),
+    subscription_time: z
+      .enum(["daily", "weekly", "monthly", "yearly"])
+      .optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.is_subscription && !data.subscription_time) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Subscription time is required for subscription plan",
+        path: ["subscription_time"],
+      });
+    }
+  });
+
 

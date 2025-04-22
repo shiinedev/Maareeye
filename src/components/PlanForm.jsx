@@ -16,7 +16,7 @@ import { Calendar } from "./ui/calendar";
 import { Textarea } from "./ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { transactionSchema } from "@/utils/schema";
+import { planSchema } from "@/utils/schema";
 import { createTransaction, getTransactionById, updateTransaction } from "@/utils/transaction";
 import { useAuth } from "@/context/AuthContext";
 import {  useEffect} from "react";
@@ -24,6 +24,7 @@ import { format } from "date-fns";
 import { useFetch } from "@/hooks/useFetch";
 import { getAccountsByUserId } from "@/utils/account";
 import { useNavigate, useParams } from "react-router";
+import { Switch } from "./ui/switch";
 
 const PlanForm = ({categories}) => {
       const {user} = useAuth();
@@ -38,7 +39,7 @@ const PlanForm = ({categories}) => {
         getValues,
         reset,
       } = useForm({
-        resolver: zodResolver(transactionSchema),
+        resolver: zodResolver(planSchema),
         defaultValues: {
             type: "expense",
             amount: 0,
@@ -118,6 +119,7 @@ const PlanForm = ({categories}) => {
        
       };
      
+      const is_subscription = watch("is_subscription");
       const type = watch("type");
       const date = watch("date");
      
@@ -260,6 +262,47 @@ const PlanForm = ({categories}) => {
                   </p>
                 )}
               </div>
+
+              {/* subscription Toggle */}
+
+      <div className="flex flex-row items-center justify-between rounded-lg border p-4">
+        <div className="space-y-0.5">
+          <label className="text-base font-medium">Subscription Plan</label>
+          <div className="text-sm text-muted-foreground capitalize">
+            Set Up a Subscription Schedule for this plan
+          </div>
+        </div>
+        <Switch
+          checked={is_subscription}
+          onCheckedChange={(checked) => setValue("is_subscription", checked)}
+        />
+      </div>
+
+      {/* subscription time */}
+      {is_subscription && (
+        <div className="space-y-2">
+          <label className="text-sm font-medium capitalize">subscription time</label>
+          <Select
+            onValueChange={(value) => setValue("subscription_time", value)}
+            defaultValue={getValues("subscription_time")}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select time" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="daily">Daily</SelectItem>
+              <SelectItem value="weekly">Weekly</SelectItem>
+              <SelectItem value="monthly">Monthly</SelectItem>
+              <SelectItem value="yearly">Yearly</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.subscription_time && (
+            <p className="text-sm text-red-500">
+              {errors.subscription_time.message}
+            </p>
+          )}
+        </div>
+      )}
   
               {/* Actions */}
               <div className="flex flex-col md:flex-row gap-4">
@@ -275,7 +318,7 @@ const PlanForm = ({categories}) => {
                   type="submit"
                   variant="purple"
                   className="w-full md:w-1/2">
-                 { transactionLoading ? isEdit ? "updating..." :"Making....." : isEdit ? "Update Plan" :"Make Plan"}
+                 { transactionLoading ? (isEdit ? "updating..." :"Making....." ):( isEdit ? "Update Plan" :"Make Plan")}
                 </Button>
               </div>
             </form>
