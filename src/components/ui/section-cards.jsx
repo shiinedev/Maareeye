@@ -1,6 +1,4 @@
 import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
-
-import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardAction,
@@ -10,56 +8,20 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { BarChart, Wallet } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
-import { useFetch } from "@/hooks/useFetch";
-import { getDefaultAccountByUserId } from "@/utils/account";
-import { generateReport, getTransactionsForAccount } from "@/utils/transaction";
-import { Spinner } from "./spinner";
+import { generateReport } from "@/utils/transaction";
 import { useMemo } from "react";
 
-export function SectionCards() {
+export function SectionCards({defaultAccount, transactions}) {
 
-  const {user} = useAuth();
-
-  const {
-    data: defaultAccount,
-    error: defaultAccountError,
-    isLoading: defaultAccountLoading,
-  } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
-
-  const shouldFetch = !!defaultAccount?.id && !!user?.id;
-  const {
-    data: accountTransactions,
-    error: transactionError,
-    isLoading: transactionLoading,
-  } = useFetch( 
-    shouldFetch ? () => getTransactionsForAccount(defaultAccount?.id) : null, [user?.id, defaultAccount?.id]);
-
-  console.log(accountTransactions)
+ 
 
   const reportData = useMemo(() => {
-    if (!Array.isArray(accountTransactions)) return null;
-    return  generateReport(accountTransactions);
-  }, [accountTransactions]);
+    if (!Array.isArray(transactions)) return null;
+    return  generateReport(transactions);
+  }, [transactions]);
   
 
-  console.log(reportData);
-
-  if (defaultAccountLoading || transactionLoading) {
-    return (
-      <div className="flex flex-1 items-center justify-center mt-20">
-        <Badge variant="outline" className="animate-pulse">
-          <Spinner /> Loading Data...
-        </Badge>
-      </div>
-    );
-  }
-
- 
-
-
- 
-
+ // console.log(reportData);
 
 
   return (
@@ -101,10 +63,10 @@ export function SectionCards() {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Income  month <IconTrendingUp className="size-4" />
+            Income <IconTrendingUp className="size-4" />
           </div>
-          <div className="text-muted-foreground">
-            Income for the last  months
+          <div className="text-muted-foreground capitalize">
+            Total Income for The Account
           </div>
         </CardFooter>
       </Card>
@@ -125,8 +87,8 @@ export function SectionCards() {
           <div className="line-clamp-1 flex gap-2 font-medium">
             Expense <IconTrendingDown className="size-4" />
           </div>
-          <div className="text-muted-foreground">
-            Expense for the last  months
+          <div className="text-muted-foreground capitalize">
+           Total Expense for the Account
           </div>
         </CardFooter>
       </Card>
@@ -149,7 +111,7 @@ export function SectionCards() {
           <div className="line-clamp-1 flex gap-2 font-medium capitalize">
             {reportData?.topCategory?.category} <BarChart className="size-4" />
           </div>
-          <div className="text-muted-foreground">Top Category For the last Month</div>
+          <div className="text-muted-foreground capitalize">Top Expense Category For the Account</div>
         </CardFooter>
       </Card>
     </div>

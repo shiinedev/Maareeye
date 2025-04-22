@@ -284,3 +284,30 @@ export const generateReport = (transactions = []) => {
   };
 };
 
+
+//summary of transactions by date
+export const getTransactionSummary = async (transactions) => {
+  // Group by date
+  const summaryMap = {};
+
+  transactions.forEach((txn) => {
+    const date = format(startOfDay(new Date(txn.date)), "yyyy-MM-dd");
+
+    if (!summaryMap[date]) {
+      summaryMap[date] = { date, income: 0, expense: 0 };
+    }
+
+    if (txn.type === "income") {
+      summaryMap[date].income += txn.amount;
+    } else {
+      summaryMap[date].expense += txn.amount;
+    }
+  });
+
+  // Filter out days where both income and expense are zero
+  const summaryArray = Object.values(summaryMap)
+    .filter((day) => day.income !== 0 || day.expense !== 0)
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  return summaryArray;
+};
