@@ -17,7 +17,7 @@ import { Textarea } from "./ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { planSchema } from "@/utils/schema";
-import { createTransaction, getTransactionById, updateTransaction } from "@/utils/transaction";
+import {  getTransactionById, updateTransaction } from "@/utils/transaction";
 import { useAuth } from "@/context/AuthContext";
 import {  useEffect} from "react";
 import { format } from "date-fns";
@@ -25,11 +25,14 @@ import { useFetch } from "@/hooks/useFetch";
 import { getAccountsByUserId } from "@/utils/account";
 import { useNavigate, useParams } from "react-router";
 import { Switch } from "./ui/switch";
+import { createPlan } from "@/utils/plans";
 
 const PlanForm = ({categories}) => {
       const {user} = useAuth();
-     // const [isLoading, setIsLoading] = useState(false);
+
       const navigate = useNavigate();
+
+
       const {
         register,
         handleSubmit,
@@ -46,6 +49,7 @@ const PlanForm = ({categories}) => {
             description: "",    
         },
       });
+
     
        const {
           data:accounts  = [],
@@ -61,6 +65,7 @@ const PlanForm = ({categories}) => {
     
         const {id} = useParams();
       const isEdit = Boolean(id);
+
       const {
         data:updateData,
         fetchData:updatedTransaction,
@@ -70,23 +75,9 @@ const PlanForm = ({categories}) => {
           data:transactions,
           isLoading:transactionLoading,
           fetchData:fnTransaction,
-        } = useFetch( isEdit ? updateTransaction : createTransaction,[id,user]);
+        } = useFetch(createPlan,[id,user]);
     
        
-    
-      useEffect(() => {
-        if (isEdit && updateData) {
-          reset({
-            ...updateData,
-            amount:String(updateData.amount),
-            date: new Date(updateData.date)
-          });
-    
-        setValue("type", updateData.type);
-        setValue("accountId", updateData.accountId);
-        setValue("category", updateData.category);
-        }
-      }, [updateData, reset, isEdit]);
     
      
       const onSubmit =async (data) => {
@@ -98,24 +89,16 @@ const PlanForm = ({categories}) => {
         }
         console.log(formData)
         try {
-          if(isEdit){
-           await updateTransaction(id,formData);
-            console.log("transaction updated successfully", formData);
-            reset();       
-          }else{
-           
-             await createTransaction(formData); 
+         
+             await createPlan(formData); 
         
-              console.log("transaction created successfully", formData);
+              console.log("plan created successfully", formData);
               reset();
-          }
-          navigate("/dashboard/transactionList")
+             navigate("/dashboard/yourPlans")
         } catch (error) {
-          console.error("Transaction error:", error);
+          console.error("plan error:", error);
           alert(error.message || "Something went wrong");
         }
-       
-      
        
       };
      
@@ -267,7 +250,7 @@ const PlanForm = ({categories}) => {
 
       <div className="flex flex-row items-center justify-between rounded-lg border p-4">
         <div className="space-y-0.5">
-          <label className="text-base font-medium">Subscription Plan</label>
+          <Label className="text-base font-medium">Subscription Plan</Label>
           <div className="text-sm text-muted-foreground capitalize">
             Set Up a Subscription Schedule for this plan
           </div>
@@ -281,12 +264,12 @@ const PlanForm = ({categories}) => {
       {/* subscription time */}
       {is_subscription && (
         <div className="space-y-2">
-          <label className="text-sm font-medium capitalize">subscription time</label>
+          <Label className="text-sm font-medium capitalize">subscription time</Label>
           <Select
             onValueChange={(value) => setValue("subscription_time", value)}
             defaultValue={getValues("subscription_time")}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Select time" />
             </SelectTrigger>
             <SelectContent>
