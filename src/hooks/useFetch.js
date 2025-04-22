@@ -6,6 +6,7 @@ export function useFetch(fetchFunction, dependencies = []) {
   const [error, setError] = useState(null);
 
   const fetchData = useCallback(async () => {
+    if (typeof fetchFunction !== "function") return;
     setIsLoading(true);
     try {
       const result = await fetchFunction();
@@ -19,7 +20,10 @@ export function useFetch(fetchFunction, dependencies = []) {
   }, dependencies);
 
   useEffect(() => {
-    fetchData();
+    if(typeof fetchFunction === "function") {
+      fetchData();
+    }
+   
   }, [fetchData]);
 
   return { data, isLoading, error,  fetchData };

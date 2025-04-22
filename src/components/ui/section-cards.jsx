@@ -1,6 +1,4 @@
 import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
-
-import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardAction,
@@ -9,93 +7,111 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { BarChart, Wallet } from "lucide-react";
+import { generateReport } from "@/utils/transaction";
+import { useMemo } from "react";
 
-export function SectionCards() {
+export function SectionCards({defaultAccount, transactions}) {
+
+ 
+
+  const reportData = useMemo(() => {
+    if (!Array.isArray(transactions)) return null;
+    return  generateReport(transactions);
+  }, [transactions]);
+  
+
+ // console.log(reportData);
+
+
   return (
     <div
       className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-      <Card className="@container/card">
+       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Total Revenue</CardDescription>
-          <CardTitle className="text-purple-400 text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $1,250.00
+          <CardDescription>Balance</CardDescription>
+          <CardTitle className="text-purple-400 text-2xl font-semibold tabular-num @[250px]/card:text-3xl">
+           ${defaultAccount?.balance.toLocaleString("en-Us",
+            { minimumFractionDigits:2,},{ maximumFractionDigits:2,})}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className={"text-green-600"}>
-              <IconTrendingUp />
-              +12.5%
-            </Badge>
+            <div variant="outline" className={"text-purple-600"}>
+              <IconTrendingUp size={30} />
+              
+            </div>
+          </CardAction>
+        </CardHeader>
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium capitalize">
+             { defaultAccount ? defaultAccount?.name : "No Account"}<IconTrendingUp className="size-4" />
+          </div>
+          <div className="text-muted-foreground capitalize">{defaultAccount ? defaultAccount?.type : "no account"}</div>
+        </CardFooter>
+      </Card>
+      <Card className="@container/card">
+        <CardHeader>
+          <CardDescription>Income</CardDescription>
+          <CardTitle className="text-green-400 text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+           ${reportData?.income?.toLocaleString("en-Us",
+            { minimumFractionDigits:2,},{ maximumFractionDigits:2,})}
+          </CardTitle>
+          <CardAction>
+            <div variant="outline" className={"text-green-600"}>
+            <Wallet size={30}/>
+            </div>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Trending up this month <IconTrendingUp className="size-4" />
+            Income <IconTrendingUp className="size-4" />
           </div>
-          <div className="text-muted-foreground">
-            Visitors for the last 6 months
+          <div className="text-muted-foreground capitalize">
+            Total Income for The Account
           </div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>New Customers</CardDescription>
-          <CardTitle className="text-purple-400 text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            1,234
+          <CardDescription>Expense</CardDescription>
+          <CardTitle className="text-red-400 text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            ${reportData?.expense?.toLocaleString("en-Us",
+            { minimumFractionDigits:2,},{ maximumFractionDigits:2,})}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className={"text-red-600"}>
-              <IconTrendingDown />
-              -20%
-            </Badge>
+            <div variant="outline" className={"text-red-600"}>
+              <Wallet size={30} />
+            </div>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Down 20% this period <IconTrendingDown className="size-4" />
+            Expense <IconTrendingDown className="size-4" />
           </div>
-          <div className="text-muted-foreground">
-            Acquisition needs attention
+          <div className="text-muted-foreground capitalize">
+           Total Expense for the Account
           </div>
         </CardFooter>
       </Card>
+     
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Active Accounts</CardDescription>
-          <CardTitle className="text-purple-400 text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            45,678
+          <CardDescription>Top Expense Category</CardDescription>
+          <CardTitle className="text-blue-400 text-2xl font-semibold tabular-num @[250px]/card:text-3xl">
+            ${reportData?.topCategory?.amount.toLocaleString("en-Us",
+            { minimumFractionDigits:2,},{ maximumFractionDigits:2,})}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" className={"text-red-600"}>
-              <IconTrendingUp />
-              -12.5%
-            </Badge>
+            <div variant="outline" className={"text-blue-600"}>
+            <BarChart size={30} />
+             
+            </div>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Strong user retention <IconTrendingUp className="size-4" />
+          <div className="line-clamp-1 flex gap-2 font-medium capitalize">
+            {reportData?.topCategory?.category} <BarChart className="size-4" />
           </div>
-          <div className="text-muted-foreground">Engagement exceed targets</div>
-        </CardFooter>
-      </Card>
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Growth Rate</CardDescription>
-          <CardTitle className="text-purple-400 text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            4.5%
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline" className={"text-green-600"}>
-              <IconTrendingUp />
-              +4.5%
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Steady performance increase <IconTrendingUp className="size-4" />
-          </div>
-          <div className="text-muted-foreground">Meets growth projections</div>
+          <div className="text-muted-foreground capitalize">Top Expense Category For the Account</div>
         </CardFooter>
       </Card>
     </div>

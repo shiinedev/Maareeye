@@ -41,13 +41,10 @@ import { deleteTransactions, getTransactions } from "@/utils/transaction";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { format } from "date-fns";
 import {
-  Badge,
   ChevronDown,
   ChevronUp,
-  Clock,
   HandCoins,
   MoreVertical,
-  RefreshCw,
   Search,
   Trash,
   X,
@@ -66,6 +63,8 @@ const Transactions = () => {
     field: "date",
     direction: "desc",
   });
+
+  console.log(selectedIds)
 
   const navigate = useNavigate();
 
@@ -164,6 +163,31 @@ const Transactions = () => {
       fetchData();
     }
   };
+
+
+  const handleDelete = async(id) =>{
+    if(!id) return;
+    setDeleteLoading(true);
+    try {
+      if (
+        !window.confirm(
+          `Are you sure you want to delete ${selectedIds.length} transactions?`
+        )
+      )
+        return;
+      const deleted = await deleteTransactions(id);
+      console.log(deleted);
+      toast.success("Transaction deleted successfully");
+      setSelectedIds([]);
+      setDeleteLoading(false);
+      fetchData();
+    } catch (error) {
+      console.log("error deleting transaction", error);
+    } finally {
+      setDeleteLoading(false);
+      fetchData();
+    }
+  }
 
   if (isLoading) {
     return (
@@ -354,7 +378,7 @@ const Transactions = () => {
                       : "text-green-500")
                   }>
                   {transaction.type === "expense" ? "-" : "+"} $
-                  {parseFloat(transaction.amount).toFixed(2)}
+                  {parseFloat(transaction.amount).toLocaleString("en-US")}
                 </TableCell>
                 <TableCell>
                   <Button variant="outline" className="capitalize rounded-full">
@@ -383,10 +407,12 @@ const Transactions = () => {
                     </TooltipProvider>
                   ) : (
                     <Card
-                      className={cn(` max-w-25 bg-gray-100 text-gray-800  px-2 py-1  rounded border transition-all duration-200`)}>
+                      className={cn(
+                        ` max-w-25 bg-gray-100 text-gray-800  px-2 py-1  rounded border transition-all duration-200`
+                      )}>
                       <span className="flex items-center gap-2 text-sm font-medium">
-                      <HandCoins className="h-3 w-3 text-gray-500" />
-                      One Time
+                        <HandCoins className="h-3 w-3 text-gray-500" />
+                        One Time
                       </span>
                     </Card>
                   )}
@@ -410,7 +436,7 @@ const Transactions = () => {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-destructive"
-                        onClick={() => selectedIds([transaction.id])}>
+                        onClick={() => handleDelete([transaction.id])}>
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
