@@ -1,4 +1,4 @@
-import { ArrowUpRight, ArrowDownRight, DeleteIcon, Trash2Icon } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Trash2Icon } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import {
   Card,
@@ -88,14 +88,10 @@ export function AccountCard({ account, fetchAccounts }) {
           </div>
           </div>
         </CardContent>
-        <CardFooter className={"mt-2 flex gap-2 "}>
-        <Button variant="purple" className=" flex-1 text-sm">
-              Edit Account
-            </Button>
-            <Button variant="destructive" onClick={() => setOpenConfirm(true)} >
-            <Trash2Icon />
-            </Button>
-          
+        <CardFooter className={"mt-2"}>
+            <Button variant="destructive" className={"w-full cursor-pointer"} onClick={() => setOpenConfirm(true)} >
+            <Trash2Icon /> Delete Account
+            </Button> 
         </CardFooter>
       </div>
     </Card>
