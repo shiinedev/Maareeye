@@ -109,3 +109,18 @@ export const updateDefaultAccount = async (accountId) =>{
         }
       };
       
+export const deleteAccountById = async(id) =>{
+  const {data,error} = await supabase
+  .from("account")
+  .delete()
+  .eq("id",id)
+  .select()
+  .single()
+
+  if(error){
+    console.log("error deleting account");
+    throw error;
+  }
+
+  console.log("successfully deleting account",data);
+}
