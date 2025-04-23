@@ -66,6 +66,10 @@ export const router = createBrowserRouter([
             element:<MakePlan />
           },
           {
+            path:"/dashboard/makePlan/:id",
+            element:<MakePlan />
+          },
+          {
             path:"/dashboard/yourPlans",
             element:<YourPlans />
           },

@@ -17,6 +17,7 @@ import { getPlansForAccount } from "@/utils/plans";
 import { useAuth } from "@/context/AuthContext";
 import { Spinner } from "@/components/ui/spinner";
 import { getDefaultAccountByUserId } from "@/utils/account";
+import { useNavigate } from "react-router";
 
 const statusColor = {
   pending: "bg-yellow-200 text-yellow-800",
@@ -28,6 +29,8 @@ const YourPlans = () => {
 
   const [selectedPlan, setSelectedPlan] = useState(null);
   const {user} = useAuth();
+
+  const navigate = useNavigate();
 
    const {
       data: defaultAccount,
@@ -135,7 +138,11 @@ const YourPlans = () => {
               </div>
             </DialogDescription>
             <div className="flex justify-end space-x-2 mt-4">
-              <Button variant={"purple"} size={"xl"}>
+              <Button variant={"purple"} size={"xl"}  onClick={() =>
+                          navigate(
+                            `/dashboard/makePlan/${selectedPlan.id}`
+                          )
+                        }>
                 Edit
               </Button>
               <DialogClose asChild>
