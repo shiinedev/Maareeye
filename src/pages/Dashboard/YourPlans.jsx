@@ -12,6 +12,9 @@ import {
   DialogDescription,
   DialogClose,
 } from "@/components/ui/dialog";
+import { useFetch } from "@/hooks/useFetch";
+import { getPlansByUser } from "@/utils/plans";
+import { useAuth } from "@/context/AuthContext";
 
 // Example plan data (replace this with actual data from your backend)
 const allPlans = [
@@ -87,21 +90,31 @@ const statusColor = {
 };
 
 const YourPlans = () => {
-  const [plans] = useState(allPlans);
+ //const [plans] = useState(allPlans);
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const {user} = useAuth();
+
+  const {
+    data,
+    isLoading:plansLoading,
+    error:plansError,
+  } = useFetch(() => getPlansByUser(user?.id) , [user?.id]);
+
+  const plans = data ?? [];
+  console.log(plans)
 
   // Filter plans by status
   const today = new Date().toISOString().split("T")[0];
-  const upcomingPlans = plans.filter(
+  const upcomingPlans = plans?.filter(
     (plan) => plan.status === "pending" && plan.date > today
   );
-  const todayPlans = plans.filter(
+  const todayPlans = plans?.filter(
     (plan) => plan.status === "pending" && plan.date === today
   );
-  const missedPlans = plans.filter(
+  const missedPlans = plans?.filter(
     (plan) => plan.status === "pending" && plan.date < today
   );
-  const completedPlans = plans.filter((plan) => plan.status === "completed");
+  const completedPlans = plans?.filter((plan) => plan.status === "completed");
   const failedPlans = plans.filter((plan) => plan.status === "failed");
 
   return (

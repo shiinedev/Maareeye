@@ -90,3 +90,21 @@ export const createPlan = async (plan) => {
   
     return date;
   }
+
+
+// get all plans 
+export const getPlansByUser = async (userId)=>{
+  const { data, error } = await supabase
+  .from("plans")
+  .select("*")
+  .eq("user_id",userId)
+
+if (error) {
+  console.log("error getting plans", error);
+  throw error;
+}
+
+console.log(data)
+return data;
+
+}
