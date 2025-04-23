@@ -93,11 +93,11 @@ export const createPlan = async (plan) => {
 
 
 // get all plans 
-export const getPlansByUser = async (userId)=>{
+export const getPlansForAccount = async (accountId)=>{
   const { data, error } = await supabase
   .from("plans")
   .select("*")
-  .eq("user_id",userId)
+  .eq("accountId",accountId)
 
 if (error) {
   console.log("error getting plans", error);

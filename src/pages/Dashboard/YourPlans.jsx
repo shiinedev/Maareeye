@@ -13,76 +13,10 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { useFetch } from "@/hooks/useFetch";
-import { getPlansByUser } from "@/utils/plans";
+import { getPlansForAccount } from "@/utils/plans";
 import { useAuth } from "@/context/AuthContext";
 import { Spinner } from "@/components/ui/spinner";
-
-// Example plan data (replace this with actual data from your backend)
-const allPlans = [
-  {
-    id: 1,
-    type: "income",
-    amount: 250,
-    date: "2025-04-25",
-    category: "Salary",
-    status: "pending",
-    description: "April Salary",
-  },
-  {
-    id: 2,
-    type: "expense",
-    amount: 50,
-    date: "2025-04-24",
-    category: "Groceries",
-    status: "completed",
-    description: "Weekly groceries",
-  },
-  {
-    id: 3,
-    type: "expense",
-    amount: 120,
-    date: "2025-03-20",
-    category: "Subscription",
-    status: "failed",
-    description: "Streaming service",
-  },
-  {
-    id: 4,
-    type: "expense",
-    amount: 120,
-    date: "2025-04-22",
-    category: "Subscription",
-    status: "pending",
-    description: "Streaming service",
-  },
-  {
-    id: 5,
-    type: "expense",
-    amount: 120,
-    date: "2025-02-20",
-    category: "Subscription",
-    status: "failed",
-    description: "Streaming service",
-  },
-  {
-    id: 6,
-    type: "income",
-    amount: 120,
-    date: "2025-03-24",
-    category: "Subscription",
-    status: "completed",
-    description: "Streaming service",
-  },
-  {
-    id: 7,
-    type: "expense",
-    amount: 120,
-    date: "2025-05-20",
-    category: "Subscription",
-    status: "pending",
-    description: "Streaming service",
-  },
-];
+import { getDefaultAccountByUserId } from "@/utils/account";
 
 const statusColor = {
   pending: "bg-yellow-200 text-yellow-800",
@@ -91,15 +25,22 @@ const statusColor = {
 };
 
 const YourPlans = () => {
- //const [plans] = useState(allPlans);
+
   const [selectedPlan, setSelectedPlan] = useState(null);
   const {user} = useAuth();
 
+   const {
+      data: defaultAccount,
+      error: defaultAccountError,
+      isLoading: defaultAccountLoading,
+    } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
+  
+    const shouldFetch = !!defaultAccount?.id && !!user?.id;
   const {
     data,
     isLoading:plansLoading,
     error:plansError,
-  } = useFetch(() => getPlansByUser(user?.id) , [user?.id]);
+  } = useFetch( shouldFetch ? () => getPlansForAccount(defaultAccount?.id):null , [user?.id,defaultAccount?.id]);
 
   const plans = data ?? [];
   console.log(plans)
@@ -119,7 +60,7 @@ const YourPlans = () => {
   const failedPlans = plans.filter((plan) => plan.status === "failed");
 
 
-   if (plansLoading) {
+   if (plansLoading ) {
       return (
         <div className="flex items-center justify-center h-screen gap-3">
           <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
