@@ -37,7 +37,7 @@ import { useAuth } from "@/context/AuthContext";
 import { categoryColors } from "@/data/categories";
 import { useFetch } from "@/hooks/useFetch";
 import { cn } from "@/lib/utils";
-import { deleteTransactions, getTransactions } from "@/utils/transaction";
+import { deleteTransactions, getTransactionsByUser } from "@/utils/transaction";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { format } from "date-fns";
 import {
@@ -64,8 +64,6 @@ const Transactions = () => {
     direction: "desc",
   });
 
-  console.log(selectedIds)
-
   const navigate = useNavigate();
 
   const { user } = useAuth();
@@ -75,7 +73,7 @@ const Transactions = () => {
     isLoading,
     error,
     fetchData,
-  } = useFetch(() => getTransactions(), [user.id]);
+  } = useFetch(() => getTransactionsByUser(user?.id), [user.id]);
 
   useEffect(() => {
     if (user) {

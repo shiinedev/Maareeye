@@ -66,10 +66,11 @@ export const createTransaction = async (transaction) => {
 };
 
 // get All transactions
-export const getTransactions = async () => {
+export const getTransactionsByUser = async (userId) => {
   const { data, error } = await supabase
     .from("transaction")
     .select("*")
+    .eq("user_id",userId)
     .order("created_at", { ascending: false });
 
   if (error) {

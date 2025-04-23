@@ -15,6 +15,7 @@ import {
 import { useFetch } from "@/hooks/useFetch";
 import { getPlansByUser } from "@/utils/plans";
 import { useAuth } from "@/context/AuthContext";
+import { Spinner } from "@/components/ui/spinner";
 
 // Example plan data (replace this with actual data from your backend)
 const allPlans = [
@@ -116,6 +117,19 @@ const YourPlans = () => {
   );
   const completedPlans = plans?.filter((plan) => plan.status === "completed");
   const failedPlans = plans.filter((plan) => plan.status === "failed");
+
+
+   if (plansLoading) {
+      return (
+        <div className="flex items-center justify-center h-screen gap-3">
+          <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
+          <div className="loader text-2xl ">
+            {" "}
+            Loading Plans Please wait.....
+          </div>
+        </div>
+      );
+    }
 
   return (
     <Tabs defaultValue="upcoming" className="p-6">
