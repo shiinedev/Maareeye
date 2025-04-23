@@ -37,7 +37,8 @@ import { useAuth } from "@/context/AuthContext";
 import { categoryColors } from "@/data/categories";
 import { useFetch } from "@/hooks/useFetch";
 import { cn } from "@/lib/utils";
-import { deleteTransactions, getTransactionsByUser } from "@/utils/transaction";
+import { getDefaultAccountByUserId } from "@/utils/account";
+import { deleteTransactions, getTransactionsByAccount } from "@/utils/transaction";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { format } from "date-fns";
 import {
@@ -67,19 +68,26 @@ const Transactions = () => {
   const navigate = useNavigate();
 
   const { user } = useAuth();
+   const {
+      data: defaultAccount,
+      error: defaultAccountError,
+      isLoading: defaultAccountLoading,
+    } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
+
+    const shouldFetch = !!defaultAccount?.id && !!user?.id;
 
   const {
     data: transactions,
     isLoading,
     error,
     fetchData,
-  } = useFetch(() => getTransactionsByUser(user?.id), [user.id]);
+  } = useFetch( shouldFetch ? () => getTransactionsByAccount(defaultAccount?.id) : null, [user.id,defaultAccount?.id]);
 
   useEffect(() => {
     if (user) {
       fetchData();
     }
-  }, [user, fetchData]);
+  }, [user.id,defaultAccount?.id, fetchData]);
 
   const filterAndSortTransactions = useMemo(() => {
     let result = transactions || [];

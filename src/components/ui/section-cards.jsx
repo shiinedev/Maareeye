@@ -98,7 +98,7 @@ export function SectionCards({defaultAccount, transactions}) {
           <CardDescription>Top Expense Category</CardDescription>
           <CardTitle className="text-blue-400 text-2xl font-semibold tabular-num @[250px]/card:text-3xl">
             ${reportData?.topCategory?.amount.toLocaleString("en-Us",
-            { minimumFractionDigits:2,},{ maximumFractionDigits:2,})}
+            { minimumFractionDigits:2,},{ maximumFractionDigits:2,}) || "0.00"}
           </CardTitle>
           <CardAction>
             <div variant="outline" className={"text-blue-600"}>
@@ -109,7 +109,7 @@ export function SectionCards({defaultAccount, transactions}) {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium capitalize">
-            {reportData?.topCategory?.category} <BarChart className="size-4" />
+            {reportData?.topCategory?.category || "No Expense" } <BarChart className="size-4" />
           </div>
           <div className="text-muted-foreground capitalize">Top Expense Category For the Account</div>
         </CardFooter>
