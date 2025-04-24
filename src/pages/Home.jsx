@@ -1,5 +1,6 @@
 
 import HeroSection from '@/components/HeroSection'
+import Testimonials from '@/components/Testimonials';
 
 import { useTheme } from '@/components/ThemeProvider'
 
@@ -23,8 +24,8 @@ const {theme} = useTheme();
         />
       </div>
       </div>
- 
     </section>
+    <Testimonials />
 
     </div>
   )
