@@ -1,6 +1,7 @@
 import { SubscriptionOptions } from "@/components/SubscriptionOptions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 
 import {
   Table,
@@ -17,24 +18,66 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
+import { useAuth } from "@/context/AuthContext";
 import { categoryColors } from "@/data/categories";
+import { useFetch } from "@/hooks/useFetch";
 
 import { cn } from "@/lib/utils";
-
+import { getDefaultAccountByUserId } from "@/utils/account";
+import { getTransactionsForAccountWithPagination } from "@/utils/transaction";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { format } from "date-fns";
-import {
-  HandCoins,
-} from "lucide-react";
+import { HandCoins } from "lucide-react";
 import React from "react";
 
+const RecentTransactions = () => {
+  const { user } = useAuth();
+  const {
+    data: defaultAccount,
+    error: defaultAccountError,
+    isLoading: defaultAccountLoading,
+  } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
 
+  const shouldFetch = !!defaultAccount?.id && !!user?.id;
+  const {
+    data: recentTransactions,
+    error,
+    isLoading
+  } = useFetch(
+    shouldFetch
+      ? () =>
+          getTransactionsForAccountWithPagination(defaultAccount?.id, {
+            limit: 5,
+          })
+      : null,
+    [defaultAccount?.id]
+  );
 
-const RecentTransactions = ({transactions}) => {
+  const transactions = recentTransactions?.data || [];
   return (
     <div className="p-6 space-y-4">
       <h1 className="text-3xl font-bold">Recent Transactions</h1>
+      
+      
+      {
+        error &&(
+          <div className="flex items-center justify-center  gap-3">
+          <div className="loader text-2xl text-red-500 ">
+            Error fetching Recent transactions pleas Reload
+          </div>
+        </div>
+        )
+      }
+      {
+        isLoading ?(
+          <div className="flex items-center justify-center gap-3">
+            <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
+          <div className="loader text-2xl text-purple-500 ">
+            Loading recent transactions......
+          </div>
+        </div>
+        )
+        :
       <Table className={"border  rounded-md"}>
         <TableCaption>A list of your Transactions.</TableCaption>
         <TableHeader>
@@ -42,9 +85,7 @@ const RecentTransactions = ({transactions}) => {
             <TableHead>Date</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Category</TableHead>
-            <TableHead>
-                Amount
-            </TableHead>
+            <TableHead>Amount</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Subscription</TableHead>
           </TableRow>
@@ -126,6 +167,8 @@ const RecentTransactions = ({transactions}) => {
           )}
         </TableBody>
       </Table>
+        
+      }
     </div>
   );
 };

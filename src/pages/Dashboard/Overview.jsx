@@ -56,7 +56,7 @@ const Overview = () => {
                 <BarChar  transactions={accountTransactions} />
               </div>
               <div>
-                <RecentTransactions  transactions={accountTransactions}/>
+                <RecentTransactions />
               </div>
             </div>
           </div>

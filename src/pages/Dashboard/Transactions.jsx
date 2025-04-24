@@ -40,7 +40,7 @@ import { cn } from "@/lib/utils";
 import { getDefaultAccountByUserId } from "@/utils/account";
 import {
   deleteTransactions,
-  getTransactionsForAccount,
+  getTransactionsForAccountWithPagination,
 } from "@/utils/transaction";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { format } from "date-fns";
@@ -90,7 +90,7 @@ const Transactions = () => {
   } = useFetch(
     shouldFetch
       ? () =>
-          getTransactionsForAccount(defaultAccount?.id, {
+        getTransactionsForAccountWithPagination(defaultAccount?.id, {
             limit: itemsPerPage,
             offset: (currentPage - 1) * itemsPerPage,
           })
