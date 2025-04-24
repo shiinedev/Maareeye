@@ -99,63 +99,74 @@ export const getTransactionById = async (id) => {
 
 // update transaction
 export const updateTransaction = async (id, transaction) => {
-  console.log("updating transaction", transaction);
-  const { data: accountDat, error: accountError } = await supabase
-    .from("account")
-    .select("*")
-    .eq("id", transaction.accountId)
-    .single();
+ // 1. Fetch the original transaction
+const { data: originalTxn, error: txnError } = await supabase
+.from("transaction")
+.select("*")
+.eq("id", id)
+.single();
 
-  if (accountError) {
-    console.log("error fetching accounts", accountError);
-    throw accountError;
-  }
+if (txnError) {
+console.log("Error fetching original transaction", txnError);
+throw txnError;
+}
 
-  console.log("selected account", accountDat);
+// 2. Fetch account
+const { data: accountDat, error: accountError } = await supabase
+.from("account")
+.select("*")
+.eq("id", transaction.accountId)
+.single();
 
-  const balance =
-    accountDat.balance +
-    (transaction.type === "income" ? transaction.amount : -transaction.amount);
-  console.log("new balance", balance);
+if (accountError) {
+console.log("error fetching account", accountError);
+throw accountError;
+}
 
-  if (balance < 0 && transaction.type === "expense") {
-    throw new Error(
-      "You don’t have enough balance in this account for this expense."
-    );
-  } else if (balance < 0 && transaction.type === "income") {
-    throw new Error(
-      "An income transaction can't reduce your account balance below zero. Please check the amount and try again."
-    );
-  }
+// 3. Reverse original transaction
+let balance = accountDat.balance;
+balance += originalTxn.type === "income" ? -originalTxn.amount : originalTxn.amount;
 
-  const { error: updateError } = await supabase
-    .from("account")
-    .update({ balance: balance })
-    .eq("id", transaction.accountId);
+// 4. Apply new transaction
+balance += transaction.type === "income" ? transaction.amount : -transaction.amount;
 
-  if (updateError) {
-    console.log("error updating account balance", updateError);
-    throw updateError;
-  }
+// 5. Validation
+if (balance < 0 && transaction.type === "expense") {
+throw new Error("You don’t have enough balance in this account for this expense.");
+} else if (balance < 0 && transaction.type === "income") {
+throw new Error("An income transaction can't reduce your account balance below zero.");
+}
 
-  const preparedTransaction = {
-    ...transaction,
-    date: new Date(transaction.date).toISOString(),
-  };
-  console.log("prepared transaction", preparedTransaction);
+// 6. Update balance
+const { error: updateError } = await supabase
+.from("account")
+.update({ balance })
+.eq("id", transaction.accountId);
 
-  const { data, error } = await supabase
-    .from("transaction")
-    .update([preparedTransaction])
-    .eq("id", id)
-    .select();
+if (updateError) {
+console.log("error updating account balance", updateError);
+throw updateError;
+}
 
-  if (error) {
-    console.log("error updating transaction", error);
-    throw error;
-  }
+// 7. Update transaction
+const preparedTransaction = {
+...transaction,
+date: new Date(transaction.date).toISOString(),
+};
 
-  return data;
+const { data, error } = await supabase
+.from("transaction")
+.update([preparedTransaction])
+.eq("id", id)
+.select();
+
+if (error) {
+console.log("error updating transaction", error);
+throw error;
+}
+
+return data;
+
 };
 
 // delete transaction

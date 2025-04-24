@@ -26,6 +26,15 @@ const Overview = () => {
 
  // console.log(accountTransactions)
 
+ if (defaultAccountError || transactionError) {
+  return (
+        <div className="flex items-center justify-center h-screen gap-3">
+          <div className="loader text-2xl text-red-500 ">
+            Error fetching data pleas try again
+          </div>
+        </div>
+      );
+ }
   if (defaultAccountLoading || transactionLoading) {
    return (
          <div className="flex items-center justify-center h-screen gap-3">
@@ -37,6 +46,7 @@ const Overview = () => {
          </div>
        );
   }
+  
   return (
      <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
