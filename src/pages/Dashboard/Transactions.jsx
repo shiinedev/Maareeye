@@ -38,7 +38,7 @@ import { categoryColors } from "@/data/categories";
 import { useFetch } from "@/hooks/useFetch";
 import { cn } from "@/lib/utils";
 import { getDefaultAccountByUserId } from "@/utils/account";
-import { deleteTransactions, getTransactionsByAccount } from "@/utils/transaction";
+import { deleteTransactions, getTransactionsForAccount } from "@/utils/transaction";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { format } from "date-fns";
 import {
@@ -81,7 +81,7 @@ const Transactions = () => {
     isLoading,
     error,
     fetchData,
-  } = useFetch( shouldFetch ? () => getTransactionsByAccount(defaultAccount?.id) : null, [user.id,defaultAccount?.id]);
+  } = useFetch( shouldFetch ? () => getTransactionsForAccount(defaultAccount?.id,{limit:10}) : null, [user.id,defaultAccount?.id]);
 
   useEffect(() => {
     if (user) {

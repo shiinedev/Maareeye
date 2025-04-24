@@ -111,7 +111,7 @@ export function SectionCards({defaultAccount, transactions}) {
           <div className="line-clamp-1 flex gap-2 font-medium capitalize">
             {reportData?.topCategory?.category || "No Expense" } <BarChart className="size-4" />
           </div>
-          <div className="text-muted-foreground capitalize">Top Expense Category For the Account</div>
+          <div className="text-muted-foreground capitalize">Top Expense Category </div>
         </CardFooter>
       </Card>
     </div>

@@ -65,20 +65,21 @@ export const createTransaction = async (transaction) => {
   return data;
 };
 
-// get All transactions
-export const getTransactionsByAccount = async (accountId) => {
+// getTransactionsForAccount
+export const getTransactionsForAccount = async (accountId,{ offset = 0 , limit = 10}) => {
   const { data, error } = await supabase
     .from("transaction")
     .select("*")
-    .eq("accountId",accountId)
-    .order("created_at", { ascending: false });
+    .eq("accountId", accountId) 
+    .order("date", { ascending: false })
+    .range(offset, offset + limit -1)
 
   if (error) {
-    console.log("error getting transactions", error);
-    throw error;
+    console.error("Error fetching transactions:", error);
+    return [];
   }
 
-  return data;
+  return data; 
 };
 
 export const getTransactionById = async (id) => {
@@ -226,21 +227,7 @@ export const deleteTransactions = async (ids) => {
   return deleted;
 };
 
-// getTransactionsForAccount
-export const getTransactionsForAccount = async (accountId) => {
-  const { data, error } = await supabase
-    .from("transaction")
-    .select("*")
-    .eq("accountId", accountId) // Filter by the accountId
-    .order("date", { ascending: false }); // Sort by date, descending
 
-  if (error) {
-    console.error("Error fetching transactions:", error);
-    return [];
-  }
-
-  return data; // Return transactions for the account within the date range
-};
 
 //report Data
 export const generateReport = (transactions = []) => {
