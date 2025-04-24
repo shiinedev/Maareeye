@@ -9,7 +9,7 @@ const HeroSection = () => {
        <Navbar />
       {/* Main Content */}
      
-      <main className="flex-1 flex flex-col items-center justify-center text-center px-4 relative">
+      <main className="flex-1 flex flex-col pt-20 items-center justify-center text-center px-4 relative">
         <div className="max-w-3xl mx-auto mb-24 z-10">
           <h1 className="text-5xl md:text-6xl font-bold mb-4">
             <span className="gradient-title ">
@@ -39,10 +39,6 @@ const HeroSection = () => {
          
           </div>
         </div>
-
-        {/* Hero Image */}
-       
-
         {/* Decorative Elements */}
         <div className="absolute top-1/4 left-1/4 w-4 h-4 rounded-full bg-purple-500 opacity-70 animate-pulse"></div>
         <div className="absolute top-1/3 right-1/4 w-6 h-6 rounded-full bg-blue-500 opacity-50 animate-pulse delay-700"></div>
