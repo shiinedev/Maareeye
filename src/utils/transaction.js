@@ -67,9 +67,9 @@ export const createTransaction = async (transaction) => {
 
 // getTransactionsForAccount
 export const getTransactionsForAccount = async (accountId,{ offset = 0 , limit = 10}) => {
-  const { data, error } = await supabase
+  const { data,count, error } = await supabase
     .from("transaction")
-    .select("*")
+    .select("*",{ count: "exact" })
     .eq("accountId", accountId) 
     .order("date", { ascending: false })
     .range(offset, offset + limit -1)
@@ -79,7 +79,9 @@ export const getTransactionsForAccount = async (accountId,{ offset = 0 , limit =
     return [];
   }
 
-  return data; 
+
+
+  return {data,count}; 
 };
 
 export const getTransactionById = async (id) => {
@@ -202,7 +204,7 @@ export const deleteTransactions = async (ids) => {
     const { data: account, error: accountError } = await supabase
       .from("account")
       .select("*")
-      .eq("id", accountId)
+      .eq("id", accountId) 
       .single();
 
     if (accountError) {
