@@ -22,7 +22,7 @@ const Overview = () => {
     error: transactionError,
     isLoading: transactionLoading,
   } = useFetch( 
-    shouldFetch ? () => getTransactionsForAccount(defaultAccount?.id,{limit:10}) : null, [user?.id, defaultAccount?.id]);
+    shouldFetch ? () => getTransactionsForAccount(defaultAccount?.id) : null, [user?.id, defaultAccount?.id]);
 
  // console.log(accountTransactions)
 

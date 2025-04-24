@@ -66,13 +66,13 @@ export const createTransaction = async (transaction) => {
 };
 
 // getTransactionsForAccount
-export const getTransactionsForAccount = async (accountId,{ offset = 0 , limit = 10}) => {
+export const getTransactionsForAccount = async (accountId,{ offset = 0 , limit = 10} = {}) => {
   const { data,count, error } = await supabase
     .from("transaction")
     .select("*",{ count: "exact" })
     .eq("accountId", accountId) 
     .order("date", { ascending: false })
-    .range(offset, offset + limit -1)
+    .range(offset , offset +limit  -1)
 
   if (error) {
     console.error("Error fetching transactions:", error);

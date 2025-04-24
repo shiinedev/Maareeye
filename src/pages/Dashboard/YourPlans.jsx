@@ -76,8 +76,17 @@ const YourPlans = () => {
     }
 
   return (
-    <Tabs defaultValue="upcoming" className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Your Plans</h1>
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold">Your Plans</h1>
+            <Button
+              variant={"purple"}
+              onClick={() => navigate("/dashboard/makePlan")}>
+              Make New Plan
+            </Button>
+          </div>
+
+    <Tabs defaultValue="upcoming" >  
       <TabsList className="w-full mb-4">
         <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
         <TabsTrigger value="today">Today</TabsTrigger>
@@ -158,6 +167,7 @@ const YourPlans = () => {
         </Dialog>
       )}
     </Tabs>
+    </div>
   );
 };
 
