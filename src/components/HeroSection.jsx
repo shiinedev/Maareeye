@@ -19,9 +19,8 @@ const HeroSection = () => {
             <span className="">With Intelligence .</span>
           </h1>
 
-          <p className=" max-w-2xl mx-auto mb-10 capitalize">
-            financial management platform that helps you track,
-            analyze, and optimize your spending with real-time insights.
+          <p className=" max-w-2xl mx-auto mb-10 capitalize text-muted-foreground">
+          Maareeye helps you track, save, and spend smarter—without the stress..
           </p>
 
           <div className="flex flex-wrap justify-center gap-4">

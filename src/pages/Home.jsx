@@ -1,5 +1,6 @@
+
 import HeroSection from '@/components/HeroSection'
-import Testimonials from '@/components/Testimonials';
+
 import { useTheme } from '@/components/ThemeProvider'
 
 import React from 'react'
@@ -19,12 +20,12 @@ const {theme} = useTheme();
           src={theme === "dark" ?"/images/DashDark.PNG" :"/images/DashLight.PNG"}
           alt="Dashboard preview"
           className="w-full h-auto hero-image.scrolled "
-          priority
         />
       </div>
       </div>
  
     </section>
+
     </div>
   )
 }
