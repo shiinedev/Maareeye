@@ -17,7 +17,7 @@ import {
 import { SubscriptionOptions } from "@/components/SubscriptionOptions";
 
 
-export function ReportTransactions({ transactions }) {
+export function ReportTransactions({ filteredTransactions }) {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -39,8 +39,8 @@ export function ReportTransactions({ transactions }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {transactions?.length > 0 ? (
-            transactions?.map((transaction) => (
+          {filteredTransactions?.length > 0 ? (
+            filteredTransactions?.map((transaction) => (
               <TableRow key={transaction.id}>
                 <TableCell>
                   {format(new Date(transaction.date), "PP")}

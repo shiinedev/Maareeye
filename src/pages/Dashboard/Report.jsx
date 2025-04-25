@@ -1,55 +1,121 @@
+import { useEffect, useState } from "react";
+import { CalendarIcon } from "lucide-react";
+import { addDays, format } from "date-fns";
 
-import { useState } from "react"
-import { CalendarIcon } from "lucide-react"
-import { addDays, format } from "date-fns"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { SummaryCards } from "@/components/Report/summaryCard";
+import { ReportTransactions } from "@/components/Report/ReportTransactions";
+import { TopExpensesCategory } from "@/components/Report/TopExpensesCategory";
+import { useAuth } from "@/context/AuthContext";
+import { useFetch } from "@/hooks/useFetch";
+import { getAccountsByUserId, getDefaultAccountByUserId } from "@/utils/account";
+import { defaultCategories } from "../../data/categories.js";
+import { getTransactionsForAccount } from "@/utils/transaction.js";
+import { Spinner } from "@/components/ui/spinner.jsx";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { cn } from "@/lib/utils"
-import { SummaryCards } from "@/components/Report/summaryCard"
+export const types = [
+  { id: "income", name: "Income" },
+  { id: "expense", name: "Expense" },
 
-// Sample data
-import { transactions, accounts, categories, types } from "@/data/data"
-import { ReportTransactions } from "@/components/Report/ReportTransactions"
-import { TopExpensesCategory } from "@/components/Report/TopExpensesCategory"
+]
 
 export default function Report() {
   // State for filters
   const [dateRange, setDateRange] = useState({
     from: addDays(new Date(), -30),
     to: new Date(),
-  })
-  const [selectedType, setSelectedType] = useState("all")
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [selectedAccount, setSelectedAccount] = useState("all")
+  });
+  const [selectedType, setSelectedType] = useState("expense");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedAccount, setSelectedAccount] = useState( null );
+
+  const { user } = useAuth();
+   const {
+      data: defaultAccount,
+      error: defaultAccountError,
+      isLoading: defaultAccountLoading,
+    } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
+    console.log(defaultAccount)
+
+    // 👇 Set selected account once default account is available
+useEffect(() => {
+  if (defaultAccount && !selectedAccount) {
+    setSelectedAccount(defaultAccount.id);
+  }
+}, [defaultAccount, selectedAccount]);
+
+  const {
+    data: accounts = [],
+    isLoading: accountsLoading,
+    error: accountsError,
+    fetchData: fetchAccounts,
+  } = useFetch(() => getAccountsByUserId(user?.id), [user?.id]);
+
+  const {
+    data: transactions = [],
+    isLoading: transactionLoading,
+    error: transactionError,
+    fetchData: transactionFetch,
+  } = useFetch(() => getTransactionsForAccount(selectedAccount) , [selectedAccount,user?.id]);
+
+  console.log(transactions)
+
+ 
 
   // Filter transactions based on selections
-  const filteredTransactions = transactions.filter((transaction) => {
-    const transactionDate = new Date(transaction.date)
-    const dateInRange = transactionDate >= dateRange.from && transactionDate <= dateRange.to
+  const filteredTransactions = transactions?.filter((transaction) => {
+    const transactionDate = new Date(transaction.date);
+    const dateInRange =
+      transactionDate >= dateRange.from && transactionDate <= dateRange.to;
 
-    const typeMatch = selectedType === "all" || transaction.type === selectedType
-    const categoryMatch = selectedCategory === "all" || transaction.category === selectedCategory
-    const accountMatch = selectedAccount === "all" || transaction.account === selectedAccount
+    const typeMatch =
+     transaction.type === selectedType;
+    const categoryMatch =
+      selectedCategory === "all" || transaction.category === selectedCategory;
+    const accountMatch =
+  transaction.accountId === selectedAccount;
 
-    return dateInRange && typeMatch && categoryMatch && accountMatch
-  })
+    return dateInRange && typeMatch && categoryMatch && accountMatch;
+  });
 
-  // Calculate summary data
-  const income = filteredTransactions.filter((t) => t.type === "income").reduce((sum, t) => sum + t.amount, 0)
+  const filteredCategories = defaultCategories.filter(
+    (category) => category.type === selectedType
+  );
 
-  const expense = filteredTransactions.filter((t) => t.type === "expense").reduce((sum, t) => sum + t.amount, 0)
-
-  const netBalance = income - expense
-
+  if (defaultAccountLoading || transactionLoading ) {
+     return (
+           <div className="flex items-center justify-center h-screen gap-3">
+             <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
+             <div className="loader text-2xl ">
+              
+               Loading Data Please wait.....
+             </div>
+           </div>
+         );
+    }
+  
   return (
     <div className="container mx-auto p-6 space-y-8">
       <div className="flex flex-col space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Financial Report</h1>
-        <p className="text-muted-foreground">View and analyze your financial transactions</p>
+        <p className="text-muted-foreground">
+          View and analyze your financial transactions
+        </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -58,13 +124,16 @@ export default function Report() {
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className={cn("w-full justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
-            >
+              className={cn(
+                "w-full justify-start text-left font-normal",
+                !dateRange && "text-muted-foreground"
+              )}>
               <CalendarIcon className="mr-2 h-4 w-4" />
               {dateRange?.from ? (
                 dateRange.to ? (
                   <>
-                    {format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}
+                    {format(dateRange.from, "LLL dd, y")} -{" "}
+                    {format(dateRange.to, "LLL dd, y")}
                   </>
                 ) : (
                   format(dateRange.from, "LLL dd, y")
@@ -91,8 +160,7 @@ export default function Report() {
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select type" />
           </SelectTrigger>
-          <SelectContent >
-            <SelectItem value="all">All Types</SelectItem>
+          <SelectContent>
             {types.map((type) => (
               <SelectItem key={type.id} value={type.id}>
                 {type.name}
@@ -107,8 +175,8 @@ export default function Report() {
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            {categories.map((category) => (
+          <SelectItem value="all">All Categories</SelectItem>
+            {filteredCategories.map((category) => (
               <SelectItem key={category.id} value={category.id}>
                 {category.name}
               </SelectItem>
@@ -117,13 +185,16 @@ export default function Report() {
         </Select>
 
         {/* Account Select */}
-        <Select value={selectedAccount} onValueChange={setSelectedAccount}>
+        <Select defaultValue={selectedAccount} onValueChange={setSelectedAccount}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select account" />
+            <SelectValue
+              placeholder={
+                accountsLoading ? "Loading accounts..." : "Select account"
+              }
+            />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Accounts</SelectItem>
-            {accounts.map((account) => (
+            {accounts?.map((account) => (
               <SelectItem key={account.id} value={account.id}>
                 {account.name}
               </SelectItem>
@@ -133,14 +204,14 @@ export default function Report() {
       </div>
 
       {/* Summary Cards */}
-      <SummaryCards netBalance={netBalance} income={income} expense={expense} />
+      <SummaryCards filteredTransactions={filteredTransactions} />
       {/* Top Expenses category */}
       <Card>
         <CardHeader>
           <CardTitle>Top Expenses Category</CardTitle>
         </CardHeader>
         <CardContent>
-          <TopExpensesCategory transactions={filteredTransactions} />
+          <TopExpensesCategory filteredTransactions={filteredTransactions} />
         </CardContent>
       </Card>
 
@@ -150,9 +221,9 @@ export default function Report() {
           <CardTitle>Transactions</CardTitle>
         </CardHeader>
         <CardContent>
-          <ReportTransactions transactions={filteredTransactions} />
+          <ReportTransactions filteredTransactions={filteredTransactions} />
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

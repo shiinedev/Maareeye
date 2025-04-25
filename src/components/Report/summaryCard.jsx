@@ -2,13 +2,19 @@ import { cn } from "@/lib/utils"
 import { ArrowDownIcon, ArrowUpIcon, MinusIcon } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-export function SummaryCards({ netBalance, income, expense }) {
+export function SummaryCards({ filteredTransactions}) {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(amount)
   }
+ // Calculate summary data
+ const income = filteredTransactions?.filter((t) => t.type === "income").reduce((sum, t) => sum + t.amount, 0)
+
+ const expense = filteredTransactions?.filter((t) => t.type === "expense").reduce((sum, t) => sum + t.amount, 0)
+
+ const netBalance = income - expense
 
   return (
     <div className="grid gap-4 md:grid-cols-3 ">
@@ -19,7 +25,7 @@ export function SummaryCards({ netBalance, income, expense }) {
         </CardHeader>
         <CardContent>
           <div className={cn("text-2xl font-bold text-purple-600")}>
-            {formatCurrency(netBalance)}
+            {formatCurrency(netBalance > 0 ? netBalance : 0)}
           </div>
         </CardContent>
       </Card>

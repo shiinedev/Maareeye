@@ -257,51 +257,55 @@ export const deleteTransactions = async (ids) => {
 
 
 
-//report Data
-export const generateReport = (transactions = []) => {
-  const income = transactions
-    .filter((t) => t.type === "income")
-    .reduce((acc, t) => acc + t.amount, 0);
-  const expense = transactions
-    .filter((t) => t.type === "expense")
-    .reduce((acc, t) => acc + t.amount, 0);
+// //report Data
 
-  // 🔍 Group expenses by category
-  const expenseCategories = transactions
-    .filter((t) => t.type === "expense")
-    .reduce((acc, t) => {
-      acc[t.category] = (acc[t.category] || 0) + t.amount;
-      return acc;
-    }, {});
+// export const generateReport = (transactions = []) => {
+//   const income = transactions
+//     .filter((t) => t.type === "income")
+//     .reduce((acc, t) => acc + t.amount, 0);
+//   const expense = transactions
+//     .filter((t) => t.type === "expense")
+//     .reduce((acc, t) => acc + t.amount, 0);
 
-  // 🥇 Find top category by expense
-  let topCategory = null;
-  let maxSpent = 0;
-  for (const [category, amount] of Object.entries(expenseCategories)) {
-    if (amount > maxSpent) {
-      maxSpent = amount;
-      topCategory = category;
-    }
-  }
+//   // 🔍 Group expenses by category
+//   const expenseCategories = transactions
+//     .filter((t) => t.type === "expense")
+//     .reduce((acc, t) => {
+//       acc[t.category] = (acc[t.category] || 0) + t.amount;
+//       return acc;
+//     }, {});
 
-  const monthlyTrends = transactions.reduce((acc, t) => {
-    const month = new Date(t.date).getMonth(); // Group by month
-    acc[month] = (acc[month] || 0) + t.amount;
-    return acc;
-  }, {});
+//   // 🥇 Find top category by expense
+//   let topCategory = null;
+//   let maxSpent = 0;
+//   for (const [category, amount] of Object.entries(expenseCategories)) {
+//     if (amount > maxSpent) {
+//       maxSpent = amount;
+//       topCategory = category;
+//     }
+//   }
 
-  return {
-    income,
-    expense,
-    topCategory: topCategory
-      ? { category: topCategory, amount: maxSpent }
-      : null,
-    monthlyTrends,
-  };
-};
+//   const monthlyTrends = transactions.reduce((acc, t) => {
+//     const month = new Date(t.date).getMonth(); // Group by month
+//     acc[month] = (acc[month] || 0) + t.amount;
+//     return acc;
+//   }, {});
+
+//   return {
+//     income,
+//     expense,
+//     topCategory: topCategory
+//       ? { category: topCategory, amount: maxSpent }
+//       : null,
+//     monthlyTrends,
+//   };
+// };
 
 
 //summary of transactions by date
+
+
+
 export const getSummaryData = async (transactions = []) => {
 
   const totalIncome = transactions
@@ -340,3 +344,5 @@ const totalExpense = transactions
     totalExpense
   };
 };
+
+

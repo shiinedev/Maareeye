@@ -1,17 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 
-export function TopExpensesCategory({ transactions }) {
+export function TopExpensesCategory({filteredTransactions }) {
   // Only consider expense transactions
-  const expenseTransactions = transactions.filter((t) => t.type === "expense")
+  const expenseTransactions = filteredTransactions?.filter((t) => t.type === "expense")
 
   // Calculate total expenses
-  const totalExpenses = expenseTransactions.reduce((sum, t) => sum + t.amount, 0)
+  const totalExpenses = expenseTransactions?.reduce((sum, t) => sum + t.amount, 0)
 
   // Group expenses by category
   const expensesByCategory = {}
 
-  expenseTransactions.forEach((transaction) => {
+  expenseTransactions?.forEach((transaction) => {
     if (!expensesByCategory[transaction.category]) {
       expensesByCategory[transaction.category] = {
         amount: 0,
