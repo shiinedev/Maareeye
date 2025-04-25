@@ -37,7 +37,7 @@ export function LoginForm({
        await signIn(data.email,data.password);
        setIsLoading(false); 
        toast.success("user signin successfully")
-        navigate("/");
+        navigate("/dashboard");
     } catch (error) {
       console.log("error",error);
       setError(error.message);
