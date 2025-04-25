@@ -302,7 +302,16 @@ export const generateReport = (transactions = []) => {
 
 
 //summary of transactions by date
-export const getTransactionSummary = async (transactions) => {
+export const getSummaryData = async (transactions = []) => {
+
+  const totalIncome = transactions
+  .filter((t) => t.type === "income")
+  .reduce((acc, t) => acc + t.amount, 0);
+const totalExpense = transactions
+  .filter((t) => t.type === "expense")
+  .reduce((acc, t) => acc + t.amount, 0);
+
+
   // Group by date
   const summaryMap = {};
 
@@ -321,9 +330,13 @@ export const getTransactionSummary = async (transactions) => {
   });
 
   // Filter out days where both income and expense are zero
-  const summaryArray = Object.values(summaryMap)
+  const chartData = Object.values(summaryMap)
     .filter((day) => day.income !== 0 || day.expense !== 0)
     .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  return summaryArray;
+  return {
+    chartData,  
+    totalIncome,
+    totalExpense
+  };
 };

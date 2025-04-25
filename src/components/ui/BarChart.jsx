@@ -1,4 +1,3 @@
-"use client"
 
 import * as React from "react"
 import { Bar, BarChart, CartesianGrid, Legend, XAxis } from "recharts"
@@ -16,8 +15,9 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select"
-import { getTransactionSummary } from "@/utils/transaction"
 import { Spinner } from "./spinner"
+// import { getTransactionSummary } from "@/utils/transaction"
+// import { Spinner } from "./spinner"
 
 
 const chartConfig = {
@@ -34,33 +34,9 @@ const chartConfig = {
   },
 } 
 
-export function BarChar({transactions}) {
+export function BarChar({chartData,chartLoading}) {
   
-    const [timeRange, setTimeRange] = React.useState("7d");
-
-    const [chartData, setChartData ]= React.useState([]);
-const [chartLoading, setChartLoading] =React.useState(true);
-const [chartError, setChartError] = React.useState(null);
-
-React.useEffect(() => {
-  if (!Array.isArray(transactions)) return;
-
-  const fetchChart = async () => {
-    try {
-      setChartLoading(true);
-      const result = await getTransactionSummary(transactions);
-      setChartData(result);
-    } catch (err) {
-      console.error("Error generating chart:", err);
-      setChartError(err);
-    } finally {
-      setChartLoading(false);
-    }
-  };
-
-  fetchChart();
-}, [transactions]);
-
+    const [timeRange, setTimeRange] = React.useState("30d");
   
     const filteredData = React.useMemo(() => {
       return chartData.filter((item) => {
