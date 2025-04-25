@@ -16,23 +16,21 @@ import { Calendar } from "./ui/calendar";
 import { Textarea } from "./ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { transactionSchema } from "@/utils/schema";
-import {
-  createTransaction,
-  getTransactionById,
-  updateTransaction,
-} from "@/utils/transaction";
+import { planSchema } from "@/utils/schema";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useFetch } from "@/hooks/useFetch";
 import { getAccountsByUserId } from "@/utils/account";
 import { useNavigate, useParams } from "react-router";
+import { Switch } from "./ui/switch";
+import { createPlan, getPlanById, updatePlan } from "@/utils/plans";
 
-const TransactionForm = ({ className, categories, ...props }) => {
+const PlanForm = ({ categories }) => {
   const { user } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -42,7 +40,7 @@ const TransactionForm = ({ className, categories, ...props }) => {
     getValues,
     reset,
   } = useForm({
-    resolver: zodResolver(transactionSchema),
+    resolver: zodResolver(planSchema),
     defaultValues: {
       type: "expense",
       amount: 0,
@@ -63,10 +61,12 @@ const TransactionForm = ({ className, categories, ...props }) => {
 
   const { id } = useParams();
   const isEdit = Boolean(id);
-  const { data: updateData, fetchData: updatedTransaction } = useFetch(
-    () => getTransactionById(id),
+ 
+  const { data: updateData} = useFetch(
+    () => getPlanById(id),
     [id]
   );
+
 
   useEffect(() => {
     if (isEdit && updateData) {
@@ -88,42 +88,47 @@ const TransactionForm = ({ className, categories, ...props }) => {
       ...data,
       amount: parseFloat(data.amount),
       date: new Date(data.date).toISOString(),
+      is_subscription: data.is_subscription,
+        ...(data.subscription_time && {
+        subscription_time: data.subscription_time,
+      }),
     };
-    console.log(formData);
+   
     setIsLoading(true);
     try {
+
       if (isEdit) {
-        await updateTransaction(id, formData);
-        console.log("transaction updated successfully", formData);
+        await updatePlan(id, formData);
+        console.log("Plan updated successfully", formData);
         reset();
       } else {
-        await createTransaction(formData);
+        await createPlan(formData);
 
-        console.log("transaction created successfully", formData);
+        console.log("Plan created successfully", formData);
         reset();
       }
-      navigate("/dashboard/transactionList");
+      navigate("/dashboard/yourPlans");
     } catch (error) {
-      console.error("Transaction error:", error);
+      console.error("Plan error:", error);
       alert(error.message || "Something went wrong");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const is_subscription = watch("is_subscription");
   const type = watch("type");
   const date = watch("date");
 
   const filteredCategories = categories.filter(
     (category) => category.type === type
   );
-
   return (
-    <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
+    <div className={"flex flex-col gap-6 p-6"}>
       <Card>
         <CardHeader>
           <CardTitle className="gradient-title text-2xl font-bold text-center">
-            {isEdit ? "Edit Transaction" : "Create Transaction"}
+            {isEdit ? "Edit Plan" : "Make Plan"}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -241,7 +246,7 @@ const TransactionForm = ({ className, categories, ...props }) => {
                     selected={date}
                     onSelect={(date) => setValue("date", date)}
                     disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
+                      date < new Date() || date < new Date("1900-01-01")
                     }
                     initialFocus
                   />
@@ -266,6 +271,54 @@ const TransactionForm = ({ className, categories, ...props }) => {
               )}
             </div>
 
+            {/* subscription Toggle */}
+
+            <div className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <Label className="text-base font-medium">
+                  Subscription Plan
+                </Label>
+                <div className="text-sm text-muted-foreground capitalize">
+                  Set Up a Subscription Schedule for this plan
+                </div>
+              </div>
+              <Switch
+                checked={is_subscription}
+                onCheckedChange={(checked) =>
+                  setValue("is_subscription", checked)
+                }
+              />
+            </div>
+
+            {/* subscription time */}
+            {is_subscription && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium capitalize">
+                  subscription time
+                </Label>
+                <Select
+                  onValueChange={(value) =>
+                    setValue("subscription_time", value)
+                  }
+                  defaultValue={getValues("subscription_time")}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select time" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="daily">Daily</SelectItem>
+                    <SelectItem value="weekly">Weekly</SelectItem>
+                    <SelectItem value="monthly">Monthly</SelectItem>
+                    <SelectItem value="yearly">Yearly</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.subscription_time && (
+                  <p className="text-sm text-red-500">
+                    {errors.subscription_time.message}
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* Actions */}
             <div className="flex flex-col md:flex-row gap-4">
               <Button
@@ -283,10 +336,10 @@ const TransactionForm = ({ className, categories, ...props }) => {
                 {isLoading
                   ? isEdit
                     ? "updating..."
-                    : "creating....."
+                    : "Making....."
                   : isEdit
-                  ? "Update Transaction"
-                  : "Create Transaction"}
+                  ? "Update Plan"
+                  : "Make Plan"}
               </Button>
             </div>
           </form>
@@ -296,4 +349,4 @@ const TransactionForm = ({ className, categories, ...props }) => {
   );
 };
 
-export default TransactionForm;
+export default PlanForm;

@@ -3,11 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -22,11 +17,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createAccount } from "@/utils/account";
 import { Card, CardContent } from "./ui/card";
 import { Plus } from "lucide-react";
+import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
 
 const AccountForm = ({fetchAccounts}) => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [open,setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const {
     register,
     handleSubmit,
@@ -40,7 +36,6 @@ const AccountForm = ({fetchAccounts}) => {
     defaultValues: {
       name: "",
       type: "current",
-      balance: "",
       is_default: false,
     },
   });
@@ -49,7 +44,6 @@ const AccountForm = ({fetchAccounts}) => {
    const formData = {
          user_id:user.id,
          ...data,
-         balance:parseFloat(data.balance)
        }
       
        try {
@@ -71,26 +65,26 @@ const AccountForm = ({fetchAccounts}) => {
   };
 
   return (
-    <Popover  open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
       <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardContent className="flex flex-col items-center justify-center text-muted-foreground h-full ">
               <Plus className="h-10 w-10 mb-2" />
               <p className="text-sm sm:font-medium">Add New Account</p>
             </CardContent>
           </Card>
-      </PopoverTrigger>
-      <PopoverContent className="mx-2 md:mx-auto max-w-80 " align="start">
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
-          <div className="space-y-2">
-            <h4 className="font-medium leading-none gradient-title">
+          </DialogTrigger>
+        <DialogContent>
+        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 ">
+        <DialogTitle className="space-y-2">
+            <h4 className="font-bold leading-none text-xl text-center gradient-title">
               Create New Account
             </h4>
-          </div>
+          </DialogTitle>
           <div className="grid gap-2">
             <div>
-              <div className="flex flex-col md:flex-row md:items-center gap-2 ">
-                <Label htmlFor="width">Name</Label>
+              <div className="flex flex-col  gap-3 ">
+                <Label htmlFor="width">Name :</Label>
                 <Input
                   id="name"
                   {...register("name")}
@@ -98,7 +92,7 @@ const AccountForm = ({fetchAccounts}) => {
                   onChange={(e) => setValue("name", e.target.value)}
                   defaultValue={getValues("name")}
                   placeholder="Enter account name"
-                  className="flex-1 w-full h-8"
+                  className="flex-1 w-full h-10"
                 />
               </div>
               {errors.name && (
@@ -106,8 +100,8 @@ const AccountForm = ({fetchAccounts}) => {
               )}
             </div>
             <div>
-            <div className="flex flex-col md:flex-row md:items-center gap-2">
-              <Label htmlFor="type">Type</Label>
+            <div className="flex flex-col  gap-3">
+              <Label htmlFor="type">Type :</Label>
               <Select
                 {...register("type")}
                 onValueChange={(value) => setValue("type", value)}
@@ -127,20 +121,18 @@ const AccountForm = ({fetchAccounts}) => {
               )}
             </div>
             <div>
-            <div className="flex flex-col md:flex-row md:items-center gap-2">
-              <Label htmlFor="balance">Balance</Label>
+            {/* <div className="flex flex-col  gap-3">
+              <Label htmlFor="balance">Balance : </Label>
               <Input
+               disabled
                 id="balance"
                 {...register("balance")}
-                type="Number"
-                step="0.01"
-                onChange={(e) => setValue("balance", e.target.value)}
-                defaultValue={getValues("balance")}
-                placeholder="Enter account balance"
-                className="flex-1 w-full h-8"
+                step="0.01" 
+                value={0} 
+                type={"Number"}
               />
              
-            </div>
+            </div> */}
             {errors.balance && (
                 <p className="text-sm text-red-500 ">{errors.balance.message}</p>
               )}
@@ -161,6 +153,7 @@ const AccountForm = ({fetchAccounts}) => {
               className="w-full ">
               Create Account
             </Button>
+            <DialogClose>
             <Button
               type="button"
               variant="outline"
@@ -168,10 +161,11 @@ const AccountForm = ({fetchAccounts}) => {
               className="w-full">
               Cancel
             </Button>
+            </DialogClose>
           </div>
         </form>
-      </PopoverContent>
-    </Popover>
+      </DialogContent>
+    </Dialog>
   );
 };
 

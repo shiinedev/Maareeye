@@ -87,7 +87,16 @@ React.useEffect(() => {
     [filteredData]
   )
 
-
+  {
+    chartLoading && (
+      <div className="flex items-center justify-center gap-3">
+       <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
+       <div className="loader text-2xl ">
+         Loading Data Please wait.....
+       </div>
+     </div>
+    )
+  }
 
   return (
     <Card>
@@ -126,18 +135,6 @@ React.useEffect(() => {
         </div>
       </div>
       <CardContent className="px-2 sm:p-6">
-
-        {
-          chartLoading && (
-            <div className="flex items-center justify-center h-screen gap-3">
-             <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
-             <div className="loader text-2xl ">
-              
-               Loading Data Please wait.....
-             </div>
-           </div>
-          )
-        }
         <ChartContainer
           config={chartConfig}
           className="aspect-auto h-[300px] w-full"

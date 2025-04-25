@@ -4,7 +4,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getAccountsByUserId } from "@/utils/account";
 
-import React, { useEffect, useState } from "react";
 
 const Accounts = () => {
   const { user } = useAuth();
@@ -37,7 +36,8 @@ const Accounts = () => {
 
   return (
     <div className="p-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-     <AccountForm fetchAccounts={fetchAccounts} />
+      
+    <AccountForm fetchAccounts={fetchAccounts} />
 
     
         {accounts?.length > 0 &&

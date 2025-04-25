@@ -1,4 +1,4 @@
-import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Trash2Icon } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import {
   Card,
@@ -7,15 +7,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { updateDefaultAccount } from "@/utils/account";
+import { deleteAccountById, updateDefaultAccount } from "@/utils/account";
 import { toast } from "sonner";
 import { useState } from "react";
+import { Button } from "./ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
 
 
-export function AccountCard({ account,fetchAccounts }) {
+export function AccountCard({ account, fetchAccounts }) {
   const { name, type, balance, id, is_default } = account;
 
-  const [isLoading,setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   const handleToggleDefault = async (id) => {
     if (is_default) {
@@ -34,17 +38,35 @@ export function AccountCard({ account,fetchAccounts }) {
     }
   };
 
+  const handleDelete = async (id)=>{
+    if (is_default) {
+      toast.warning("You need at least one default account.");
+      return;
+    }
+
+    setDeleteLoading(true);
+    try {
+      await deleteAccountById(id);
+      fetchAccounts();
+    } catch (error) {
+      console.error("Failed to Delete account:", error);
+    } finally {
+      setDeleteLoading(false);
+    }
+  }
+
   return (
-    <Card className="hover:shadow-md transition-shadow group relative">
-      <div >
+    <>
+    <Card className="hover:shadow-md transition-shadow">
+      <div>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium capitalize">
             {name}
           </CardTitle>
           <Switch
-          checked={is_default}
-          onCheckedChange={() => handleToggleDefault(id)}
-          disabled={isLoading}
+            checked={is_default}
+            onCheckedChange={() => handleToggleDefault(id)}
+            disabled={isLoading}
           />
         </CardHeader>
         <CardContent>
@@ -54,8 +76,8 @@ export function AccountCard({ account,fetchAccounts }) {
           <p className="text-xs text-muted-foreground">
             {type.charAt(0) + type.slice(1).toLowerCase()} Account
           </p>
-        </CardContent>
-        <CardFooter className="flex justify-between text-sm text-muted-foreground">
+
+          <div  className="flex justify-between mt-2 text-sm text-muted-foreground">
           <div className="flex items-center">
             <ArrowUpRight className="mr-1 h-4 w-4 text-green-500" />
             Income
@@ -64,8 +86,40 @@ export function AccountCard({ account,fetchAccounts }) {
             <ArrowDownRight className="mr-1 h-4 w-4 text-red-500" />
             Expense
           </div>
+          </div>
+        </CardContent>
+        <CardFooter className={"mt-2"}>
+            <Button variant="destructive" className={"w-full cursor-pointer"} onClick={() => setOpenConfirm(true)} >
+            <Trash2Icon /> Delete Account
+            </Button> 
         </CardFooter>
       </div>
     </Card>
+      <AlertDialog open={openConfirm} onOpenChange={setOpenConfirm}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete {account.name} Account?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. The selected Account will be permanently deleted.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel
+            disabled={deleteLoading}
+            onClick={() => setOpenConfirm(false)}
+          >
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            disabled={deleteLoading}
+            className="bg-red-600 text-white hover:bg-red-700"
+            onClick={() => handleDelete(id)}
+          >
+            {deleteLoading ? "Deleting..." : "Delete"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+   </>
   );
 }

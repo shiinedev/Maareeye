@@ -37,7 +37,11 @@ import { useAuth } from "@/context/AuthContext";
 import { categoryColors } from "@/data/categories";
 import { useFetch } from "@/hooks/useFetch";
 import { cn } from "@/lib/utils";
-import { deleteTransactions, getTransactions } from "@/utils/transaction";
+import { getDefaultAccountByUserId } from "@/utils/account";
+import {
+  deleteTransactions,
+  getTransactionsForAccountWithPagination,
+} from "@/utils/transaction";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { format } from "date-fns";
 import {
@@ -64,24 +68,46 @@ const Transactions = () => {
     direction: "desc",
   });
 
-  console.log(selectedIds)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const navigate = useNavigate();
 
   const { user } = useAuth();
+  const {
+    data: defaultAccount,
+    error: defaultAccountError,
+    isLoading: defaultAccountLoading,
+  } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
+
+  const shouldFetch = !!defaultAccount?.id && !!user?.id;
 
   const {
-    data: transactions,
+    data: transactionData,
     isLoading,
     error,
     fetchData,
-  } = useFetch(() => getTransactions(), [user.id]);
+  } = useFetch(
+    shouldFetch
+      ? () =>
+        getTransactionsForAccountWithPagination(defaultAccount?.id, {
+            limit: itemsPerPage,
+            offset: (currentPage - 1) * itemsPerPage,
+          })
+      : null,
+    [user.id, defaultAccount?.id, currentPage, itemsPerPage]
+  );
+
+  const transactions = transactionData?.data || [];
+  const totalCount = transactionData?.count || 0;
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
+
 
   useEffect(() => {
     if (user) {
       fetchData();
     }
-  }, [user, fetchData]);
+  }, [user.id, defaultAccount?.id, fetchData]);
 
   const filterAndSortTransactions = useMemo(() => {
     let result = transactions || [];
@@ -164,9 +190,8 @@ const Transactions = () => {
     }
   };
 
-
-  const handleDelete = async(id) =>{
-    if(!id) return;
+  const handleDelete = async (id) => {
+    if (!id) return;
     setDeleteLoading(true);
     try {
       if (
@@ -187,7 +212,7 @@ const Transactions = () => {
       setDeleteLoading(false);
       fetchData();
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -209,6 +234,15 @@ const Transactions = () => {
 
   return (
     <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Transactions</h1>
+        <Button
+          variant={"purple"}
+          onClick={() => navigate("/dashboard/addTransaction")}>
+          Add New Transaction
+        </Button>
+      </div>
+
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -276,7 +310,6 @@ const Transactions = () => {
       </div>
 
       <Table className={"border  rounded-md"}>
-        <TableCaption>A list of your Transactions.</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead className="w-[50px]">
@@ -455,6 +488,43 @@ const Transactions = () => {
           )}
         </TableBody>
       </Table>
+      <div className="flex items-center gap-2">
+        <label htmlFor="perPage" className="text-sm">
+          Items per page:
+        </label>
+        <Select
+          value={String(itemsPerPage)}
+          onValueChange={(val) => {
+            setItemsPerPage(Number(val));
+            setCurrentPage(1); // Reset to first page
+          }}>
+          <SelectTrigger className="w-[80px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="5">5</SelectItem>
+            <SelectItem value="10">10</SelectItem>
+            <SelectItem value="20">20</SelectItem>
+            <SelectItem value="50">50</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex items-center justify-between mt-4">
+        <Button
+          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+          disabled={currentPage === 1}>
+          Previous
+        </Button>
+        <div className="text-sm">
+          Page {currentPage} of {totalPages || 1}
+        </div>
+        <Button
+          onClick={() => setCurrentPage((p) => (p < totalPages ? p + 1 : p))}
+          disabled={currentPage >= totalPages}>
+          Next
+        </Button>
+      </div>
     </div>
   );
 };

@@ -1,17 +1,15 @@
 import React from 'react'
-import data  from '../../data/data.json'
 import { SectionCards } from '@/components/ui/section-cards'
 import { BarChar } from '@/components/ui/BarChart'
-import { DataTable } from '@/components/ui/data-table'
 import { useAuth } from '@/context/AuthContext'
 import { useFetch } from '@/hooks/useFetch'
 import { getDefaultAccountByUserId } from '@/utils/account'
 import { getTransactionsForAccount } from '@/utils/transaction'
 import { Spinner } from '@/components/ui/spinner'
+import RecentTransactions from './RecentTransactions'
 const Overview = () => {
 
   const {user} = useAuth();
-
   const {
     data: defaultAccount,
     error: defaultAccountError,
@@ -28,6 +26,15 @@ const Overview = () => {
 
  // console.log(accountTransactions)
 
+ if (defaultAccountError || transactionError) {
+  return (
+        <div className="flex items-center justify-center h-screen gap-3">
+          <div className="loader text-2xl text-red-500 ">
+            Error fetching data pleas try again
+          </div>
+        </div>
+      );
+ }
   if (defaultAccountLoading || transactionLoading) {
    return (
          <div className="flex items-center justify-center h-screen gap-3">
@@ -39,6 +46,7 @@ const Overview = () => {
          </div>
        );
   }
+  
   return (
      <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
@@ -47,7 +55,9 @@ const Overview = () => {
               <div className="px-4 lg:px-6">
                 <BarChar  transactions={accountTransactions} />
               </div>
-              <DataTable data={data} />
+              <div>
+                <RecentTransactions />
+              </div>
             </div>
           </div>
         </div>
