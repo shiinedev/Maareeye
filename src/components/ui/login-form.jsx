@@ -15,7 +15,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { signIn } from "@/utils/auth"
 import { signinSchema } from "@/utils/schema"
-import { toast } from "sonner"
+import toast from "react-hot-toast"
 
 export function LoginForm({
   className,

@@ -18,6 +18,7 @@ import { createAccount } from "@/utils/account";
 import { Card, CardContent } from "./ui/card";
 import { Plus } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
+import toast from "react-hot-toast";
 
 const AccountForm = ({fetchAccounts}) => {
   const { user } = useAuth();
@@ -52,12 +53,14 @@ const AccountForm = ({fetchAccounts}) => {
         
         const account = await createAccount(formData);
          console.log("account created successfully",account );
+         toast.success("Account created successfully")
          fetchAccounts();
          reset();
          setOpen(false);
          }
        } catch (error) {
          console.log("error creating account", error);
+         toast.error("Error creating account");
        }finally {
          setIsLoading(false);
        }

@@ -1,6 +1,8 @@
 import { getUserProfile, onAuthChange, singOut } from '@/utils/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { toast } from 'sonner';
+import toast from 'react-hot-toast';
+import { Navigate } from 'react-router';
+
 
 
 const AuthContext = createContext();
@@ -37,9 +39,11 @@ export const AuthProvider = ({children}) => {
     const logout = async()=>{
         try {
             await singOut();
-            toast.warning("user logged out")
+            <Navigate to="/login" replace={true} />
+            toast.success("user logged out");
         } catch (error) {
             console.log("error user logout ")
+            toast.error("error user logout")
         }
         
     }
