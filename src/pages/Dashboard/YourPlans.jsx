@@ -133,7 +133,7 @@ const YourPlans = () => {
               </div>
 
               <div className="font-bold">Description:</div>
-              <div>{selectedPlan.description || "No description"}</div>
+              <div className="truncate">{selectedPlan.description || "No description"}</div>
 
               <div className="font-bold">Date:</div>
               <div>{format(new Date(selectedPlan.date), "MMM dd, yyyy")}</div>

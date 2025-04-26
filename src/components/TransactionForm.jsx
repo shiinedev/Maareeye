@@ -28,6 +28,8 @@ import { format } from "date-fns";
 import { useFetch } from "@/hooks/useFetch";
 import { getAccountsByUserId } from "@/utils/account";
 import { useNavigate, useParams } from "react-router";
+import { ReceiptScanner } from "./ReceiptScanner";
+import { toast } from "sonner";
 
 const TransactionForm = ({ className, categories, ...props }) => {
   const { user } = useAuth();
@@ -82,6 +84,20 @@ const TransactionForm = ({ className, categories, ...props }) => {
     }
   }, [updateData, reset, isEdit]);
 
+  const handleScanComplete = (scannedData) => {
+    if (scannedData) {
+      setValue("amount", scannedData.amount.toString());
+      setValue("date", new Date(scannedData.date));
+      if (scannedData.description) {
+        setValue("description", scannedData.description);
+      }
+      if (scannedData.category) {
+        setValue("category", scannedData.category);
+      }
+      toast.success("Receipt scanned successfully");
+    }
+  };
+
   const onSubmit = async (data) => {
     const formData = {
       user_id: user.id,
@@ -128,6 +144,8 @@ const TransactionForm = ({ className, categories, ...props }) => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Receipt Scanner */}
+            {!isEdit && <ReceiptScanner onScanComplete={handleScanComplete}/>}
             {/* Type */}
             <div className="space-y-2">
               <Label className="text-sm font-medium">Type</Label>
