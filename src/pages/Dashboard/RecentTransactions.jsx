@@ -97,7 +97,9 @@ const RecentTransactions = () => {
                 <TableCell>
                   {format(new Date(transaction.date), "PP")}
                 </TableCell>
-                <TableCell>{transaction.description}</TableCell>
+                <TableCell>{transaction.description.length > 10
+                    ? `${transaction.description.substring(0, 30)}...`
+                    : transaction.description}</TableCell>
                 <TableCell className={"capitalize"}>
                   <span
                     style={{

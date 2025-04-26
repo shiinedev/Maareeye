@@ -90,7 +90,7 @@ const Transactions = () => {
   } = useFetch(
     shouldFetch
       ? () =>
-        getTransactionsForAccountWithPagination(defaultAccount?.id, {
+          getTransactionsForAccountWithPagination(defaultAccount?.id, {
             limit: itemsPerPage,
             offset: (currentPage - 1) * itemsPerPage,
           })
@@ -101,7 +101,6 @@ const Transactions = () => {
   const transactions = transactionData?.data || [];
   const totalCount = transactionData?.count || 0;
   const totalPages = Math.ceil(totalCount / itemsPerPage);
-
 
   useEffect(() => {
     if (user) {
@@ -393,7 +392,11 @@ const Transactions = () => {
                 <TableCell>
                   {format(new Date(transaction.date), "PP")}
                 </TableCell>
-                <TableCell>{transaction.description}</TableCell>
+                <TableCell>
+                  {transaction.description.length > 10
+                    ? `${transaction.description.substring(0, 30)}...`
+                    : transaction.description}
+                </TableCell>
                 <TableCell className={"capitalize"}>
                   <span
                     style={{
