@@ -266,54 +266,7 @@ export const deleteTransactions = async (ids) => {
 
 
 
-// //report Data
-
-// export const generateReport = (transactions = []) => {
-//   const income = transactions
-//     .filter((t) => t.type === "income")
-//     .reduce((acc, t) => acc + t.amount, 0);
-//   const expense = transactions
-//     .filter((t) => t.type === "expense")
-//     .reduce((acc, t) => acc + t.amount, 0);
-
-//   // 🔍 Group expenses by category
-//   const expenseCategories = transactions
-//     .filter((t) => t.type === "expense")
-//     .reduce((acc, t) => {
-//       acc[t.category] = (acc[t.category] || 0) + t.amount;
-//       return acc;
-//     }, {});
-
-//   // 🥇 Find top category by expense
-//   let topCategory = null;
-//   let maxSpent = 0;
-//   for (const [category, amount] of Object.entries(expenseCategories)) {
-//     if (amount > maxSpent) {
-//       maxSpent = amount;
-//       topCategory = category;
-//     }
-//   }
-
-//   const monthlyTrends = transactions.reduce((acc, t) => {
-//     const month = new Date(t.date).getMonth(); // Group by month
-//     acc[month] = (acc[month] || 0) + t.amount;
-//     return acc;
-//   }, {});
-
-//   return {
-//     income,
-//     expense,
-//     topCategory: topCategory
-//       ? { category: topCategory, amount: maxSpent }
-//       : null,
-//     monthlyTrends,
-//   };
-// };
-
-
 //summary of transactions by date
-
-
 
 export const getSummaryData = async (transactions = []) => {
 
@@ -355,7 +308,7 @@ const totalExpense = transactions
 };
 
 
-
+// Function to convert a file to Base64
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -365,6 +318,8 @@ function fileToBase64(file) {
   });
 }
 
+
+//scan receipt
 export async function scanReceipt(file) {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
