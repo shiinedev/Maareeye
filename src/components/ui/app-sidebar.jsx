@@ -70,9 +70,8 @@ export function AppSidebar({
   return (
     <Sidebar collapsible="offcanvas" {...props} className={"border-r"}>
       <SidebarHeader>
-              <Link to="/" className="flex gap-2 items-center">
-                <CircleDollarSign  className="!size-5" />
-                <span className="text-base font-semibold gradient-title">Maareye</span>
+              <Link to="/">
+                <span className="text-xl font-bold gradient-title uppercase">Maareye</span>
               </Link>
       </SidebarHeader>
       <DropdownMenuSeparator />
