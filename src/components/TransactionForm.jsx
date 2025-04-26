@@ -29,7 +29,7 @@ import { useFetch } from "@/hooks/useFetch";
 import { getAccountsByUserId } from "@/utils/account";
 import { useNavigate, useParams } from "react-router";
 import { ReceiptScanner } from "./ReceiptScanner";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 const TransactionForm = ({ className, categories, ...props }) => {
   const { user } = useAuth();
@@ -111,17 +111,19 @@ const TransactionForm = ({ className, categories, ...props }) => {
       if (isEdit) {
         await updateTransaction(id, formData);
         console.log("transaction updated successfully", formData);
+        toast.success("Transaction updated successfully");
         reset();
       } else {
         await createTransaction(formData);
 
         console.log("transaction created successfully", formData);
+        toast.success("Transaction created successfully");
         reset();
       }
       navigate("/dashboard/transactionList");
     } catch (error) {
       console.error("Transaction error:", error);
-      alert(error.message || "Something went wrong");
+      toast.error("Something went wrong please try again");
     } finally {
       setIsLoading(false);
     }

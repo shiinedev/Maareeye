@@ -12,11 +12,11 @@ const HeroSection = () => {
       <main className="flex-1 flex flex-col pt-20 items-center justify-center text-center px-4 relative">
         <div className="max-w-3xl mx-auto mb-24 z-10">
           <h1 className="text-5xl md:text-6xl font-bold mb-4">
-            <span className="gradient-title ">
+            <span className="gradient-title animate-gradient  ">
               Manage Your Finance 
             </span>
             <br />
-            <span className="">With Intelligence .</span>
+            <span className="gradient-title animate-gradient  ">With Intelligence .</span>
           </h1>
 
           <p className=" max-w-2xl mx-auto mb-10 capitalize text-muted-foreground">

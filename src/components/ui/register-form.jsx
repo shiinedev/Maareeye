@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema } from "@/utils/schema"
 import { signUp } from "@/utils/auth"
 import { useState } from "react"
+import toast from "react-hot-toast"
 
 
 export function RegisterForm({
@@ -31,18 +32,22 @@ export function RegisterForm({
     resolver: zodResolver(signupSchema)
   })
 
-  const onSubmit =  (data) =>{
+  const onSubmit = async(data) =>{
     console.log(data)
     try {
 
         setIsLoading(true);      
-       signUp(data.email,data.password,data.username);
+      await signUp(data.email,data.password,data.username);
+      toast.success("Account created successfully")
+
        setSuccess(true);
        setTimeout(()=>{
         navigate("/login");
+       
       },3000)
     } catch (error) {
       console.log("error",error)
+      toast.error("Error creating account");
     }
 
   }

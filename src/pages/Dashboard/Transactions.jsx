@@ -1,4 +1,14 @@
 import { SubscriptionOptions } from "@/components/SubscriptionOptions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -55,14 +65,15 @@ import {
 } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
-import { toast } from "sonner";
-
+import { toast } from "react-hot-toast";
 const Transactions = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [subscriptionFilter, setSubscriptionFilter] = useState("");
   const [selectedIds, setSelectedIds] = useState([]);
-  const [deleLoading, setDeleteLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+
   const [sortConfig, setSortConfig] = useState({
     field: "date",
     direction: "desc",
@@ -169,12 +180,6 @@ const Transactions = () => {
     if (selectedIds.length === 0) return;
     setDeleteLoading(true);
     try {
-      if (
-        !window.confirm(
-          `Are you sure you want to delete ${selectedIds.length} transactions?`
-        )
-      )
-        return;
       const deleted = await deleteTransactions(selectedIds);
       console.log(deleted);
       toast.success("Transaction deleted successfully");
@@ -183,35 +188,36 @@ const Transactions = () => {
       fetchData();
     } catch (error) {
       console.log("error deleting transaction", error);
+      toast.error("Failed to delete transactions. Please try again.");
     } finally {
       setDeleteLoading(false);
       fetchData();
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!id) return;
-    setDeleteLoading(true);
-    try {
-      if (
-        !window.confirm(
-          `Are you sure you want to delete ${selectedIds.length} transactions?`
-        )
-      )
-        return;
-      const deleted = await deleteTransactions(id);
-      console.log(deleted);
-      toast.success("Transaction deleted successfully");
-      setSelectedIds([]);
-      setDeleteLoading(false);
-      fetchData();
-    } catch (error) {
-      console.log("error deleting transaction", error);
-    } finally {
-      setDeleteLoading(false);
-      fetchData();
-    }
-  };
+  // const handleDelete = async (id) => {
+  //   if (!id) return;
+  //   setDeleteLoading(true);
+  //   try {
+  //     if (
+  //       !window.confirm(
+  //         `Are you sure you want to delete ${selectedIds.length} transactions?`
+  //       )
+  //     )
+  //       return;
+  //     const deleted = await deleteTransactions(id);
+  //     console.log(deleted);
+  //     toast.success("Transaction deleted successfully");
+  //     setSelectedIds([]);
+  //     setDeleteLoading(false);
+  //     fetchData();
+  //   } catch (error) {
+  //     console.log("error deleting transaction", error);
+  //   } finally {
+  //     setDeleteLoading(false);
+  //     fetchData();
+  //   }
+  // };
 
   if (isLoading) {
     return (
@@ -289,7 +295,8 @@ const Transactions = () => {
               <Button
                 variant="destructive"
                 size="sm"
-                onClick={handleBulkDelete}>
+                onClick={() => setOpenConfirm(true)}
+                disabled={deleteLoading}>
                 <Trash className="h-4 w-4 mr-2" />
                 Delete Selected({selectedIds.length})
               </Button>
@@ -472,7 +479,7 @@ const Transactions = () => {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-destructive"
-                        onClick={() => handleDelete([transaction.id])}>
+                        onClick={() => setSelectedIds([transaction.id])}>
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -528,6 +535,32 @@ const Transactions = () => {
           Next
         </Button>
       </div>
+      <AlertDialog open={openConfirm} onOpenChange={setOpenConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Delete {selectedIds.length} Account?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. The selected transactions will be
+              permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              disabled={deleteLoading}
+              onClick={() => setOpenConfirm(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleteLoading}
+              className="bg-red-600 text-white hover:bg-red-700"
+              onClick={() => handleBulkDelete()}>
+              {deleteLoading ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

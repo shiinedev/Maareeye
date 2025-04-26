@@ -25,6 +25,7 @@ import { getAccountsByUserId } from "@/utils/account";
 import { useNavigate, useParams } from "react-router";
 import { Switch } from "./ui/switch";
 import { createPlan, getPlanById, updatePlan } from "@/utils/plans";
+import toast from "react-hot-toast";
 
 const PlanForm = ({ categories }) => {
   const { user } = useAuth();
@@ -100,17 +101,18 @@ const PlanForm = ({ categories }) => {
       if (isEdit) {
         await updatePlan(id, formData);
         console.log("Plan updated successfully", formData);
+        toast.success("Plan updated successfully");
         reset();
       } else {
         await createPlan(formData);
-
         console.log("Plan created successfully", formData);
+        toast.success("Plan created successfully");
         reset();
       }
       navigate("/dashboard/yourPlans");
     } catch (error) {
       console.error("Plan error:", error);
-      alert(error.message || "Something went wrong");
+      toast.error("Something went wrong please try again!");
     } finally {
       setIsLoading(false);
     }

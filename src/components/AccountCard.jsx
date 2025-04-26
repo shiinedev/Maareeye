@@ -8,10 +8,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { deleteAccountById, updateDefaultAccount } from "@/utils/account";
-import { toast } from "sonner";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
+import toast from "react-hot-toast";
 
 
 export function AccountCard({ account, fetchAccounts }) {
@@ -40,16 +40,18 @@ export function AccountCard({ account, fetchAccounts }) {
 
   const handleDelete = async (id)=>{
     if (is_default) {
-      toast.warning("You need at least one default account.");
+      toast.error("You need at least one default account.");
       return;
     }
 
     setDeleteLoading(true);
     try {
       await deleteAccountById(id);
+      toast.success("Account deleted successfully");
       fetchAccounts();
     } catch (error) {
       console.error("Failed to Delete account:", error);
+      toast.error("Failed to delete account. Please try again.");
     } finally {
       setDeleteLoading(false);
     }

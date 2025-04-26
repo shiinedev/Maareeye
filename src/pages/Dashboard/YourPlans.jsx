@@ -147,13 +147,13 @@ const YourPlans = () => {
               </div>
             </DialogDescription>
             <div className="flex justify-end space-x-2 mt-4">
-              <Button variant={"purple"} size={"xl"}  onClick={() =>
+              {/* <Button variant={"purple"} size={"xl"}  onClick={() =>
                           navigate(
                             `/dashboard/makePlan/${selectedPlan.id}`
                           )
                         }>
                 Edit
-              </Button>
+              </Button> */}
               <DialogClose asChild>
                 <Button
                   className={"cursor-pointer"}
