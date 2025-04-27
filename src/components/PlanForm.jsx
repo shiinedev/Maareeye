@@ -162,6 +162,7 @@ const PlanForm = ({ categories }) => {
                 <Input
                   type="number"
                   step="0.01"
+                  min="1"
                   placeholder="0.00"
                   {...register("amount")}
                 />
