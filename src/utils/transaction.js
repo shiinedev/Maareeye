@@ -3,7 +3,7 @@ import supabase from "./supabase";
 import { startOfDay, format } from "date-fns";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import buffer from "buffer";
+
 
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GOOGLE_API_KEY)

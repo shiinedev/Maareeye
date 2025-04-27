@@ -84,11 +84,12 @@ const PlanForm = ({ categories }) => {
   }, [updateData, reset, isEdit]);
 
   const onSubmit = async (data) => {
+    const formattedDate = format(data.date, "yyyy-MM-dd");
     const formData = {
       user_id: user.id,
       ...data,
       amount: parseFloat(data.amount),
-      date: new Date(data.date).toISOString(),
+      date: formattedDate,
       is_subscription: data.is_subscription,
         ...(data.subscription_time && {
         subscription_time: data.subscription_time,
@@ -112,7 +113,7 @@ const PlanForm = ({ categories }) => {
       navigate("/dashboard/yourPlans");
     } catch (error) {
       console.error("Plan error:", error);
-      toast.error("Something went wrong please try again!");
+      toast.error( error.message || "Something went wrong please try again!");
     } finally {
       setIsLoading(false);
     }
@@ -161,6 +162,7 @@ const PlanForm = ({ categories }) => {
                 <Input
                   type="number"
                   step="0.01"
+                  min="1"
                   placeholder="0.00"
                   {...register("amount")}
                 />
@@ -248,8 +250,13 @@ const PlanForm = ({ categories }) => {
                     selected={date}
                     onSelect={(date) => setValue("date", date)}
                     disabled={(date) =>
-                      date < new Date() || date < new Date("1900-01-01")
+                    {
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      return date < today|| date < new Date("1900-01-01")
                     }
+                    }
+                     
                     initialFocus
                   />
                 </PopoverContent>

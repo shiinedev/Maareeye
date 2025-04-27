@@ -138,13 +138,33 @@ const YourPlans = () => {
               <div className="font-bold">Date:</div>
               <div>{format(new Date(selectedPlan.date), "MMM dd, yyyy")}</div>
 
+              {
+                selectedPlan.is_subscription &&(
+                  <div className="flex flex-col space-y-2">
+                    <div className="font-bold">Subscription:</div>
+                    <div className="text-base text-muted-foreground">{selectedPlan.subscription_time}</div>
+                    <div className="font-bold">Next Date:</div>
+                    <div className="text-base text-muted-foreground">{selectedPlan.next_time}</div>
+                  </div>
+                )
+              }
+              
+
               <div className="font-bold">Status:</div>
               <div
                 className={`${
                   statusColor[selectedPlan.status]
-                } py-2 rounded text-center capitalize`}>
+                } py-2 rounded text-base font-medium text-center capitalize`}>
                 {selectedPlan.status}
               </div>
+              {
+                selectedPlan.reason &&(
+                  <div className="flex flex-col space-y-2">
+                   <div className="font-bold">Reason:</div>
+                   <div className="text-base text-red-500">{selectedPlan.reason}</div>
+                  </div>
+                )
+              }
             </DialogDescription>
             <div className="flex justify-end space-x-2 mt-4">
               {/* <Button variant={"purple"} size={"xl"}  onClick={() =>

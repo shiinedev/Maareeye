@@ -99,11 +99,14 @@ const TransactionForm = ({ className, categories, ...props }) => {
   };
 
   const onSubmit = async (data) => {
+
+    const formattedDate = format(data.date, "yyyy-MM-dd");
+
     const formData = {
       user_id: user.id,
       ...data,
       amount: parseFloat(data.amount),
-      date: new Date(data.date).toISOString(),
+      date: formattedDate,
     };
     console.log(formData);
     setIsLoading(true);
@@ -123,7 +126,7 @@ const TransactionForm = ({ className, categories, ...props }) => {
       navigate("/dashboard/transactionList");
     } catch (error) {
       console.error("Transaction error:", error);
-      toast.error("Something went wrong please try again");
+      toast.error( error.message || "Something went wrong please try again");
     } finally {
       setIsLoading(false);
     }

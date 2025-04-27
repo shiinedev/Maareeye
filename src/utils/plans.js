@@ -1,11 +1,17 @@
 import supabase from "./supabase";
 
 export const createPlan = async (plan) => {
-    console.log(plan);
     
+    const newPlan = {
+      ...plan,
+      next_time: plan.is_subscription && plan.subscription_time
+      ? calculateNextSubscriptionDate(plan.date, plan.subscription_time)
+      : null
+    }
+    console.log("new plan", newPlan)
     const { data, error } = await supabase
       .from("plans")
-      .insert([plan])
+      .insert([newPlan])
       .select()
       .single();
   
