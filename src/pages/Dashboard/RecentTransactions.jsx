@@ -23,8 +23,8 @@ import { categoryColors } from "@/data/categories";
 import { useFetch } from "@/hooks/useFetch";
 
 import { cn } from "@/lib/utils";
-import { getDefaultAccountByUserId } from "@/utils/account";
-import { getTransactionsForAccountWithPagination } from "@/utils/transaction";
+import { getDefaultAccountByUserId } from "@/lib/account";
+import { getTransactionsForAccountWithPagination } from "@/lib/transaction";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { HandCoins } from "lucide-react";

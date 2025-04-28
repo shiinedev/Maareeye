@@ -47,11 +47,11 @@ import { useAuth } from "@/context/AuthContext";
 import { categoryColors } from "@/data/categories";
 import { useFetch } from "@/hooks/useFetch";
 import { cn } from "@/lib/utils";
-import { getDefaultAccountByUserId } from "@/utils/account";
+import { getDefaultAccountByUserId } from "@/lib/account";
 import {
   deleteTransactions,
   getTransactionsForAccountWithPagination,
-} from "@/utils/transaction";
+} from "@/lib/transaction";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { format } from "date-fns";
 import {

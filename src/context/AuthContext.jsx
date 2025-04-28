@@ -1,4 +1,4 @@
-import { getUserProfile, onAuthChange, singOut } from '@/utils/auth';
+import { getUserProfile, onAuthChange, singOut } from '@/lib/auth';
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { Navigate } from 'react-router';

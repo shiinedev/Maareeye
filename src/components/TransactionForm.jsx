@@ -16,17 +16,17 @@ import { Calendar } from "./ui/calendar";
 import { Textarea } from "./ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { transactionSchema } from "@/utils/schema";
+import { transactionSchema } from "@/lib/schema";
 import {
   createTransaction,
   getTransactionById,
   updateTransaction,
-} from "@/utils/transaction";
+} from "@/lib/transaction";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useFetch } from "@/hooks/useFetch";
-import { getAccountsByUserId } from "@/utils/account";
+import { getAccountsByUserId } from "@/lib/account";
 import { useNavigate, useParams } from "react-router";
 import { ReceiptScanner } from "./ReceiptScanner";
 import { toast } from "react-hot-toast";

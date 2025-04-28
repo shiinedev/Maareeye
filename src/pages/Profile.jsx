@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import supabase from "@/utils/supabase";
+import supabase from "@/lib/supabase";
 import Navbar from "@/components/Navbar";
 import toast from "react-hot-toast";
 

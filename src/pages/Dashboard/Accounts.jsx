@@ -2,7 +2,7 @@ import { AccountCard } from "@/components/AccountCard";
 import AccountForm from "@/components/AccountForm";
 import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
-import { getAccountsByUserId } from "@/utils/account";
+import { getAccountsByUserId } from "@/lib/account";
 
 
 const Accounts = () => {

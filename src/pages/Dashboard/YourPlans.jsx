@@ -13,10 +13,10 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { useFetch } from "@/hooks/useFetch";
-import { getPlansForAccount } from "@/utils/plans";
+import { getPlansForAccount } from "@/lib/plans";
 import { useAuth } from "@/context/AuthContext";
 import { Spinner } from "@/components/ui/spinner";
-import { getDefaultAccountByUserId } from "@/utils/account";
+import { getDefaultAccountByUserId } from "@/lib/account";
 import { useNavigate } from "react-router";
 
 const statusColor = {
