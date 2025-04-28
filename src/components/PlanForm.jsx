@@ -16,15 +16,15 @@ import { Calendar } from "./ui/calendar";
 import { Textarea } from "./ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { planSchema } from "@/utils/schema";
+import { planSchema } from "@/lib/schema";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useFetch } from "@/hooks/useFetch";
-import { getAccountsByUserId } from "@/utils/account";
+import { getAccountsByUserId } from "@/lib/account";
 import { useNavigate, useParams } from "react-router";
 import { Switch } from "./ui/switch";
-import { createPlan, getPlanById, updatePlan } from "@/utils/plans";
+import { createPlan, getPlanById, updatePlan } from "@/lib/plans";
 import toast from "react-hot-toast";
 
 const PlanForm = ({ categories }) => {

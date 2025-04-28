@@ -10,11 +10,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { accountSchema } from "@/utils/schema";
+import { accountSchema } from "@/lib/schema";
 import { useAuth } from "@/context/AuthContext";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createAccount } from "@/utils/account";
+import { createAccount } from "@/lib/account";
 import { Card, CardContent } from "./ui/card";
 import { Plus } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";

@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { Camera, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { scanReceipt } from "@/utils/transaction";
+import { scanReceipt } from "@/lib/transaction";
 import toast from "react-hot-toast";
 
 

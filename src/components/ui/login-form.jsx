@@ -13,8 +13,8 @@ import { Link, useNavigate } from "react-router"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { signIn } from "@/utils/auth"
-import { signinSchema } from "@/utils/schema"
+import { signIn } from "@/lib/auth"
+import { signinSchema } from "@/lib/schema"
 import toast from "react-hot-toast"
 
 export function LoginForm({

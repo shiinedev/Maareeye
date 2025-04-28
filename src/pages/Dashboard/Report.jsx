@@ -17,15 +17,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils.js";
 import { SummaryCards } from "@/components/Report/summaryCard";
 import { ReportTransactions } from "@/components/Report/ReportTransactions";
 import { TopExpensesCategory } from "@/components/Report/TopExpensesCategory";
 import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
-import { getAccountsByUserId, getDefaultAccountByUserId } from "@/utils/account";
+import { getAccountsByUserId, getDefaultAccountByUserId } from "@/lib/account.js";
 import { defaultCategories } from "../../data/categories.js";
-import { getTransactionsForAccount } from "@/utils/transaction.js";
+import { getTransactionsForAccount } from "@/lib/transaction.js";
 import { Spinner } from "@/components/ui/spinner.jsx";
 
 export const types = [
