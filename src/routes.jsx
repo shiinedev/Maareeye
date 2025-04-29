@@ -14,12 +14,14 @@ import Accounts from "./pages/Dashboard/Accounts";
 import MakePlan from "./pages/Dashboard/MakePlan";
 import YourPlans from "./pages/Dashboard/YourPlans";
 import Report from "./pages/Dashboard/Report";
+import NotFoundPage from "./components/NotFoundPage";
 
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement:<NotFoundPage />,
     children: [
       {
         index:true,
