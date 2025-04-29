@@ -1,0 +1,19 @@
+name: Run Plan Executor Every 10 Minutes
+
+on:
+  schedule:
+    - cron: "*/10 * * * *" # Runs every 10 minutes
+  workflow_dispatch: # Optional: allows manual runs
+
+jobs:
+  run-plan-executer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Supabase plan-executer Function
+        run: |
+          curl -L -X POST 'https://mfrhwrbumjylyhtwrscl.supabase.co/functions/v1/plan-Executer' \
+          -H "Authorization: Bearer ${{ secrets.SERVICE_ROLE_KEY }}" \
+          -H "Content-Type: application/json"
+
+ 
