@@ -1,0 +1,22 @@
+[
+    {
+        "question": "What is Maareeye?",
+        "answer": "Maareeye is a modern finance app that helps you easily track your income and expenses, create budgets, and receive monthly financial reports."
+    },
+    {
+        "question": "How do I get started with Maareeye?",
+        "answer": "Simply sign up and start adding your income and expenses. You’ll immediately get smart insights and organized financial data."
+    },
+    {
+        "question": "Is my data secure?",
+        "answer": "Yes, Maareeye uses Supabase with encrypted authentication and secure data handling to ensure your information stays safe."
+    },
+    {
+        "question": "Can I use Maareeye on my phone?",
+        "answer": "Yes! Maareeye is fully responsive and works smoothly across mobile, tablet, and desktop devices."
+    },
+    {
+        "question": "Do I need financial knowledge to use Maareeye?",
+        "answer": "Not at all. Maareeye is designed for everyone, regardless of their finance background. It’s intuitive and beginner-friendly."
+    }
+]
