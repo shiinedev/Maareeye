@@ -12,15 +12,16 @@ const HeroSection = () => {
       <main className="flex-1 flex flex-col pt-20 items-center justify-center text-center px-4 relative">
         <div className="max-w-3xl mx-auto mb-24 z-10">
           <h1 className="text-5xl md:text-6xl font-bold mb-4">
-            <span className="gradient-title animate-gradient  ">
+            <span className="gradient-title">
               Manage Your Finance 
             </span>
             <br />
-            <span className="gradient-title animate-gradient  ">With Intelligence .</span>
+            <span >With Intelligence .</span>
           </h1>
 
           <p className=" max-w-2xl mx-auto mb-10 capitalize text-muted-foreground">
-          Maareeye helps you track, save, and spend smarter—without the stress..
+          An AI-powered financial management platform that helps you track,
+          analyze, and optimize your spending with real-time insights.
           </p>
 
           <div className="flex flex-wrap justify-center gap-4">

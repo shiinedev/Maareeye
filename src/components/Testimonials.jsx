@@ -6,7 +6,7 @@ export default function Testimonials() {
     <div className=" pb-20 py-25 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4 gradient-title capitalize animate-gradient ">What Our User say</h2>
+          <h2 className="text-4xl font-bold mb-4 gradient-title capitalize ">What Our User say</h2>
           <p className=" max-w-2xl mx-auto text-muted-foreground capitalize">
           Real People feedback from real peaple using maareeye to master their money.
           </p>
