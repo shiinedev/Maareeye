@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,11 +13,13 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { useFetch } from "@/hooks/useFetch";
-import { getPlansForAccount } from "@/lib/plans";
+import { deletePlan, getPlansForAccount } from "@/lib/plans";
 import { useAuth } from "@/context/AuthContext";
 import { Spinner } from "@/components/ui/spinner";
 import { getDefaultAccountByUserId } from "@/lib/account";
 import { useNavigate } from "react-router";
+import toast from "react-hot-toast";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const statusColor = {
   pending: "bg-yellow-200 text-yellow-800",
@@ -28,6 +30,8 @@ const statusColor = {
 const YourPlans = () => {
 
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const[deleteLoading,setDeleteLoading] = useState(false);
+  const [openConfirm,setOpenConfirm] = useState(false);
   const {user} = useAuth();
 
   const navigate = useNavigate();
@@ -43,7 +47,15 @@ const YourPlans = () => {
     data,
     isLoading:plansLoading,
     error:plansError,
+    fetchData
   } = useFetch( shouldFetch ? () => getPlansForAccount(defaultAccount?.id):null , [user?.id,defaultAccount?.id]);
+
+
+   useEffect(() => {
+      if (defaultAccount?.id) {
+        fetchData();
+      }
+    }, [user.id, defaultAccount?.id, fetchData]);
 
   const plans = data ?? [];
   console.log(plans)
@@ -63,7 +75,26 @@ const YourPlans = () => {
   const failedPlans = plans.filter((plan) => plan.status === "failed");
 
 
-   if (plansLoading ) {
+
+   const handleDelete = async (id) => {
+    if (!id) return;
+    setDeleteLoading(true);
+    try {
+      const deleted = await deletePlan(id);
+      console.log(deleted);
+      toast.success("plan deleted successfully");
+      setSelectedPlan(null)
+      fetchData(); 
+    } catch (error) {
+      console.log("error deleting plan", error);
+    } finally {
+      setDeleteLoading(false);
+      fetchData();
+    }
+  };
+
+
+   if (plansLoading) {
       return (
         <div className="flex items-center justify-center h-screen gap-3">
           <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
@@ -144,7 +175,7 @@ const YourPlans = () => {
                     <div className="font-bold">Subscription:</div>
                     <div className="text-base text-muted-foreground">{selectedPlan.subscription_time}</div>
                     <div className="font-bold">Next Date:</div>
-                    <div className="text-base text-muted-foreground">{selectedPlan.next_time}</div>
+                    <div className="text-base text-muted-foreground">{format(new Date(selectedPlan.next_time),"MMM dd, yyyy")}</div>
                   </div>
                 )
               }
@@ -167,26 +198,53 @@ const YourPlans = () => {
               }
             </DialogDescription>
             <div className="flex justify-end space-x-2 mt-4">
-              {/* <Button variant={"purple"} size={"xl"}  onClick={() =>
-                          navigate(
-                            `/dashboard/makePlan/${selectedPlan.id}`
-                          )
-                        }>
-                Edit
-              </Button> */}
-              <DialogClose asChild>
+            <DialogClose asChild>
+                
                 <Button
+                 disabled={deleteLoading}
                   className={"cursor-pointer"}
-                  variant={"destructive"}
+                  variant={"outline"}
                   size={"xl"}>
                   Close
                 </Button>
               </DialogClose>
+              <Button variant={"destructive"} size={"xl"} 
+               onClick={() => setOpenConfirm(true)}
+               disabled={deleteLoading}
+               >
+                {deleteLoading ? "Deleting..." : "Delete"}
+              </Button>
             </div>
           </DialogContent>
         </Dialog>
       )}
     </Tabs>
+    <AlertDialog open={openConfirm} onOpenChange={setOpenConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Delete plan?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. The selected transactions will be
+              permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              disabled={deleteLoading}
+              onClick={() => setOpenConfirm(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleteLoading}
+              className="bg-red-600 text-white hover:bg-red-700"
+              onClick={() => handleDelete(selectedPlan.id)}>
+              {deleteLoading ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
@@ -195,7 +253,7 @@ export default YourPlans;
 
 function PlanGrid({ plans, onViewDetails }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 ">
+    <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {plans.length > 0 ? (
         plans.map((plan) => (
           <Card key={plan.id} className="rounded-2xl shadow-md">

@@ -57,7 +57,7 @@ export function RegisterForm({
 
 if (success) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted px-4">
+    <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md text-center">
         <Card className="p-8">
           <CardContent className="space-y-4">

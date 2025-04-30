@@ -94,7 +94,7 @@ const TransactionForm = ({ className, categories, ...props }) => {
       if (scannedData.category) {
         setValue("category", scannedData.category);
       }
-      toast.success("Receipt scanned successfully");
+     // toast.success("Receipt scanned successfully");
     }
   };
 

@@ -13,7 +13,8 @@ jobs:
       - name: Trigger Supabase plan-executer Function
         run: |
           curl -L -X POST 'https://mfrhwrbumjylyhtwrscl.supabase.co/functions/v1/plan-Executer' \
-          -H "Authorization: Bearer ${{ secrets.SERVICE_ROLE_KEY }}" \
-          -H "Content-Type: application/json"
+          -H 'Authorization: Bearer ${{ secrets.SERVICE_ROLE_KEY }}' \
+          -H 'Content-Type: application/json' \
+          --data '{}'
 
  

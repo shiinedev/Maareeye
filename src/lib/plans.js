@@ -20,7 +20,7 @@ export const createPlan = async (plan) => {
       throw error;
     }
     
-    console.log("plan created successfully")
+    console.log("plan created successfully",data)
     return data;
   };
 
@@ -87,9 +87,17 @@ return data;
 
 // update plans
 export const updatePlan = async (id, plan) => {
+
+  const updatedPlan = {
+    ...plan,
+    next_time: plan.is_subscription && plan.subscription_time
+    ? calculateNextSubscriptionDate(plan.date, plan.subscription_time)
+    : null
+  }
+
   const { data, error } = await supabase
     .from("plans")
-    .update([plan])
+    .update([updatedPlan])
     .eq("id", id)
 
     
@@ -99,5 +107,20 @@ export const updatePlan = async (id, plan) => {
     throw error;
   }
 
-
+  console.log("Plan updated successfully:", data);
 };
+
+//delete plan
+export const deletePlan = async (id) =>{
+
+  const {data,error} = await supabase
+  .from("plans")
+  .delete()
+  .eq("id",id)
+  .select()
+
+  if(error)  throw error
+
+  console.log("delete plan successfully",data);
+  
+}
