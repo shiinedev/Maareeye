@@ -1,6 +1,5 @@
 
 import FaqSection from '@/components/FaqSection';
-import { Footer } from '@/components/Footer';
 import HeroSection from '@/components/HeroSection'
 import Testimonials from '@/components/Testimonials';
 
@@ -29,7 +28,7 @@ const {theme} = useTheme();
     </section>
     <Testimonials />
     <FaqSection />
-    <Footer />
+
 
     </div>
   )
