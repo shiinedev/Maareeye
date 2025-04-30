@@ -37,7 +37,7 @@ export function RegisterForm({
     try {
 
         setIsLoading(true);      
-      await signUp(data.email,data.password,data.username);
+      await signUp(data.email,data.password);
       toast.success("Account created successfully")
 
        setSuccess(true);
