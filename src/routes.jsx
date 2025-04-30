@@ -21,11 +21,15 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    errorElement:<NotFoundPage />,
     children: [
+     
       {
         index:true,
         element:<Home />
+      },
+      {
+        path:"*",
+        element:<NotFoundPage />
       },
       {
         path: "/login",    

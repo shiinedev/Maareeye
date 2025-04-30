@@ -84,7 +84,7 @@ const PlanForm = ({ categories }) => {
   }, [updateData, reset, isEdit]);
 
   const onSubmit = async (data) => {
-  const formattedDate = format(data.date, "yyyy-MM-dd");
+   const formattedDate = format(data.date, "yyyy-MM-dd");
     const formData = {
       user_id: user.id,
       ...data,
