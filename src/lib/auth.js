@@ -3,10 +3,12 @@ import supabase from "./supabase"
 
 export const signUp = async (email,password)=>{
 
-    let { data, error } =  supabase.auth.signUp({
-         email,
-        password,
-      })
+  let { data, error } = await supabase.auth.signUp({
+    email: email,
+    password: password
+  })
+
+      if(error) throw error;
    
     if(data?.user){
         const {data:sessionData} = await supabase.auth.getSession();
