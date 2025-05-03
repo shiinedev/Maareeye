@@ -35,7 +35,8 @@ const Navbar = () => {
         <Link
           to="/"
           className="gradient-title text-xl  sm:text-2xl font-bold uppercase">
-          Maareeye
+          {/* <img src="/public/images/logo.png" alt="logo" width={'40px'}/> */}
+        MAAREEYE
         </Link>
       </div>
       {/* theme and login */}
