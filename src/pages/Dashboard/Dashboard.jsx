@@ -11,7 +11,10 @@ const Dashboard = () => {
     <AppSidebar variant="inset" />
     <SidebarInset>
       <SiteHeader />
+      <div className='mt-10'>
       <Outlet />
+      </div>
+    
     </SidebarInset>
   </SidebarProvider>
   )

@@ -19,7 +19,16 @@ import { Spinner } from "@/components/ui/spinner";
 import { getDefaultAccountByUserId } from "@/lib/account";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const statusColor = {
   pending: "bg-yellow-200 text-yellow-800",
@@ -28,37 +37,38 @@ const statusColor = {
 };
 
 const YourPlans = () => {
-
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const[deleteLoading,setDeleteLoading] = useState(false);
-  const [openConfirm,setOpenConfirm] = useState(false);
-  const {user} = useAuth();
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const { user } = useAuth();
 
   const navigate = useNavigate();
 
-   const {
-      data: defaultAccount,
-      error: defaultAccountError,
-      isLoading: defaultAccountLoading,
-    } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
-  
-    const shouldFetch = !!defaultAccount?.id && !!user?.id;
+  const {
+    data: defaultAccount,
+    error: defaultAccountError,
+    isLoading: defaultAccountLoading,
+  } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
+
+  const shouldFetch = !!defaultAccount?.id && !!user?.id;
   const {
     data,
-    isLoading:plansLoading,
-    error:plansError,
-    fetchData
-  } = useFetch( shouldFetch ? () => getPlansForAccount(defaultAccount?.id):null , [user?.id,defaultAccount?.id]);
+    isLoading: plansLoading,
+    error: plansError,
+    fetchData,
+  } = useFetch(
+    shouldFetch ? () => getPlansForAccount(defaultAccount?.id) : null,
+    [user?.id, defaultAccount?.id]
+  );
 
-
-   useEffect(() => {
-      if (defaultAccount?.id) {
-        fetchData();
-      }
-    }, [user.id, defaultAccount?.id, fetchData]);
+  useEffect(() => {
+    if (defaultAccount?.id) {
+      fetchData();
+    }
+  }, [user.id, defaultAccount?.id, fetchData]);
 
   const plans = data ?? [];
-  console.log(plans)
+  console.log(plans);
 
   // Filter plans by status
   const today = new Date().toISOString().split("T")[0];
@@ -74,17 +84,15 @@ const YourPlans = () => {
   const completedPlans = plans?.filter((plan) => plan.status === "completed");
   const failedPlans = plans.filter((plan) => plan.status === "failed");
 
-
-
-   const handleDelete = async (id) => {
+  const handleDelete = async (id) => {
     if (!id) return;
     setDeleteLoading(true);
     try {
       const deleted = await deletePlan(id);
       console.log(deleted);
       toast.success("plan deleted successfully");
-      setSelectedPlan(null)
-      fetchData(); 
+      setSelectedPlan(null);
+      fetchData();
     } catch (error) {
       console.log("error deleting plan", error);
     } finally {
@@ -93,138 +101,143 @@ const YourPlans = () => {
     }
   };
 
-
-   if (plansLoading) {
-      return (
-        <div className="flex items-center justify-center h-screen gap-3">
-          <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
-          <div className="loader text-2xl ">
-            {" "}
-            Loading Plans Please wait.....
-          </div>
-        </div>
-      );
-    }
+  if (plansLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen gap-3">
+        <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
+        <div className="loader text-2xl "> Loading Plans Please wait.....</div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Your Plans</h1>
-            <Button
-              variant={"purple"}
-              onClick={() => navigate("/dashboard/makePlan")}>
-              Make New Plan
-            </Button>
-          </div>
+        <h1 className="text-2xl font-bold">Your Plans</h1>
+        <Button
+          variant={"purple"}
+          onClick={() => navigate("/dashboard/makePlan")}>
+          Make New Plan
+        </Button>
+      </div>
 
-    <Tabs defaultValue="upcoming" >  
-      <TabsList className="w-full mb-4">
-        <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-        <TabsTrigger value="today">Today</TabsTrigger>
-        <TabsTrigger value="missed">Missed</TabsTrigger>
-        <TabsTrigger value="completed">Completed</TabsTrigger>
-        <TabsTrigger value="failed">Failed</TabsTrigger>
-      </TabsList>
+      <Tabs defaultValue="upcoming">
+        <TabsList className="w-full mb-4">
+          <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+          <TabsTrigger value="today">Today</TabsTrigger>
+          <TabsTrigger value="missed">Missed</TabsTrigger>
+          <TabsTrigger value="completed">Completed</TabsTrigger>
+          <TabsTrigger value="failed">Failed</TabsTrigger>
+        </TabsList>
 
-      <TabsContent value="upcoming">
-        <PlanGrid plans={upcomingPlans} onViewDetails={setSelectedPlan} />
-      </TabsContent>
-      <TabsContent value="today">
-        <PlanGrid plans={todayPlans} onViewDetails={setSelectedPlan} />
-      </TabsContent>
-      <TabsContent value="missed">
-        <PlanGrid plans={missedPlans} onViewDetails={setSelectedPlan} />
-      </TabsContent>
-      <TabsContent value="completed">
-        <PlanGrid plans={completedPlans} onViewDetails={setSelectedPlan} />
-      </TabsContent>
-      <TabsContent value="failed">
-        <PlanGrid plans={failedPlans} onViewDetails={setSelectedPlan} />
-      </TabsContent>
+        <TabsContent value="upcoming">
+          <PlanGrid plans={upcomingPlans} onViewDetails={setSelectedPlan} />
+        </TabsContent>
+        <TabsContent value="today">
+          <PlanGrid plans={todayPlans} onViewDetails={setSelectedPlan} />
+        </TabsContent>
+        <TabsContent value="missed">
+          <PlanGrid plans={missedPlans} onViewDetails={setSelectedPlan} />
+        </TabsContent>
+        <TabsContent value="completed">
+          <PlanGrid plans={completedPlans} onViewDetails={setSelectedPlan} />
+        </TabsContent>
+        <TabsContent value="failed">
+          <PlanGrid plans={failedPlans} onViewDetails={setSelectedPlan} />
+        </TabsContent>
 
-      {/* Modal for viewing detailed plan */}
-      {selectedPlan && (
-        <Dialog open={true} onOpenChange={() => setSelectedPlan(null)}>
-          <DialogContent className="p-6">
-            <DialogTitle>{selectedPlan.category}</DialogTitle>
-            <DialogDescription className="space-y-4">
-              <div className="font-bold">Amount:</div>
-              <div
-                className={`${
-                  selectedPlan.type === "income"
-                    ? "text-green-600 text-base font-medium"
-                    : "text-red-600 text-base font-medium"
-                }`}>
-                {selectedPlan.type === "income" ? "+" : "-"}$
-                {selectedPlan.amount.toLocaleString(
-                  "en-Us",
-                  { minimumFractionDigits: 2 },
-                  { maximumFractionDigits: 2 }
-                )}
-              </div>
+        {/* Modal for viewing detailed plan */}
+        {selectedPlan && (
+          <Dialog open={true} onOpenChange={() => setSelectedPlan(null)}>
+            <DialogContent className="p-6">
+              <DialogTitle>{selectedPlan.category}</DialogTitle>
+              <DialogDescription className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <div className="font-bold">Amount:</div>
+                <div
+                  className={`${
+                    selectedPlan.type === "income"
+                      ? "text-green-600 text-base font-medium"
+                      : "text-red-600 text-base font-medium"
+                  }`}>
+                  {selectedPlan.type === "income" ? "+" : "-"}$
+                  {selectedPlan.amount.toLocaleString(
+                    "en-Us",
+                    { minimumFractionDigits: 2 },
+                    { maximumFractionDigits: 2 }
+                  )}
+                </div>
+                  </div>
 
-              <div className="font-bold">Description:</div>
-              <div className="truncate">{selectedPlan.description || "No description"}</div>
+                <div className="flex items-center space-x-2">
+                <div className="font-bold">Description:</div>
+                <div className="truncate">
+                  {selectedPlan.description || "No description"}
+                </div>
+                </div>
 
-              <div className="font-bold">Date:</div>
-              <div>{format(new Date(selectedPlan.date), "MMM dd, yyyy")}</div>
+                <div className="flex items-center space-x-2">
+                  <div className="font-bold">Date:</div>
+                  <div>
+                    {format(new Date(selectedPlan.date), "MMM dd, yyyy")}
+                  </div>
+                </div>
 
-              {
-                selectedPlan.is_subscription &&(
+                {selectedPlan.is_subscription && (
                   <div className="flex flex-col space-y-2">
                     <div className="font-bold">Subscription:</div>
-                    <div className="text-base text-muted-foreground">{selectedPlan.subscription_time}</div>
+                    <div className="text-base text-muted-foreground">
+                      {selectedPlan.subscription_time}
+                    </div>
                     <div className="font-bold">Next Date:</div>
-                    <div className="text-base text-muted-foreground">{format(new Date(selectedPlan.next_time),"MMM dd, yyyy")}</div>
+                    <div className="text-base text-muted-foreground">
+                      {format(new Date(selectedPlan.next_time), "MMM dd, yyyy")}
+                    </div>
                   </div>
-                )
-              }
-              
+                )}
 
-              <div className="font-bold">Status:</div>
-              <div
-                className={`${
-                  statusColor[selectedPlan.status]
-                } py-2 rounded text-base font-medium text-center capitalize`}>
-                {selectedPlan.status}
-              </div>
-              {
-                selectedPlan.reason &&(
+                <div className="font-bold">Status:</div>
+                <div
+                  className={`${
+                    statusColor[selectedPlan.status]
+                  } py-2 rounded text-base font-medium text-center capitalize`}>
+                  {selectedPlan.status}
+                </div>
+                {selectedPlan.reason && (
                   <div className="flex flex-col space-y-2">
-                   <div className="font-bold">Reason:</div>
-                   <div className="text-base text-red-500">{selectedPlan.reason}</div>
+                    <div className="font-bold">Reason:</div>
+                    <div className="text-base text-red-500">
+                      {selectedPlan.reason}
+                    </div>
                   </div>
-                )
-              }
-            </DialogDescription>
-            <div className="flex justify-end space-x-2 mt-4">
-            <DialogClose asChild>
-                
+                )}
+              </DialogDescription>
+              <div className="flex justify-end space-x-2 mt-4">
+                <DialogClose asChild>
+                  <Button
+                    disabled={deleteLoading}
+                    className={"cursor-pointer"}
+                    variant={"outline"}
+                    size={"xl"}>
+                    Close
+                  </Button>
+                </DialogClose>
                 <Button
-                 disabled={deleteLoading}
-                  className={"cursor-pointer"}
-                  variant={"outline"}
-                  size={"xl"}>
-                  Close
+                  variant={"destructive"}
+                  size={"xl"}
+                  onClick={() => setOpenConfirm(true)}
+                  disabled={deleteLoading}>
+                  {deleteLoading ? "Deleting..." : "Delete"}
                 </Button>
-              </DialogClose>
-              <Button variant={"destructive"} size={"xl"} 
-               onClick={() => setOpenConfirm(true)}
-               disabled={deleteLoading}
-               >
-                {deleteLoading ? "Deleting..." : "Delete"}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
-    </Tabs>
-    <AlertDialog open={openConfirm} onOpenChange={setOpenConfirm}>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+      </Tabs>
+      <AlertDialog open={openConfirm} onOpenChange={setOpenConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              Delete plan?
-            </AlertDialogTitle>
+            <AlertDialogTitle>Delete plan?</AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. The selected transactions will be
               permanently deleted.
@@ -253,7 +266,7 @@ export default YourPlans;
 
 function PlanGrid({ plans, onViewDetails }) {
   return (
-    <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       {plans.length > 0 ? (
         plans.map((plan) => (
           <Card key={plan.id} className="rounded-2xl shadow-md">

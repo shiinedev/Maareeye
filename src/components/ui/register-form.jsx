@@ -26,6 +26,7 @@ export function RegisterForm({
 
   const [success,setSuccess] = useState(false);
   const [isLoading,setIsLoading] = useState(false);
+  const [error,setError] = useState(null);
 
   const navigate = useNavigate();
   const {register,handleSubmit,formState:{errors}} = useForm({
@@ -33,10 +34,11 @@ export function RegisterForm({
   })
 
   const onSubmit = async(data) =>{
-    console.log(data)
+    console.log(data);
+    setIsLoading(true);   
+    setError(null);
     try {
-
-        setIsLoading(true);      
+       
       await signUp(data.email,data.password);
       toast.success("Account created successfully")
 
@@ -47,7 +49,10 @@ export function RegisterForm({
       },3000)
     } catch (error) {
       console.log("error",error)
+      setError(error.message)
       toast.error("Error creating account");
+    }finally{
+      setIsLoading(false)
     }
 
   }
@@ -87,6 +92,11 @@ if (success) {
           </CardDescription>
         </CardHeader>
         <CardContent>
+        {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+              {error}
+            </div>
+          )}
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
             <div className="grid gap-3">

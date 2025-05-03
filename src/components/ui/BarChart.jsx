@@ -76,13 +76,13 @@ export function BarChar({chartData,chartLoading}) {
 
   return (
     <Card>
-     <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-        <div className="grid flex-1 gap-1 text-center sm:text-left">
+     <CardHeader className="flex flex-col gap-2 space-y-0 border-b sm:flex-row">
+        <div className="flex-1 gap-1 text-left">
           <CardTitle>Your Finance  Chart Data</CardTitle>
           <CardDescription>Showing total income and expenses for the selected time period</CardDescription>
         </div>
-        <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger className="w-[160px] rounded-lg sm:ml-auto" aria-label="Select a time range">
+        <Select value={timeRange} onValueChange={setTimeRange} >
+          <SelectTrigger className="sm:w-[160px] rounded-lg sm:ml-auto text-right w-full" aria-label="Select a time range">
             <SelectValue placeholder="Last 3 months" />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
@@ -99,12 +99,12 @@ export function BarChar({chartData,chartLoading}) {
         </Select>
       </CardHeader>
       <div className="flex border-b">
-        <div className="flex flex-1 flex-col justify-center gap-1 border-r px-6 py-4 text-left sm:px-8 sm:py-6">
+        <div className="flex flex-1 flex-col justify-center gap-1 border-r px-4 pb-3 text-left">
           <span className="text-xs text-muted-foreground">{chartConfig.income.label}</span>
           <span className="text-lg font-bold leading-none sm:text-3xl">${total.income.toLocaleString("en-Us",
             { minimumFractionDigits:2,},{ maximumFractionDigits:2,})}</span>
         </div>
-        <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-4 text-left sm:px-8 sm:py-6">
+        <div className="flex flex-1 flex-col justify-center gap-1 px-4 pb-3 text-left">
           <span className="text-xs text-muted-foreground">{chartConfig.expense.label}</span>
           <span className="text-lg font-bold leading-none sm:text-3xl">${total.expense.toLocaleString("en-Us",
             { minimumFractionDigits:2,},{ maximumFractionDigits:2,})}</span>

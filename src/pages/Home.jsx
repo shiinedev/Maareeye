@@ -29,8 +29,8 @@ const {theme} = useTheme();
     </section>
     <Testimonials />
     <FaqSection />
-    <Footer />
 
+    <Footer />
     </div>
   )
 }

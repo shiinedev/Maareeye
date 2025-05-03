@@ -26,7 +26,9 @@ const HeroSection = () => {
 
           <div className="flex flex-wrap justify-center gap-4">
             <Button variant="purple" size="xl">
+            <Link to={"/register"} className='flex items-center gap-1'>
               Get started
+              </Link>
             </Button>
            
               <Button   
