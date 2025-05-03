@@ -16,6 +16,13 @@ import toast from "react-hot-toast";
 
 export function AccountCard({ account, fetchAccounts }) {
   const { name, type, balance, id, is_default } = account;
+  
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount)
+  }
 
   const [isLoading, setIsLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -73,7 +80,7 @@ export function AccountCard({ account, fetchAccounts }) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            ${parseFloat(balance).toFixed(2)}
+            {formatCurrency(balance)}
           </div>
           <p className="text-xs text-muted-foreground">
             {type.charAt(0) + type.slice(1).toLowerCase()} Account
