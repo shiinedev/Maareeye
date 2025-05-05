@@ -1,8 +1,8 @@
-name: Run Plan Executor Every 10 Minutes
+name: Run Plan Executor Every 6 Hours
 
 on:
   schedule:
-    - cron: "0 */6 * * *" # Runs every 10 minutes
+    - cron: "0 */6 * * *" # Runs every 6 Hours
   workflow_dispatch: # Optional: allows manual runs
 
 jobs:
