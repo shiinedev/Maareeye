@@ -29,6 +29,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import PlansSkeleton from "@/components/skeletons/PlansSkeleton";
 
 const statusColor = {
   pending: "bg-yellow-200 text-yellow-800",
@@ -102,10 +103,7 @@ const YourPlans = () => {
 
   if (plansLoading) {
     return (
-      <div className="flex items-center justify-center h-screen gap-3">
-        <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
-        <div className="loader text-2xl "> Loading Plans Please wait.....</div>
-      </div>
+      <PlansSkeleton />
     );
   }
 
