@@ -66,6 +66,7 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "react-hot-toast";
+import TransactionSkeleton from "@/components/skeletons/TransactionSkeleton";
 const Transactions = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
@@ -201,14 +202,9 @@ const Transactions = () => {
     setSubscriptionFilter("");
   };
 
-  if (defaultAccountLoading ) {
+  if (defaultAccountLoading || transactionLoading) {
     return (
-      <div className="flex items-center justify-center h-screen gap-3">
-        <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
-        <div className="loader text-2xl ">
-          Loading account.....
-        </div>
-      </div>
+      <TransactionSkeleton />
     );
   }
 
@@ -372,13 +368,7 @@ const Transactions = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-           {transactionLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground">
-                      Loading Transactions....
-                    </TableCell>
-                  </TableRow>
-                ) : (
+           {
           filterAndSortTransactions?.length > 0 ? (
             filterAndSortTransactions?.map((transaction) => (
               <TableRow key={transaction.id}>
@@ -493,7 +483,7 @@ const Transactions = () => {
                 No transactions found
               </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
       <div className="flex items-center gap-2">
