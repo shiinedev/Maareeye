@@ -5,12 +5,12 @@ import { useAuth } from '@/context/AuthContext'
 import { useFetch } from '@/hooks/useFetch'
 import { getDefaultAccountByUserId } from '@/lib/account'
 import { getSummaryData, getTransactionsForAccount } from '@/lib/transaction'
-import { Spinner } from '@/components/ui/spinner'
 import RecentTransactions from './RecentTransactions'
+import { OverviewSkeleton } from "@/components/skeletons/OverviewSkeleton"
 const Overview = () => {
   const [chartData, setChartData ]= React.useState([]);
   const [chartLoading, setChartLoading] =React.useState(true);
-  const [chartError, setChartError] = React.useState(null);
+
   const [totalIncome, setTotalIncome] = React.useState(0);
   const [totalExpense, setTotalExpense] = React.useState(0);
   const {user} = useAuth();
@@ -36,14 +36,13 @@ const Overview = () => {
      try {
        setChartLoading(true);
        const {chartData:result,totalIncome,totalExpense} = await getSummaryData(accountTransactions);
-//console.log(totalIncome)
+        //console.log(totalIncome)
        console.log(chartData)
        setChartData(result);
        setTotalIncome(totalIncome);
        setTotalExpense(totalExpense);
      } catch (err) {
        console.error("Error generating chart:", err);
-       setChartError(err);
      } finally {
        setChartLoading(false);
      }
@@ -56,13 +55,7 @@ const Overview = () => {
 
   if (defaultAccountLoading || transactionLoading ) {
    return (
-         <div className="flex items-center justify-center h-screen gap-3">
-           <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
-           <div className="loader text-2xl ">
-            
-             Loading Data Please wait.....
-           </div>
-         </div>
+         <OverviewSkeleton />
        );
   }
 
