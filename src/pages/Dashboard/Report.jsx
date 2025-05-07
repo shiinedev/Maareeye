@@ -27,6 +27,7 @@ import { getAccountsByUserId, getDefaultAccountByUserId } from "@/lib/account.js
 import { defaultCategories } from "../../data/categories.js";
 import { getTransactionsForAccount } from "@/lib/transaction.js";
 import { Spinner } from "@/components/ui/spinner.jsx";
+import { useNavigate } from "react-router";
 
 export const types = [
   { id: "income", name: "Income" },
@@ -42,7 +43,9 @@ export default function Report() {
   });
   const [selectedType, setSelectedType] = useState("expense");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedAccount, setSelectedAccount] = useState( null );
+  const [selectedAccount, setSelectedAccount] = useState([]);
+
+  const navigate = useNavigate();
 
   const { user } = useAuth();
    const {
@@ -87,8 +90,7 @@ useEffect(() => {
      transaction.type === selectedType;
     const categoryMatch =
       selectedCategory === "all" || transaction.category === selectedCategory;
-    const accountMatch =
-  transaction.accountId === selectedAccount;
+    const accountMatch = transaction.accountId === selectedAccount || null;
 
     return dateInRange && typeMatch && categoryMatch && accountMatch;
   });
@@ -108,7 +110,19 @@ useEffect(() => {
            </div>
          );
     }
-  
+   if (!defaultAccount) {
+      return (
+        <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
+          <h2 className="text-xl font-semibold">No account found</h2>
+          <p className="text-muted-foreground">
+            Please create an account to start tracking your Report.
+          </p>
+          <Button variant={"purple"} onClick={() => navigate("/dashboard/accounts")}>
+            Go to Accounts
+          </Button>
+        </div>
+      );
+    }
   return (
     <div className="container mx-auto p-6 space-y-8">
       <div className="flex flex-col space-y-2">
@@ -194,12 +208,13 @@ useEffect(() => {
             />
           </SelectTrigger>
           <SelectContent>
-            {accounts?.map((account) => (
+           
+           { accounts?.map((account) => (
               <SelectItem key={account.id} value={account.id}>
                  {account.name} ($
                   {parseFloat(account.balance).toFixed(2)})
               </SelectItem>
-            ))}
+            )) }
           </SelectContent>
         </Select>
       </div>

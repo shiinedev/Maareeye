@@ -20,13 +20,12 @@ const Overview = () => {
     isLoading: defaultAccountLoading,
   } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
 
-  const shouldFetch = !!defaultAccount?.id && !!user?.id;
+  // const shouldFetch = !!defaultAccount?.id && !!user?.id;
   const {
     data: accountTransactions,
     error: transactionError,
     isLoading: transactionLoading,
-  } = useFetch( 
-    shouldFetch ? () => getTransactionsForAccount(defaultAccount?.id) : null, [user?.id, defaultAccount?.id]);
+  } = useFetch(  () => getTransactionsForAccount(defaultAccount?.id), [user?.id, defaultAccount?.id]);
 
  // console.log(accountTransactions)
 
@@ -67,7 +66,7 @@ const Overview = () => {
        );
   }
 
-  if (defaultAccountError || transactionError ) {
+  if (transactionError ) {
     return (
           <div className="flex items-center justify-center h-screen gap-3">
             <div className="loader text-2xl text-red-500 ">
@@ -86,7 +85,7 @@ const Overview = () => {
                 <BarChar  chartData={chartData} chartLoading={chartLoading} />
               </div>
               <div>
-                <RecentTransactions />
+                <RecentTransactions defaultAccount={defaultAccount} />
               </div>
             </div>
           </div>

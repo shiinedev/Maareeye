@@ -95,7 +95,7 @@ const Transactions = () => {
 
   const {
     data: transactionData,
-    isLoading,
+    isLoading:transactionLoading,
     error,
     fetchData,
   } = useFetch(
@@ -195,48 +195,39 @@ const Transactions = () => {
     }
   };
 
-  // const handleDelete = async (id) => {
-  //   if (!id) return;
-  //   setDeleteLoading(true);
-  //   try {
-  //     if (
-  //       !window.confirm(
-  //         `Are you sure you want to delete ${selectedIds.length} transactions?`
-  //       )
-  //     )
-  //       return;
-  //     const deleted = await deleteTransactions(id);
-  //     console.log(deleted);
-  //     toast.success("Transaction deleted successfully");
-  //     setSelectedIds([]);
-  //     setDeleteLoading(false);
-  //     fetchData();
-  //   } catch (error) {
-  //     console.log("error deleting transaction", error);
-  //   } finally {
-  //     setDeleteLoading(false);
-  //     fetchData();
-  //   }
-  // };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen gap-3">
-        <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
-        <div className="loader text-2xl ">
-          {" "}
-          Loading Transaction Please wait.....
-        </div>
-      </div>
-    );
-  }
-
   const handleClearFilters = () => {
     setSearchTerm("");
     setTypeFilter("");
     setSubscriptionFilter("");
   };
 
+  if (defaultAccountLoading ) {
+    return (
+      <div className="flex items-center justify-center h-screen gap-3">
+        <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
+        <div className="loader text-2xl ">
+          Loading account.....
+        </div>
+      </div>
+    );
+  }
+
+
+  if (!defaultAccount) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
+        <h2 className="text-xl font-semibold">No account found</h2>
+        <p className="text-muted-foreground">
+          Please create an account to start tracking your Report.
+        </p>
+        <Button variant={"purple"} onClick={() => navigate("/dashboard/accounts")}>
+          Go to Accounts
+        </Button>
+      </div>
+    );
+  }
+
+  
   return (
     <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">
@@ -381,7 +372,14 @@ const Transactions = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filterAndSortTransactions?.length > 0 ? (
+           {transactionLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center text-muted-foreground">
+                      Loading Transactions....
+                    </TableCell>
+                  </TableRow>
+                ) : (
+          filterAndSortTransactions?.length > 0 ? (
             filterAndSortTransactions?.map((transaction) => (
               <TableRow key={transaction.id}>
                 <TableCell className="font-medium">
@@ -495,7 +493,7 @@ const Transactions = () => {
                 No transactions found
               </TableCell>
             </TableRow>
-          )}
+          ))}
         </TableBody>
       </Table>
       <div className="flex items-center gap-2">

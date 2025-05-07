@@ -50,14 +50,13 @@ const YourPlans = () => {
     isLoading: defaultAccountLoading,
   } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
 
-  const shouldFetch = !!defaultAccount?.id && !!user?.id;
+  // const shouldFetch = !!defaultAccount?.id && !!user?.id;
   const {
     data,
     isLoading: plansLoading,
     error: plansError,
     fetchData,
-  } = useFetch(
-    shouldFetch ? () => getPlansForAccount(defaultAccount?.id) : null,
+  } = useFetch( () => getPlansForAccount(defaultAccount?.id),
     [user?.id, defaultAccount?.id]
   );
 

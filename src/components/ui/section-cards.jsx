@@ -27,7 +27,7 @@ export function SectionCards({defaultAccount,totalIncome,totalExpense}) {
         <CardHeader>
           <CardDescription>Balance</CardDescription>
           <CardTitle className="text-purple-400 text-2xl font-semibold tabular-num @[250px]/card:text-3xl">
-           {formatCurrency(defaultAccount?.balance)}
+           {formatCurrency(defaultAccount?.balance || 0)}
           </CardTitle>
           <CardAction>
             <div variant="outline" className={"text-purple-600"}>
