@@ -1,4 +1,3 @@
-// components/PlansSkeleton.tsx
 
 import { Skeleton } from "@/components/ui/skeleton";
 

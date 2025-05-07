@@ -28,6 +28,7 @@ import { defaultCategories } from "../../data/categories.js";
 import { getTransactionsForAccount } from "@/lib/transaction.js";
 import { Spinner } from "@/components/ui/spinner.jsx";
 import { useNavigate } from "react-router";
+import { ReportSkeleton } from "@/components/skeletons/ReportSkelton.jsx";
 
 export const types = [
   { id: "income", name: "Income" },
@@ -101,14 +102,8 @@ useEffect(() => {
 
   if (defaultAccountLoading || transactionLoading ) {
      return (
-           <div className="flex items-center justify-center h-screen gap-3">
-             <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
-             <div className="loader text-2xl ">
-              
-               Loading Data Please wait.....
-             </div>
-           </div>
-         );
+          <ReportSkeleton />
+     )
     }
    if (!defaultAccount) {
       return (

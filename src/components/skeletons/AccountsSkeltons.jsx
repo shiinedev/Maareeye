@@ -1,4 +1,3 @@
-// components/AccountsSkeleton.tsx
 
 import { Skeleton } from "@/components/ui/skeleton";
 
