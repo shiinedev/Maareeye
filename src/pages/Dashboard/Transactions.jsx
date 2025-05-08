@@ -202,6 +202,13 @@ const Transactions = () => {
     setSubscriptionFilter("");
   };
 
+ 
+  if (defaultAccountLoading) {
+    return (
+      <TransactionSkeleton />
+    );
+  }
+
   if (!defaultAccount) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
@@ -216,16 +223,13 @@ const Transactions = () => {
     );
   }
 
-  if (defaultAccountLoading || transactionLoading) {
+
+  if (transactionLoading) {
     return (
       <TransactionSkeleton />
     );
   }
 
-
- 
-
-  
   return (
     <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">

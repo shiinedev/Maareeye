@@ -54,7 +54,7 @@ const Overview = () => {
 
 
 
-  if (defaultAccountLoading || transactionLoading ) {
+  if (defaultAccountLoading ) {
    return (
          <OverviewSkeleton />
        );
@@ -70,6 +70,12 @@ const Overview = () => {
             Go to Accounts
           </Button>
         </div>
+      );
+    }
+
+    if(transactionLoading){
+      return (
+        <OverviewSkeleton />
       );
     }
 
