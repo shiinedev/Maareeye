@@ -29,6 +29,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import PlansSkeleton from "@/components/skeletons/PlansSkeleton";
 
 const statusColor = {
   pending: "bg-yellow-200 text-yellow-800",
@@ -50,14 +51,13 @@ const YourPlans = () => {
     isLoading: defaultAccountLoading,
   } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
 
-  const shouldFetch = !!defaultAccount?.id && !!user?.id;
+  // const shouldFetch = !!defaultAccount?.id && !!user?.id;
   const {
     data,
     isLoading: plansLoading,
     error: plansError,
     fetchData,
-  } = useFetch(
-    shouldFetch ? () => getPlansForAccount(defaultAccount?.id) : null,
+  } = useFetch( () => getPlansForAccount(defaultAccount?.id),
     [user?.id, defaultAccount?.id]
   );
 
@@ -101,11 +101,22 @@ const YourPlans = () => {
     }
   };
 
-  if (plansLoading) {
+  if (plansLoading || defaultAccountLoading) {
     return (
-      <div className="flex items-center justify-center h-screen gap-3">
-        <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
-        <div className="loader text-2xl "> Loading Plans Please wait.....</div>
+      <PlansSkeleton />
+    );
+  }
+
+  if (!defaultAccount) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
+        <h2 className="text-xl font-semibold">No account found</h2>
+        <p className="text-muted-foreground">
+          Please create an account to start tracking your Report.
+        </p>
+        <Button variant={"purple"} onClick={() => navigate("/dashboard/accounts")}>
+          Go to Accounts
+        </Button>
       </div>
     );
   }

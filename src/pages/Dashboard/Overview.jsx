@@ -5,12 +5,13 @@ import { useAuth } from '@/context/AuthContext'
 import { useFetch } from '@/hooks/useFetch'
 import { getDefaultAccountByUserId } from '@/lib/account'
 import { getSummaryData, getTransactionsForAccount } from '@/lib/transaction'
-import { Spinner } from '@/components/ui/spinner'
 import RecentTransactions from './RecentTransactions'
+import { OverviewSkeleton } from "@/components/skeletons/OverviewSkeleton"
+import { Button } from "@/components/ui/button"
 const Overview = () => {
   const [chartData, setChartData ]= React.useState([]);
   const [chartLoading, setChartLoading] =React.useState(true);
-  const [chartError, setChartError] = React.useState(null);
+
   const [totalIncome, setTotalIncome] = React.useState(0);
   const [totalExpense, setTotalExpense] = React.useState(0);
   const {user} = useAuth();
@@ -20,13 +21,12 @@ const Overview = () => {
     isLoading: defaultAccountLoading,
   } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
 
-  const shouldFetch = !!defaultAccount?.id && !!user?.id;
+  // const shouldFetch = !!defaultAccount?.id && !!user?.id;
   const {
     data: accountTransactions,
     error: transactionError,
     isLoading: transactionLoading,
-  } = useFetch( 
-    shouldFetch ? () => getTransactionsForAccount(defaultAccount?.id) : null, [user?.id, defaultAccount?.id]);
+  } = useFetch(  () => getTransactionsForAccount(defaultAccount?.id), [user?.id, defaultAccount?.id]);
 
  // console.log(accountTransactions)
 
@@ -37,14 +37,13 @@ const Overview = () => {
      try {
        setChartLoading(true);
        const {chartData:result,totalIncome,totalExpense} = await getSummaryData(accountTransactions);
-//console.log(totalIncome)
+        //console.log(totalIncome)
        console.log(chartData)
        setChartData(result);
        setTotalIncome(totalIncome);
        setTotalExpense(totalExpense);
      } catch (err) {
        console.error("Error generating chart:", err);
-       setChartError(err);
      } finally {
        setChartLoading(false);
      }
@@ -55,19 +54,32 @@ const Overview = () => {
 
 
 
-  if (defaultAccountLoading || transactionLoading ) {
+  if (defaultAccountLoading ) {
    return (
-         <div className="flex items-center justify-center h-screen gap-3">
-           <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
-           <div className="loader text-2xl ">
-            
-             Loading Data Please wait.....
-           </div>
-         </div>
+         <OverviewSkeleton />
        );
   }
+   if (!defaultAccount) {
+      return (
+        <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
+          <h2 className="text-xl font-semibold">No account found</h2>
+          <p className="text-muted-foreground">
+            Please create an account to start tracking your Dashboard.
+          </p>
+          <Button variant={"purple"} onClick={() => navigate("/dashboard/accounts")}>
+            Go to Accounts
+          </Button>
+        </div>
+      );
+    }
 
-  if (defaultAccountError || transactionError ) {
+    if(transactionLoading){
+      return (
+        <OverviewSkeleton />
+      );
+    }
+
+  if (transactionError ) {
     return (
           <div className="flex items-center justify-center h-screen gap-3">
             <div className="loader text-2xl text-red-500 ">
@@ -80,13 +92,13 @@ const Overview = () => {
   return (
      <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+            <div className="flex flex-col gap-4 py-8 md:gap-6">
               <SectionCards  defaultAccount={defaultAccount} totalIncome={totalIncome} totalExpense={totalExpense}/>
               <div className="px-4 lg:px-6">
                 <BarChar  chartData={chartData} chartLoading={chartLoading} />
               </div>
               <div>
-                <RecentTransactions />
+                <RecentTransactions defaultAccount={defaultAccount} />
               </div>
             </div>
           </div>

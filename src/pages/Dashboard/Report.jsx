@@ -23,16 +23,20 @@ import { ReportTransactions } from "@/components/Report/ReportTransactions";
 import { TopExpensesCategory } from "@/components/Report/TopExpensesCategory";
 import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
-import { getAccountsByUserId, getDefaultAccountByUserId } from "@/lib/account.js";
+import {
+  getAccountsByUserId,
+  getDefaultAccountByUserId,
+} from "@/lib/account.js";
 import { defaultCategories } from "../../data/categories.js";
 import { getTransactionsForAccount } from "@/lib/transaction.js";
 import { Spinner } from "@/components/ui/spinner.jsx";
+import { useNavigate } from "react-router";
+import { ReportSkeleton } from "@/components/skeletons/ReportSkelton.jsx";
 
 export const types = [
   { id: "income", name: "Income" },
   { id: "expense", name: "Expense" },
-
-]
+];
 
 export default function Report() {
   // State for filters
@@ -42,22 +46,24 @@ export default function Report() {
   });
   const [selectedType, setSelectedType] = useState("expense");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedAccount, setSelectedAccount] = useState( null );
+  const [selectedAccount, setSelectedAccount] = useState(null);
+
+  const navigate = useNavigate();
 
   const { user } = useAuth();
-   const {
-      data: defaultAccount,
-      error: defaultAccountError,
-      isLoading: defaultAccountLoading,
-    } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
-    console.log(defaultAccount)
+  const {
+    data: defaultAccount,
+    error: defaultAccountError,
+    isLoading: defaultAccountLoading,
+  } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
+  console.log(defaultAccount);
 
-    // 👇 Set selected account once default account is available
-useEffect(() => {
-  if (defaultAccount && !selectedAccount) {
-    setSelectedAccount(defaultAccount.id);
-  }
-}, [defaultAccount, selectedAccount]);
+  // 👇 Set selected account once default account is available
+  useEffect(() => {
+    if (defaultAccount && !selectedAccount) {
+      setSelectedAccount(defaultAccount.id);
+    }
+  }, [defaultAccount, selectedAccount]);
 
   const {
     data: accounts = [],
@@ -71,11 +77,12 @@ useEffect(() => {
     isLoading: transactionLoading,
     error: transactionError,
     fetchData: transactionFetch,
-  } = useFetch(() => getTransactionsForAccount(selectedAccount) , [selectedAccount,user?.id]);
+  } = useFetch(
+    () => getTransactionsForAccount(selectedAccount),
+    [selectedAccount, user?.id]
+  );
 
-  console.log(transactions)
-
- 
+  console.log(transactions);
 
   // Filter transactions based on selections
   const filteredTransactions = transactions?.filter((transaction) => {
@@ -83,12 +90,10 @@ useEffect(() => {
     const dateInRange =
       transactionDate >= dateRange.from && transactionDate <= dateRange.to;
 
-    const typeMatch =
-     transaction.type === selectedType;
+    const typeMatch = transaction.type === selectedType;
     const categoryMatch =
       selectedCategory === "all" || transaction.category === selectedCategory;
-    const accountMatch =
-  transaction.accountId === selectedAccount;
+    const accountMatch = transaction.accountId === selectedAccount;
 
     return dateInRange && typeMatch && categoryMatch && accountMatch;
   });
@@ -97,18 +102,24 @@ useEffect(() => {
     (category) => category.type === selectedType
   );
 
-  if (defaultAccountLoading || transactionLoading ) {
-     return (
-           <div className="flex items-center justify-center h-screen gap-3">
-             <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
-             <div className="loader text-2xl ">
-              
-               Loading Data Please wait.....
-             </div>
-           </div>
-         );
-    }
-  
+  if (defaultAccountLoading || transactionLoading) {
+    return <ReportSkeleton />;
+  }
+  if (!defaultAccount) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
+        <h2 className="text-xl font-semibold">No account found</h2>
+        <p className="text-muted-foreground">
+          Please create an account to start tracking your Report.
+        </p>
+        <Button
+          variant={"purple"}
+          onClick={() => navigate("/dashboard/accounts")}>
+          Go to Accounts
+        </Button>
+      </div>
+    );
+  }
   return (
     <div className="container mx-auto p-6 space-y-8">
       <div className="flex flex-col space-y-2">
@@ -175,7 +186,7 @@ useEffect(() => {
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
           <SelectContent>
-          <SelectItem value="all">All Categories</SelectItem>
+            <SelectItem value="all">All Categories</SelectItem>
             {filteredCategories.map((category) => (
               <SelectItem key={category.id} value={category.id}>
                 {category.name}
@@ -185,7 +196,7 @@ useEffect(() => {
         </Select>
 
         {/* Account Select */}
-        <Select defaultValue={selectedAccount} onValueChange={setSelectedAccount}>
+        <Select value={selectedAccount} onValueChange={setSelectedAccount}>
           <SelectTrigger className="w-full">
             <SelectValue
               placeholder={
@@ -196,8 +207,7 @@ useEffect(() => {
           <SelectContent>
             {accounts?.map((account) => (
               <SelectItem key={account.id} value={account.id}>
-                 {account.name} ($
-                  {parseFloat(account.balance).toFixed(2)})
+                {account.name}
               </SelectItem>
             ))}
           </SelectContent>

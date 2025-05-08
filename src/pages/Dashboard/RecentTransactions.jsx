@@ -18,66 +18,43 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useAuth } from "@/context/AuthContext";
 import { categoryColors } from "@/data/categories";
 import { useFetch } from "@/hooks/useFetch";
 
 import { cn } from "@/lib/utils";
-import { getDefaultAccountByUserId } from "@/lib/account";
 import { getTransactionsForAccountWithPagination } from "@/lib/transaction";
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { HandCoins } from "lucide-react";
 import React from "react";
 
-const RecentTransactions = () => {
-  const { user } = useAuth();
-  const {
-    data: defaultAccount,
-    error: defaultAccountError,
-    isLoading: defaultAccountLoading,
-  } = useFetch(() => getDefaultAccountByUserId(user?.id), [user?.id]);
-
-  const shouldFetch = !!defaultAccount?.id && !!user?.id;
+const RecentTransactions = ({ defaultAccount }) => {
   const {
     data: recentTransactions,
     error,
-    isLoading
+    isLoading,
   } = useFetch(
-    shouldFetch
-      ? () =>
-          getTransactionsForAccountWithPagination(defaultAccount?.id, {
-            limit: 5,
-          })
-      : null,
+    () =>
+      getTransactionsForAccountWithPagination(defaultAccount?.id, {
+        limit: 5,
+      }),
     [defaultAccount?.id]
   );
 
   const transactions = recentTransactions?.data || [];
+
   return (
     <div className="p-6 space-y-4">
       <h1 className="text-3xl font-bold">Recent Transactions</h1>
-      
-      
-      {
-        error &&(
-          <div className="flex items-center justify-center  gap-3">
+
+      {error && (
+        <div className="flex items-center justify-center  gap-3">
           <div className="loader text-2xl text-red-500 ">
             Error fetching Recent transactions pleas Reload
           </div>
         </div>
-        )
-      }
-      {
-        isLoading ?(
-          <div className="flex items-center justify-center gap-3">
-            <Spinner className="h-6 w-6 animate-spin- text-purple-500" />
-          <div className="loader text-2xl text-purple-500 ">
-            Loading recent transactions......
-          </div>
-        </div>
-        )
-        :
+      )}
+
       <Table className={"border  rounded-md"}>
         <TableCaption>A list of your Transactions.</TableCaption>
         <TableHeader>
@@ -91,15 +68,25 @@ const RecentTransactions = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {transactions?.length > 0 ? (
+          {isLoading ? (
+            <TableRow>
+              <TableCell
+                colSpan={7}
+                className="text-center  text-muted-foreground">
+                Loading Transactions....
+              </TableCell>
+            </TableRow>
+          ) : transactions?.length > 0 ? (
             transactions?.map((transaction) => (
               <TableRow key={transaction.id}>
                 <TableCell>
                   {format(new Date(transaction.date), "PP")}
                 </TableCell>
-                <TableCell>{transaction.description.length > 10
+                <TableCell>
+                  {transaction.description.length > 10
                     ? `${transaction.description.substring(0, 30)}...`
-                    : transaction.description}</TableCell>
+                    : transaction.description}
+                </TableCell>
                 <TableCell className={"capitalize"}>
                   <span
                     style={{
@@ -169,8 +156,6 @@ const RecentTransactions = () => {
           )}
         </TableBody>
       </Table>
-        
-      }
     </div>
   );
 };

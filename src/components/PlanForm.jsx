@@ -333,6 +333,7 @@ const PlanForm = ({ categories }) => {
               <Button
                 type="button"
                 variant="outline"
+                disabled={isLoading}
                 onClick={reset}
                 className="w-full md:w-1/2">
                 Cancel

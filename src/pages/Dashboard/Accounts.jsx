@@ -1,5 +1,6 @@
 import { AccountCard } from "@/components/AccountCard";
 import AccountForm from "@/components/AccountForm";
+import AccountsSkeleton from "@/components/skeletons/AccountsSkeltons";
 import { useAuth } from "@/context/AuthContext";
 import { useFetch } from "@/hooks/useFetch";
 import { getAccountsByUserId } from "@/lib/account";
@@ -18,11 +19,9 @@ const Accounts = () => {
    
 
   if(accountsLoading){
-    <div className='min-h-screen flex justify-center items-center'>
-            <div className='animate-spin w-12 h-12 rounded-full border-y-2 border-purple-500'>
-
-            </div>
-        </div>
+   return(
+    <AccountsSkeleton />
+   )
   }
 
   if (accountsError) {
