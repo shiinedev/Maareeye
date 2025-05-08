@@ -233,6 +233,8 @@ const YourPlans = () => {
                     Close
                   </Button>
                 </DialogClose>
+               {
+                selectedPlan.status === "pending" &&
                 <Button
                   variant={"destructive"}
                   size={"xl"}
@@ -240,6 +242,7 @@ const YourPlans = () => {
                   disabled={deleteLoading}>
                   {deleteLoading ? "Deleting..." : "Delete"}
                 </Button>
+             }
               </div>
             </DialogContent>
           </Dialog>
