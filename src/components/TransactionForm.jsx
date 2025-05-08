@@ -293,6 +293,7 @@ const TransactionForm = ({ className, categories, ...props }) => {
             <div className="flex flex-col md:flex-row gap-4">
               <Button
                 type="button"
+                disabled={isLoading}
                 variant="outline"
                 onClick={reset}
                 className="w-full md:w-1/2">

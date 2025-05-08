@@ -154,12 +154,13 @@ const AccountForm = ({fetchAccounts}) => {
               type="submit"
               variant="purple"
               className="w-full ">
-              Create Account
+              {isLoading? "Create...":"Create Account"}
             </Button>
             <DialogClose>
             <Button
               type="button"
               variant="outline"
+              disabled={isLoading}
               onClick={reset}
               className="w-full">
               Cancel

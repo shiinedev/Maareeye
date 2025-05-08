@@ -10,7 +10,7 @@ const TransactionSkeleton = () => {
       {/* Header + Button */}
       <div className="flex justify-between items-center">
         <Skeleton className="h-8 w-32" />
-        <Skeleton className="h-8 w-36" />
+        <Skeleton  className="h-8 w-36 bg-purple-400" />
       </div>
 
       {/* Filters */}

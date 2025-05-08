@@ -101,9 +101,23 @@ const YourPlans = () => {
     }
   };
 
-  if (plansLoading) {
+  if (plansLoading || defaultAccountLoading) {
     return (
       <PlansSkeleton />
+    );
+  }
+
+  if (!defaultAccount) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
+        <h2 className="text-xl font-semibold">No account found</h2>
+        <p className="text-muted-foreground">
+          Please create an account to start tracking your Report.
+        </p>
+        <Button variant={"purple"} onClick={() => navigate("/dashboard/accounts")}>
+          Go to Accounts
+        </Button>
+      </div>
     );
   }
 

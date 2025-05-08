@@ -2,20 +2,20 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
 const PlansSkeleton = () => {
-  const cardCount = 6; // Number of skeleton cards to show
+  const cardCount = 3; // Number of skeleton cards to show
 
   return (
     <div className="p-6 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <Skeleton className="h-8 w-40" />
-        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-8 w-32 bg-purple-600" />
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 ">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-8 w-24 rounded-full" />
+          <Skeleton key={i} className="h-10 w-full rounded-md bg-purple-400" />
         ))}
       </div>
 
@@ -32,7 +32,7 @@ const PlansSkeleton = () => {
               <Skeleton className="h-4 w-24" />
               <Skeleton className="h-5 w-16" />
             </div>
-            <Skeleton className="h-8 w-full rounded-md" />
+            <Skeleton className="h-8 w-full rounded-md bg-purple-500" />
           </div>
         ))}
       </div>
