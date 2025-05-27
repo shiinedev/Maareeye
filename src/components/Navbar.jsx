@@ -32,26 +32,25 @@ const Navbar = () => {
     <header className="container mx-auto py-3 px-4 flex items-center justify-between  border-b ">
       {/* logo */}
       <div>
-        <Link
-          to="/"
-          className="gradient-title text-xl  sm:text-2xl font-bold uppercase">
+        <Link to="/" className="gradient-title text-xl  sm:text-2xl font-bold ">
           {/* <img src="/public/images/logo.png" alt="logo" width={'40px'}/> */}
-        MAAREEYE
+          Maareeye
         </Link>
       </div>
       {/* theme and login */}
 
-      <div className="flex space-x-4">     
-      <Button variant="outline" className="shadow-sm hidden sm:block" asChild>
-            <a
-              href="https://github.com/shiinedev/maareye"
-              rel="noopener noreferrer"
-              target="_blank"
-              className="">
-              <Github />
-            </a>
-          </Button>   
-         <Button
+      <div className="flex space-x-2">
+         {
+          isLoggedIn && (
+             <Link to="/dashboard" rel="noopener noreferrer" className="">
+          <Button variant="outline" className="shadow-sm flex">
+            <LayoutDashboard /> <span className="hidden sm:block">Dashboard</span>
+          </Button>
+        </Link>
+          )
+        }
+       
+        <Button
           variant="outline"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           className="shadow-sm cursor-pointer">
@@ -62,22 +61,22 @@ const Navbar = () => {
             <div className="flex items-center space-x-2 ">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Avatar>
-                      <AvatarImage src={profile?.avatar_url} />
-                      <AvatarFallback >
-                        <IconUserCircle size={40} />
-                      </AvatarFallback>
-                    </Avatar>
+                  <Avatar>
+                    <AvatarImage src={profile?.avatar_url} />
+                    <AvatarFallback>
+                      <IconUserCircle size={40} />
+                    </AvatarFallback>
+                  </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="max-w-70 mt-2 mr-3">
                   <DropdownMenuLabel>
                     <div className="flex items-center space-x-4">
-                    <Avatar>
-                      <AvatarImage src={profile?.avatar_url} />
-                      <AvatarFallback >
-                        <IconUserCircle size={40} />
-                      </AvatarFallback>
-                    </Avatar>
+                      <Avatar>
+                        <AvatarImage src={profile?.avatar_url} />
+                        <AvatarFallback>
+                          <IconUserCircle size={40} />
+                        </AvatarFallback>
+                      </Avatar>
                       <div className="flex flex-col">
                         <p className="capitalize">{profile?.username}</p>
                         <p className="text-gray-400">{user?.email}</p>
@@ -86,22 +85,22 @@ const Navbar = () => {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                  <Link to={"/profile"}>
-                    <DropdownMenuItem>
-                    <Settings/> Manage Account
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link to="/dashboard">
-                    <DropdownMenuItem>
-                      <LayoutDashboard /> Dashboard
-                    </DropdownMenuItem>
-                  </Link>
-                  <Button
-                    className="w-full  mt-2 cursor-pointer"
-                    variant="destructive"
-                    onClick={() => logout()}>
-                    <LogOut /> Logout
-                  </Button>
+                    <Link to={"/profile"}>
+                      <DropdownMenuItem>
+                        <Settings /> Manage Account
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link to="/dashboard">
+                      <DropdownMenuItem>
+                        <LayoutDashboard /> Dashboard
+                      </DropdownMenuItem>
+                    </Link>
+                    <Button
+                      className="w-full  mt-2 cursor-pointer"
+                      variant="destructive"
+                      onClick={() => logout()}>
+                      <LogOut /> Logout
+                    </Button>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -111,7 +110,7 @@ const Navbar = () => {
               <Button
                 variant="purple"
                 className="text-lg font-medium"
-                size="lg">
+                >
                 Login
               </Button>
             </Link>

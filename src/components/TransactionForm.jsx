@@ -148,7 +148,7 @@ const TransactionForm = ({ className, categories, ...props }) => {
   );
 
   return (
-    <div className={cn("flex flex-col gap-6 p-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6 px-4", className)} {...props}>
       <Card>
         <CardHeader>
           <CardTitle className="gradient-title text-2xl font-bold text-center">

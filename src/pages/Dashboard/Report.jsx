@@ -121,7 +121,7 @@ export default function Report() {
     );
   }
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <div className="container mx-auto px-4 space-y-8">
       <div className="flex flex-col space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Financial Report</h1>
         <p className="text-muted-foreground">

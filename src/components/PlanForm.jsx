@@ -127,7 +127,7 @@ const PlanForm = ({ categories }) => {
     (category) => category.type === type
   );
   return (
-    <div className={"flex flex-col gap-6 p-6"}>
+    <div className={"flex flex-col gap-6 px-4"}>
       <Card>
         <CardHeader>
           <CardTitle className="gradient-title text-2xl font-bold text-center">

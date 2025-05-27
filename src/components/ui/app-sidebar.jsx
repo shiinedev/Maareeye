@@ -71,7 +71,7 @@ export function AppSidebar({
     <Sidebar collapsible="offcanvas" {...props} className={"border-r"}>
       <SidebarHeader>
               <Link to="/">
-                <span className="text-xl font-bold gradient-title uppercase">Maareye</span>
+                <span className="text-xl font-bold gradient-title ">Maareeye</span>
               </Link>
       </SidebarHeader>
       <DropdownMenuSeparator />
