@@ -85,9 +85,17 @@ const TransactionForm = ({ className, categories, ...props }) => {
   }, [updateData, reset, isEdit]);
 
   const handleScanComplete = (scannedData) => {
+    reset()
     if (scannedData) {
-      setValue("amount", scannedData.amount.toString());
-      setValue("date", new Date(scannedData.date));
+      setValue("amount", scannedData.amount?.toString());
+       const parsedDate = new Date(scannedData.date);
+       if (!isNaN(parsedDate.getDate())) {
+        console.log(parsedDate);
+        
+      setValue("date", parsedDate);
+    } 
+  
+      
       if (scannedData.description) {
         setValue("description", scannedData.description);
       }

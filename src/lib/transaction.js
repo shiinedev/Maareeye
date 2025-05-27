@@ -341,7 +341,6 @@ export async function scanReceipt(file) {
         "amount": number,
         "date": "ISO date string",
         "description": "string",
-        "merchantName": "string",
         "category": "string"
       }
 
@@ -364,12 +363,13 @@ export async function scanReceipt(file) {
 
     try {
       const data = JSON.parse(cleanedText);
+      console.log("response: ",data);
+      
       return {
         amount: parseFloat(data.amount),
         date: new Date(data.date),
         description: data.description,
         category: data.category,
-        merchantName: data.merchantName,
       };
     } catch (parseError) {
       console.error("Error parsing JSON response:", parseError);

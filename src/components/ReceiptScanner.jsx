@@ -22,7 +22,7 @@ export function ReceiptScanner({ onScanComplete }) {
 
     setScanReceiptLoading(true);
     try {
-      const receiptData = await scanReceipt(file); // Directly call scanReceipt
+      const receiptData = await scanReceipt(file); 
       setScannedData(receiptData);
     } catch (error) {
       console.log("Failed to scan the receipt",error.message)
@@ -35,8 +35,17 @@ export function ReceiptScanner({ onScanComplete }) {
 
   useEffect(() => {
     if (scannedData && !scanReceiptLoading) {
-      onScanComplete(scannedData);
+       const isValid =
+      scannedData.amount &&
+      scannedData.date &&
+      !isNaN(new Date(scannedData.date).getTime());
+      if(isValid){
+        onScanComplete(scannedData);
       toast.success("Receipt scanned successfully");
+      }else{
+        toast.error("Failed to extract valid data from the receipt");
+      }
+      
     }
   }, [scanReceiptLoading, scannedData]);
 
