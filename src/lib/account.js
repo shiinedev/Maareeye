@@ -1,7 +1,6 @@
 import supabase from "./supabase";
 
 
-
 export const createAccount = async (account) => {
     console.log(account);
 
